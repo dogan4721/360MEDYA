@@ -3,181 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360 Medya | Profesyonel Yönetim Paneli</title>
+    <title>360 Medya | Yönetim Paneli</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <style>
         :root {
-            --bg-dark: #09090b;
-            --bg-card: #111114;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --surface: #18181b;
-            --text-main: #fafafa;
-            --text-muted: #a1a1aa;
-            --border: rgba(255, 255, 255, 0.08);
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --bg: #09090b; --card: #111114; --primary: #6366f1;
+            --text: #fafafa; --muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
-        /* --- Giriş Ekranı --- */
-        #loginOverlay {
-            position: fixed; inset: 0; z-index: 9999;
-            background: radial-gradient(circle at center, #1e1e2e 0%, #09090b 100%);
-            display: flex; align-items: center; justify-content: center; transition: 0.5s;
-        }
-        .login-card {
-            background: var(--surface); padding: 3rem; border-radius: 24px; border: 1px solid var(--border);
-            width: 90%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-        }
-        .login-card input {
-            width: 100%; padding: 1rem; margin-bottom: 1rem; background: var(--bg-dark);
-            border: 1px solid var(--border); border-radius: 12px; color: white; outline: none;
-        }
-        .login-btn {
-            width: 100%; padding: 1rem; background: var(--primary); border: none;
-            border-radius: 12px; color: white; font-weight: 700; cursor: pointer; transition: 0.3s;
-        }
-
-        /* --- Sidebar (Yan Menü) --- */
-        .sidebar {
-            width: 260px; background: var(--bg-card); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 2rem 1.2rem;
-            position: fixed; height: 100vh; z-index: 100;
-        }
-        .brand { font-size: 1.5rem; font-weight: 800; margin-bottom: 3rem; display: flex; align-items: center; gap: 12px; color: var(--primary); }
-        .nav-link {
-            padding: 0.8rem 1rem; border-radius: 12px; color: var(--text-muted);
-            display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 0.4rem;
-        }
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--card); border-right: 1px solid var(--border); padding: 2rem 1.2rem; position: fixed; height: 100vh; }
+        .sidebar h2 { color: var(--primary); font-weight: 800; margin-bottom: 2.5rem; text-align: center; }
+        .nav-link { padding: 1rem; border-radius: 12px; color: var(--muted); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 0.5rem; }
         .nav-link:hover, .nav-link.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
-        .nav-link i { width: 20px; }
 
-        /* --- Ana İçerik Alanı --- */
-        .main { flex: 1; margin-left: 260px; padding: 2.5rem; }
-        .tab-content { animation: fadeIn 0.4s ease; }
+        /* Main Content */
+        .main { flex: 1; margin-left: 260px; padding: 2.5rem; width: calc(100% - 260px); }
+        .tab-content { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Kartlar ve İstatistikler --- */
-        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .card-stat { background: var(--surface); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--border); }
-        .card-stat .label { color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
-        .card-stat .value { font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem; display: block; }
+        /* Table Design */
+        .table-container { background: var(--card); border-radius: 20px; border: 1px solid var(--border); overflow-x: auto; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: rgba(255,255,255,0.02); padding: 1.2rem; text-align: left; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; }
+        td { padding: 1.2rem; border-top: 1px solid var(--border); font-size: 0.85rem; vertical-align: middle; }
 
-        /* --- Tablo Tasarımı --- */
-        .table-container { background: var(--surface); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; margin-top: 1rem; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(255,255,255,0.02); padding: 1rem 1.5rem; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 1rem 1.5rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: #e4e4e7; }
-        tr:hover { background: rgba(255,255,255,0.01); }
+        /* Inputs & Badges */
+        .remains-input { width: 80px; background: #000; border: 1px solid var(--border); color: var(--success); padding: 6px; border-radius: 6px; text-align: center; font-weight: bold; }
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
+        .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .badge-completed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .badge-canceled { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
-        /* --- Badge (Durum Etiketleri) --- */
-        .badge { padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-
-        /* --- Butonlar --- */
-        .btn-sm { padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 0.75rem; }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn { padding: 8px 14px; border-radius: 10px; border: none; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: 0.2s; }
+        .btn-success { background: var(--primary); color: white; margin-right: 5px; }
         .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .btn-danger:hover { background: var(--danger); color: white; }
 
+        #loginOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .hidden { display: none !important; }
-
-        @media (max-width: 1024px) {
-            .sidebar { width: 80px; padding: 2rem 0.5rem; }
-            .sidebar span, .brand span { display: none; }
-            .main { margin-left: 80px; padding: 1.5rem; }
-        }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
-    <div class="login-card">
-        <i class="fas fa-fingerprint fa-3x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
-        <h2 style="margin-bottom: 2rem;">Admin Girişi</h2>
-        <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
-        <input type="password" id="loginPassword" placeholder="Şifre">
-        <button class="login-btn" onclick="attemptLogin()">Sisteme Eriş</button>
+    <div style="background: var(--card); padding: 3rem; border-radius: 24px; border: 1px solid var(--border); text-align: center; width: 350px;">
+        <i class="fas fa-lock fa-3x" style="color:var(--primary); margin-bottom:1rem;"></i>
+        <h2 style="margin-bottom:1.5rem;">Yönetici Girişi</h2>
+        <input type="password" id="passInput" placeholder="Sistem Şifresi" style="width:100%; padding:12px; background:var(--bg); border:1px solid var(--border); border-radius:10px; color:white; margin-bottom:1rem; outline:none;">
+        <button class="btn btn-success" style="width:100%; padding:12px;" onclick="doLogin()">Giriş Yap</button>
     </div>
 </div>
 
 <aside class="sidebar">
-    <div class="brand"><i class="fas fa-layer-group"></i> <span>360 PANEL</span></div>
-    <div class="nav-link active" onclick="switchTab('dashboard', this)"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
-    <div class="nav-link" onclick="switchTab('orders', this)"><i class="fas fa-shopping-bag"></i> <span>Siparişler</span></div>
-    <div class="nav-link" onclick="switchTab('payments', this)"><i class="fas fa-credit-card"></i> <span>Ödemeler</span></div>
-    <div class="nav-link" onclick="switchTab('users', this)"><i class="fas fa-user-friends"></i> <span>Kullanıcılar</span></div>
-    
-    <div class="nav-link" style="margin-top: auto; color: var(--danger);" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span>
-    </div>
+    <h2>360 MEDYA</h2>
+    <div class="nav-link active" onclick="tab('orders', this)"><i class="fas fa-shopping-basket"></i> Siparişler</div>
+    <div class="nav-link" onclick="tab('payments', this)"><i class="fas fa-wallet"></i> Bakiye Talepleri</div>
+    <div class="nav-link" onclick="tab('users', this)"><i class="fas fa-users-cog"></i> Kullanıcılar</div>
+    <div class="nav-link" style="margin-top:auto; color:var(--danger)" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Çıkış</div>
 </aside>
 
 <main class="main">
-    <div id="dashboardTab" class="tab-content">
-        <h1 style="margin-bottom: 2rem;">Genel Bakış</h1>
-        <div class="grid-stats">
-            <div class="card-stat"><span class="label">Toplam Sipariş</span><span class="value" id="statOrders">0</span></div>
-            <div class="card-stat"><span class="label">Bekleyen</span><span class="value" id="statPending" style="color:var(--warning)">0</span></div>
-            <div class="card-stat"><span class="label">Kullanıcı Sayısı</span><span class="value" id="statUsers">0</span></div>
-            <div class="card-stat"><span class="label">Tamamlanan</span><span class="value" id="statSuccess" style="color:var(--success)">0</span></div>
-        </div>
-
-        <div class="table-container">
-            <div style="padding: 1.5rem; font-weight: 700;">Son Hareketler</div>
-            <table id="recentOrdersTable">
-                <thead><tr><th>KOD</th><th>MÜŞTERİ</th><th>TUTAR</th><th>DURUM</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="ordersTab" class="tab-content hidden">
+    <div id="ordersTab" class="tab-content">
         <h1>Sipariş Yönetimi</h1>
         <div class="table-container">
-            <table id="allOrdersTable">
-                <thead><tr><th>KOD</th><th>KULLANICI</th><th>HİZMET</th><th>ADET</th><th>FİYAT</th><th>DURUM</th><th>İŞLEM</th></tr></thead>
-                <tbody></tbody>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sipariş No</th>
+                        <th>Müşteri (Ad/Email)</th>
+                        <th>Tutar</th>
+                        <th>Link</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th>Kalan Miktar</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersList"></tbody>
             </table>
         </div>
     </div>
 
     <div id="paymentsTab" class="tab-content hidden">
-        <h1>Bakiye Talepleri</h1>
+        <h1>Bakiye Yükleme Onayı</h1>
         <div class="table-container">
-            <table id="paymentsTable">
-                <thead><tr><th>E-POSTA</th><th>MİKTAR</th><th>TARİH</th><th>KOD</th><th>İŞLEM</th></tr></thead>
-                <tbody></tbody>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kullanıcı Email</th>
+                        <th>Miktar</th>
+                        <th>Ödeme Kodu</th>
+                        <th>Tarih</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsList"></tbody>
             </table>
         </div>
     </div>
 
     <div id="usersTab" class="tab-content hidden">
-        <h1>Kullanıcı Listesi</h1>
+        <h1>Kayıtlı Üyeler</h1>
         <div class="table-container">
-            <table id="usersTable">
-                <thead><tr><th>AD SOYAD</th><th>E-POSTA</th><th>BAKİYE</th><th>ŞİFRE</th><th>İŞLEM</th></tr></thead>
-                <tbody></tbody>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ad Soyad</th>
+                        <th>E-posta</th>
+                        <th>Mevcut Bakiye</th>
+                        <th>Şifre</th>
+                    </tr>
+                </thead>
+                <tbody id="usersList"></tbody>
             </table>
         </div>
     </div>
 </main>
 
 <script>
-    // --- KONFİGÜRASYON ---
+    // --- FIREBASE AYARLARI ---
     const firebaseConfig = {
         apiKey: "AIzaSyBygrzMYNAcYhEoKjhREzn4JPIemW6wxoc",
         authDomain: "smmpanel-1bd3b.firebaseapp.com",
@@ -190,144 +145,102 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const ADMIN_DATA = [
-        { u: "doganb", p: "472131" },
-        { u: "360admin", p: "360123" }
-    ];
-
-    let dataCache = { orders: [], users: [], payments: [] };
-
-    // --- SİSTEM FONKSİYONLARI ---
-    function attemptLogin() {
-        const u = document.getElementById('loginUsername').value;
-        const p = document.getElementById('loginPassword').value;
-        if(ADMIN_DATA.some(a => a.u === u && a.p === p)) {
-            localStorage.setItem('admin_auth', 'active');
+    function doLogin() {
+        if(document.getElementById('passInput').value === "472131") {
             document.getElementById('loginOverlay').classList.add('hidden');
-            startSystem();
-        } else { alert("Hatalı Giriş!"); }
+            initPanel();
+        } else { alert("Hatalı Yetki Şifresi!"); }
     }
 
-    function logout() {
-        localStorage.removeItem('admin_auth');
-        location.reload();
-    }
-
-    function switchTab(tabId, el) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-        document.getElementById(tabId + 'Tab').classList.remove('hidden');
+    function tab(name, el) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(name + 'Tab').classList.remove('hidden');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         el.classList.add('active');
     }
 
-    // --- VERİ YÖNETİMİ ---
-    function startSystem() {
-        if(localStorage.getItem('admin_auth') !== 'active') return;
-        document.getElementById('loginOverlay').classList.add('hidden');
-
-        // Firebase Dinleyici (Real-time)
+    function initPanel() {
+        // Canlı Veri Akışı
         db.ref().on('value', snapshot => {
             const data = snapshot.val() || {};
-            dataCache.users = data.users ? Object.values(data.users) : [];
-            dataCache.orders = data.orders ? Object.values(data.orders).reverse() : [];
-            dataCache.payments = data.balance_requests ? Object.entries(data.balance_requests).map(([id, v]) => ({...v, id})) : [];
             
-            updateUI();
+            // 1. SIPARISLERI YUKLE
+            const oList = document.getElementById('ordersList');
+            oList.innerHTML = "";
+            if(data.orders) {
+                Object.entries(data.orders).reverse().forEach(([key, o]) => {
+                    oList.innerHTML += `
+                        <tr>
+                            <td><b style="color:var(--primary)">#${o.code}</b></td>
+                            <td>${o.name || o.email}</td>
+                            <td>₺${o.price}</td>
+                            <td><a href="${o.link}" target="_blank" style="color:var(--primary); text-decoration:none;">GİT <i class="fas fa-external-link-alt"></i></a></td>
+                            <td>${o.date || '-'}</td>
+                            <td><span class="badge badge-${o.status === 'Tamamlandı' ? 'completed' : (o.status === 'İptal' ? 'canceled' : 'pending')}">${o.status}</span></td>
+                            <td>
+                                <input type="number" class="remains-input" value="${o.remains || 0}" 
+                                       onchange="saveRemains('${key}', this.value)">
+                            </td>
+                            <td>
+                                <button class="btn btn-success" onclick="setStatus('${key}', 'Tamamlandı')">Tamamla</button>
+                                <button class="btn btn-danger" onclick="setStatus('${key}', 'İptal')">İptal</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
+            // 2. BAKIYE TALEPLERINI YUKLE
+            const pList = document.getElementById('paymentsList');
+            pList.innerHTML = "";
+            if(data.balance_requests) {
+                Object.entries(data.balance_requests).forEach(([id, r]) => {
+                    pList.innerHTML += `
+                        <tr>
+                            <td>${r.userEmail}</td>
+                            <td>₺${r.amount}</td>
+                            <td><code>${r.code}</code></td>
+                            <td>${new Date(r.date).toLocaleDateString()}</td>
+                            <td><button class="btn btn-success" onclick="confirmPayment('${id}', '${r.userEmail}', ${r.amount})">Onayla</button></td>
+                        </tr>`;
+                });
+            }
+
+            // 3. KULLANICILARI YUKLE
+            const uList = document.getElementById('usersList');
+            uList.innerHTML = "";
+            if(data.users) {
+                Object.values(data.users).forEach(u => {
+                    uList.innerHTML += `
+                        <tr>
+                            <td>${u.name || '-'}</td>
+                            <td>${u.email}</td>
+                            <td style="color:var(--success); font-weight:700;">₺${(u.balance || 0).toFixed(2)}</td>
+                            <td><code>${u.password}</code></td>
+                        </tr>`;
+                });
+            }
         });
     }
 
-    function updateUI() {
-        // İstatistikler
-        document.getElementById('statOrders').innerText = dataCache.orders.length;
-        document.getElementById('statPending').innerText = dataCache.orders.filter(o => o.status === 'Beklemede').length;
-        document.getElementById('statUsers').innerText = dataCache.users.length;
-        document.getElementById('statSuccess').innerText = dataCache.orders.filter(o => o.status === 'Tamamlandı').length;
-
-        // Dashboard Tablosu
-        renderTable('#recentOrdersTable tbody', dataCache.orders.slice(0, 5), o => `
-            <tr>
-                <td><b style="color:var(--primary)">${o.code}</b></td>
-                <td>${o.name || o.email}</td>
-                <td>₺${o.price}</td>
-                <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
-            </tr>
-        `);
-
-        // Siparişler Tablosu
-        renderTable('#allOrdersTable tbody', dataCache.orders, o => `
-            <tr>
-                <td>${o.code}</td>
-                <td>${o.email}</td>
-                <td>${o.service || '-'}</td>
-                <td>${o.quantity || '0'}</td>
-                <td>₺${o.price}</td>
-                <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
-                <td>
-                    <button class="btn-sm btn-primary" onclick="changeStatus('${o.code}', 'Tamamlandı')">Tamamla</button>
-                    <button class="btn-sm btn-danger" onclick="changeStatus('${o.code}', 'İptal')">İptal</button>
-                </td>
-            </tr>
-        `);
-
-        // Ödemeler Tablosu
-        renderTable('#paymentsTable tbody', dataCache.payments, p => `
-            <tr>
-                <td>${p.userEmail}</td>
-                <td>₺${p.amount}</td>
-                <td>${new Date(p.date).toLocaleDateString()}</td>
-                <td><code>${p.code}</code></td>
-                <td>
-                    <button class="btn-sm btn-primary" onclick="approvePayment('${p.id}', '${p.userEmail}', ${p.amount})">Onayla</button>
-                </td>
-            </tr>
-        `);
-
-        // Kullanıcılar Tablosu
-        renderTable('#usersTable tbody', dataCache.users, u => `
-            <tr>
-                <td>${u.name || '-'}</td>
-                <td>${u.email}</td>
-                <td style="color:var(--success)">₺${(u.balance || 0).toFixed(2)}</td>
-                <td><code>${u.password}</code></td>
-                <td><button class="btn-sm btn-danger" onclick="deleteUser('${u.email}')">Sil</button></td>
-            </tr>
-        `);
+    // FONKSIYONLAR
+    function setStatus(key, status) {
+        db.ref(`orders/${key}/status`).set(status);
     }
 
-    // --- YARDIMCI FONKSİYONLAR ---
-    function renderTable(selector, data, templateFn) {
-        const el = document.querySelector(selector);
-        if(!data.length) { el.innerHTML = '<tr><td colspan="7" style="text-align:center">Veri bulunamadı.</td></tr>'; return; }
-        el.innerHTML = data.map(templateFn).join('');
+    function saveRemains(key, val) {
+        db.ref(`orders/${key}/remains`).set(val);
     }
 
-    function getStatusClass(s) {
-        if(s === 'Tamamlandı') return 'success';
-        if(s === 'Beklemede' || s === 'İşlemde') return 'warning';
-        return 'danger';
-    }
-
-    async function changeStatus(code, status) {
-        const snap = await db.ref('orders').once('value');
-        const key = Object.keys(snap.val()).find(k => snap.val()[k].code === code);
-        if(key) db.ref(`orders/${key}/status`).set(status);
-    }
-
-    async function approvePayment(id, email, amount) {
-        const snap = await db.ref('users').once('value');
-        const key = Object.keys(snap.val()).find(k => snap.val()[k].email === email);
-        if(key) {
-            const currentBalance = snap.val()[key].balance || 0;
-            await db.ref(`users/${key}/balance`).set(currentBalance + parseFloat(amount));
-            await db.ref(`balance_requests/${id}`).remove();
-            alert("Bakiye onaylandı!");
+    async function confirmPayment(reqId, email, amount) {
+        const userSnap = await db.ref('users').once('value');
+        const userKey = Object.keys(userSnap.val()).find(k => userSnap.val()[k].email === email);
+        if(userKey) {
+            const current = userSnap.val()[userKey].balance || 0;
+            await db.ref(`users/${userKey}/balance`).set(current + parseFloat(amount));
+            await db.ref(`balance_requests/${reqId}`).remove();
+            alert("Bakiye başarıyla eklendi.");
         }
     }
-
-    // Sayfa Yüklendiğinde
-    window.onload = () => {
-        if(localStorage.getItem('admin_auth') === 'active') startSystem();
-    };
 </script>
 </body>
 </html>
