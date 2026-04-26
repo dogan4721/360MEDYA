@@ -604,10 +604,60 @@
         return 'pending';
     }
 
-    async function updateStatus(orderId, status) {
-        await database.ref(`orders/${orderId}/status`).set(status);
-        loadAllData();
+   async function updateStatus(orderId, status) {
+    // EĞER SİPARİŞ İPTAL EDİLİYORSA
+    if (status === 'İptal') {
+        // Sipariş bilgilerini al
+        const orderSnap = await database.ref(`orders/${orderId}`).once('value');
+        const order = orderSnap.val();
+        
+        if (order && order.email && order.price) {
+            // Sipariş tutarını sayıya çevir (örn: "25.00 ₺" -> 25)
+            let priceValue = parseFloat(order.price.toString().replace('₺', '').replace(',', '.').trim());
+            
+            if (!isNaN(priceValue) && priceValue > 0) {
+                // Admine iade miktarını sor
+                const refundAmount = prompt(`💰 Sipariş Tutarı: ${priceValue} ₺\n\n🔥 İPTAL İADE İŞLEMİ\n\nİade edilecek miktarı girin:\n• Tam iade için: ${priceValue}\n• Kısmi iade için: örn: 50\n• İade yapmamak için: 0`, priceValue);
+                
+                if (refundAmount !== null) {
+                    const refundValue = parseFloat(refundAmount);
+                    
+                    if (!isNaN(refundValue) && refundValue > 0) {
+                        // Kullanıcıyı bul
+                        const usersSnap = await database.ref('users').once('value');
+                        const users = usersSnap.val();
+                        let userId = null;
+                        
+                        for (let [id, user] of Object.entries(users || {})) {
+                            if (user.email === order.email) {
+                                userId = id;
+                                break;
+                            }
+                        }
+                        
+                        if (userId) {
+                            // Bakiyeyi güncelle
+                            const oldBalance = users[userId].balance || 0;
+                            const newBalance = oldBalance + refundValue;
+                            await database.ref(`users/${userId}/balance`).set(newBalance);
+                            alert(`✅ İADE BAŞARILI!\n\n💰 İade Edilen: ${refundValue} ₺\n📌 Yeni Bakiye: ${newBalance} ₺`);
+                        } else {
+                            alert("⚠️ Kullanıcı bulunamadı! İade yapılamadı.");
+                        }
+                    } else if (refundValue === 0) {
+                        alert("❌ İADE YAPILMADI! Sipariş sadece iptal edildi.");
+                    } else {
+                        alert("❌ Geçersiz miktar! İade yapılmadı.");
+                    }
+                }
+            }
+        }
     }
+    
+    // Sipariş durumunu güncelle
+    await database.ref(`orders/${orderId}/status`).set(status);
+    loadAllData();
+}
 
     async function updateRemaining(orderId, btnElement) {
         const inputElem = document.getElementById(`remaining_${orderId}`);
