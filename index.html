@@ -805,14 +805,17 @@
   </div>
 
   <!-- SİPARİŞLERİM Sayfası -->
-  <div id="myorders-page" class="page-section">
-    <section style="max-width: 1000px; margin: 100px auto 60px;">
-      <h2 style="text-align:center;">📋 Siparişlerim</h2>
-      <div id="ordersList" class="orders-container">
-        <p style="text-align:center; color: var(--text-muted);">Yükleniyor...</p>
-      </div>
-    </section>
-  </div>
+<div id="myorders-page" class="page-section">
+  <section style="max-width: 1000px; margin: 100px auto 60px; padding: 0 20px;">
+    <h2 style="text-align:center; color:white; margin-bottom:30px;">📋 Siparişlerim</h2>
+    
+    <!-- Siparişlerin Kart Şeklinde Listeleneceği Yer -->
+    <div id="orderslist" class="orders-container">
+        <!-- Burası JavaScript ile dolacak -->
+    </div>
+  </section>
+</div>
+
 
   <!-- HESABIM Sayfası -->
   <div id="account-page" class="page-section">
@@ -1198,13 +1201,13 @@ function calculate() {
 }
 
 async function placeOrderWithBalance() {
-  if(!currentUser) { alert('Sipariş için giriş yapın'); return; }
+  if(!currentUser) { alert('Lütfen giriş yapın'); return; }
   const service = document.getElementById('service').value;
   const qty = parseInt(document.getElementById('quantity').value) || 0;
   const link = document.getElementById('link').value;
   const total = parseFloat(document.getElementById('totalPrice').innerText);
 
-  if(!service || qty < 1 || !link) { alert('Lütfen tüm alanları doldurun!'); return; }
+  if(!service || qty < 1 || !link) { alert('Tüm alanları doldurun!'); return; }
   if(currentUser.balance < total) { alert('Yetersiz bakiye!'); return; }
 
   currentUser.balance -= total;
@@ -1213,67 +1216,65 @@ async function placeOrderWithBalance() {
 
   const orderCode = '#' + Math.random().toString(36).substring(2,10).toUpperCase();
   const newOrder = { 
-    code: orderCode, 
-    service, 
-    quantity: qty, 
-    price: total.toFixed(2) + ' ₺', 
-    link, 
-    email: currentUser.email, 
-    status: 'Beklemede',
-    date: new Date().toISOString()
+    code: orderCode, service, quantity: qty, remains: qty,
+    price: total.toFixed(2) + ' ₺', link, email: currentUser.email, 
+    status: 'Beklemede', date: new Date().toISOString() 
   };
 
   let orders = await loadOrders();
   orders.push(newOrder);
   await saveOrders(orders);
   
-  if(!currentUser.orders) currentUser.orders = [];
-  currentUser.orders.push(orderCode);
-  
-  alert('✅ Sipariş başarıyla oluşturuldu!\nKod: ' + orderCode);
+  alert('Sipariş Alındı! Kod: ' + orderCode);
   document.getElementById('orderForm').reset();
-  document.getElementById('totalPrice').innerText = '0,00';
   showPage('my-orders');
-  loadMyOrders();
 }
-    
-    async function loadMyOrders() {
-      if(!currentUser) { document.getElementById('ordersList').innerHTML = '<p style="text-align:center">Siparişlerinizi görmek için giriş yapın.</p>'; return; }
-      const orders = await loadOrders();
-      const myOrders = orders.filter(o => o.email === currentUser.email);
-      if(myOrders.length === 0) { document.getElementById('ordersList').innerHTML = '<p style="text-align:center">Henüz siparişiniz bulunmuyor.</p>'; return; }
-      document.getElementById('ordersList').innerHTML = myOrders.reverse().map(o => `
-        <div class="order-card">
-          <div class="order-card-header"><span class="order-code">${o.code}</span><span class="order-status status-${getStatusClass(o.status)}">${o.status}</span></div>
-          <div><strong>${o.service}</strong> - ${o.quantity} adet</div>
-          <div>Tutar: ${o.price}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted)">${new Date(o.date).toLocaleString('tr-TR')}</div>
-        </div>
-      `).join('');
+
+function renderOrders(ordersArray) {
+    const container = document.getElementById('orderslist');
+    container.innerHTML = '';
+    if (ordersArray.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:gray;">Sipariş bulunamadı.</p>';
+        return;
     }
-    
-    function getStatusClass(status) {
-      if(status === 'Beklemede') return 'pending';
-      if(status === 'İşlemde') return 'processing';
-      if(status === 'Tamamlandı') return 'completed';
-      if(status === 'İptal') return 'cancelled';
-      return 'pending';
-    }
-    
-    async function searchOrder() {
-      const code = document.getElementById('queryInput').value.trim().toUpperCase();
-      const orders = await loadOrders();
-      const order = orders.find(o => o.code === code);
-      const resDiv = document.getElementById('queryResult');
-      if(!order) { resDiv.innerHTML = '<p style="color:#ff4444; text-align:center;">Sipariş bulunamadı</p>'; resDiv.classList.add('active'); return; }
-      document.getElementById('qCode').textContent = order.code;
-      document.getElementById('qService').textContent = order.service;
-      document.getElementById('qQuantity').textContent = order.quantity + ' adet';
-      document.getElementById('qPrice').textContent = order.price;
-      document.getElementById('qDate').textContent = new Date(order.date).toLocaleString('tr-TR');
-      document.getElementById('qStatus').innerHTML = `<span style="color:#22c55e; font-weight:bold;">${order.status}</span>`;
-      resDiv.classList.add('active');
-    }
+    [...ordersArray].reverse().forEach(order => {
+        const card = document.createElement('div');
+        card.style = "background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 20px; color: #e6edf3;";
+        card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 15px;">
+                <span style="color: #58a6ff; font-weight: bold;">${order.code}</span>
+                <span style="color: #d29922; border: 1px solid #d29922; padding: 2px 8px; border-radius: 5px; font-size: 12px;">${order.status}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+                <div>Hizmet: <b>${order.service}</b></div>
+                <div>Miktar: <b>${order.quantity}</b></div>
+                <div>Tutar: <b style="color:#3fb950">${order.price}</b></div>
+                <div>Tarih: <b>${new Date(order.date).toLocaleString('tr-TR')}</b></div>
+                <div style="grid-column: span 2;">Link: <a href="${order.link}" target="_blank" style="color:#58a6ff;">${order.link}</a></div>
+                <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed #333; padding-top: 10px;">
+                    <span style="color: #ff7b72;">Kalan Sayı:</span> <b>${order.remains || 0}</b>
+                </div>
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+async function loadMyOrders() {
+    if (!currentUser) return;
+    const orders = await loadOrders();
+    const myOrders = orders.filter(o => o.email === currentUser.email);
+    renderOrders(myOrders);
+}
+
+async function searchOrder() {
+    const query = document.getElementById('queryInput').value.trim().toUpperCase();
+    if (!query) return;
+    const orders = await loadOrders();
+    const found = orders.filter(o => o.code.toUpperCase().includes(query) && o.email === currentUser.email);
+    if (found.length > 0) { renderOrders(found); showPage('my-orders'); } 
+    else { alert("Sipariş bulunamadı!"); }
+}
+
     
     // Sayfa Geçişleri
     function showPage(pageName) {
