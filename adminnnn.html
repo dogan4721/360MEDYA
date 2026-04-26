@@ -357,6 +357,7 @@
         
         .loading { text-align: center; padding: 2rem; color: var(--text-muted); }
         .remaining-input { width: 80px; background: var(--darker); border: 1px solid var(--border); border-radius: 8px; color: white; padding: 6px; text-align: center; }
+        .link-cell a { color: var(--primary); text-decoration: none; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -406,7 +407,7 @@
                     <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
                     <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
                 </tbody>
-            </table>
+             </table>
         </div>
     </div>
 </div>
@@ -420,12 +421,12 @@
         <table id="allOrdersTable">
             <thead>
                 <tr>
-                    <th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
+                    <th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Hizmet</th><th>Link</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
                 </tr>
             </thead>
-            <tbody><tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
+            <tbody><tr><td colspan="10" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
             </tbody>
-        </table>
+         </table>
     </div>
     <div class="admin-note">
         <textarea id="adminNoteText" rows="2" placeholder="📝 Yönetici notu burada görünür..."></textarea>
@@ -440,7 +441,7 @@
             <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
             <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
             </tbody>
-        </table>
+         </table>
     </div>
 </div>
 
@@ -455,7 +456,7 @@
             <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
             <tbody><tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
             </tbody>
-        </table>
+         </table>
     </div>
 </div>
 </main>
@@ -534,50 +535,59 @@
         renderUsersTable(allUsers);
     }
 
-   function renderOrdersTable(orders) {
-    const tbody = document.querySelector('#allOrdersTable tbody');
-    if(!orders.length) { tbody.innerHTML = '<tr><td colspan="10" class="loading">📭 Sipariş bulunamadı</td></tr>'; return; }
-    tbody.innerHTML = orders.map(o => `
-        <tr>
-            <td><strong>${o.code}</strong></td>
-            <td>${o.email}</td>
-            <td>${o.name || '-'}</td>
-            <td>${o.service || o.category || '-'}</td>
-            <td><a href="${o.link || '#'}" target="_blank" style="color:var(--primary); text-decoration:none;">${o.link ? '🔗 Link' : '-'}</a></td>
-            <td>${o.price || 0} ₺</td>
-            <td>
-                <input type="number" id="remaining_${o.id}" value="${o.remaining !== undefined ? o.remaining : (o.quantity || 0)}" class="remaining-input" style="width:70px;">
-                <button class="btn-sm btn-warning" onclick="updateRemaining('${o.id}')"><i class="fas fa-save"></i></button>
-             </td>
-            <td><small>${new Date(o.date).toLocaleString('tr-TR')}</small></td>
-            <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
-            <td>
-                <button class="btn-sm btn-primary" onclick="updateStatus('${o.id}','İşlemde')">İşlemde</button>
-                <button class="btn-sm btn-success" onclick="updateStatus('${o.id}','Tamamlandı')">Tamamla</button>
-                <button class="btn-sm btn-danger" onclick="updateStatus('${o.id}','İptal')">İptal</button>
-             </td>
-        </tr>
-    `).join('');
-}
+    // ========== SİPARİŞ TABLOSU (Hizmet ve Link eklendi) ==========
+    function renderOrdersTable(orders) {
+        const tbody = document.querySelector('#allOrdersTable tbody');
+        if(!orders || !orders.length) { 
+            tbody.innerHTML = '<tr><td colspan="10" class="loading">📭 Sipariş bulunamadı</td></tr>'; 
+            return; 
+        }
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td><strong>${o.code || '?'}</strong></td>
+                <td>${o.email || '?'}</td>
+                <td>${o.name || o.senderName || '-'}</td>
+                <td>${o.service || o.category || '-'}</td>
+                <td class="link-cell"><a href="${o.link || '#'}" target="_blank">🔗 Link</a></td>
+                <td>${o.price || '0 ₺'}</td>
+                <td>
+                    <input type="number" id="remaining_${o.id}" value="${o.remaining !== undefined ? o.remaining : (o.quantity || 0)}" class="remaining-input">
+                    <button class="btn-sm btn-warning" onclick="updateRemaining('${o.id}')"><i class="fas fa-save"></i></button>
+                 </td>
+                <td><small>${o.date ? new Date(o.date).toLocaleString('tr-TR') : '-'}</small></td>
+                <td><span class="badge badge-${getStatusClass(o.status)}">${o.status || 'Beklemede'}</span></td>
+                <td>
+                    <button class="btn-sm btn-primary" onclick="updateStatus('${o.id}','İşlemde')">İşlemde</button>
+                    <button class="btn-sm btn-success" onclick="updateStatus('${o.id}','Tamamlandı')">Tamamla</button>
+                    <button class="btn-sm btn-danger" onclick="updateStatus('${o.id}','İptal')">İptal</button>
+                 </td>
+            </tr>
+        `).join('');
+    }
 
-  function renderPaymentsTable() {
-    const tbody = document.querySelector('#paymentRequestsTable tbody');
-    if(!allRequests.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Bekleyen bakiye talebi yok</td></tr>'; return; }
-    tbody.innerHTML = allRequests.map(r => `
-        <tr>
-            <td><strong>${r.userEmail}</strong></td>
-            <td>${r.userName || r.name || r.fullname || '-'}</td> 
-            <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
-            <td style="color:var(--success); font-weight:bold;">${r.amount} ₺</td>
-            <td><code>${r.code}</code></td>
-            <td>
-                <button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
-                <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button>
-            </td>
-        </tr>
-    `).join('');
-}
+    // ========== BAKİYE TABLOSU (Ad Soyad düzeltildi) ==========
+    function renderPaymentsTable() {
+        const tbody = document.querySelector('#paymentRequestsTable tbody');
+        if(!allRequests || !allRequests.length) { 
+            tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Bekleyen bakiye talebi yok</td></tr>'; 
+            return; 
+        }
+        tbody.innerHTML = allRequests.map(r => `
+            <tr>
+                <td><strong>${r.userEmail || '?'}</strong></td>
+                <td>${r.userName || r.name || r.fullname || '-'}</td>
+                <td><small>${r.date ? new Date(r.date).toLocaleString('tr-TR') : '-'}</small></td>
+                <td style="color:var(--success); font-weight:bold;">${r.amount || 0} ₺</td>
+                <td><code>${r.code || '?'}</code></td>
+                <td>
+                    <button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
+                    <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button>
+                 </td>
+            </tr>
+        `).join('');
+    }
 
+    // ========== KULLANICI TABLOSU ==========
     function renderUsersTable(users) {
         const tbody = document.querySelector('#usersManagementTable tbody');
         if(!users.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading">👤 Kullanıcı bulunamadı</td></tr>'; return; }
@@ -592,7 +602,7 @@
                 <td>
                     <button class="btn-sm btn-success" onclick="addBalance('${u.email}')">Bakiye Ekle</button>
                     <button class="btn-sm btn-danger" onclick="delUser('${u.id}','${u.email}')">Sil</button>
-                </td>
+                 </td>
             </tr>
         `).join('');
     }
@@ -606,70 +616,65 @@
         return 'pending';
     }
 
-   async function updateStatus(orderId, status) {
-    // EĞER SİPARİŞ İPTAL EDİLİYORSA
-    if (status === 'İptal') {
-        // Sipariş bilgilerini al
-        const orderSnap = await database.ref(`orders/${orderId}`).once('value');
-        const order = orderSnap.val();
-        
-        if (order && order.email && order.price) {
-            // Sipariş tutarını sayıya çevir (örn: "25.00 ₺" -> 25)
-            let priceValue = parseFloat(order.price.toString().replace('₺', '').replace(',', '.').trim());
+    // ========== SİPARİŞ DURUM GÜNCELLE (İPTALDE İADE EKLİ) ==========
+    async function updateStatus(orderId, status) {
+        if (status === 'İptal') {
+            const orderSnap = await database.ref(`orders/${orderId}`).once('value');
+            const order = orderSnap.val();
             
-            if (!isNaN(priceValue) && priceValue > 0) {
-                // Admine iade miktarını sor
-                const refundAmount = prompt(`💰 Sipariş Tutarı: ${priceValue} ₺\n\n🔥 İPTAL İADE İŞLEMİ\n\nİade edilecek miktarı girin:\n• Tam iade için: ${priceValue}\n• Kısmi iade için: örn: 50\n• İade yapmamak için: 0`, priceValue);
+            if (order && order.email && order.price) {
+                let priceValue = parseFloat(order.price.toString().replace('₺', '').replace(',', '.').trim());
                 
-                if (refundAmount !== null) {
-                    const refundValue = parseFloat(refundAmount);
+                if (!isNaN(priceValue) && priceValue > 0) {
+                    const refundAmount = prompt(`💰 Sipariş Tutarı: ${priceValue} ₺\n\nİade edilecek miktarı girin:\n• Tam iade: ${priceValue}\n• Kısmi iade: örn: 50\n• İade yok: 0`, priceValue);
                     
-                    if (!isNaN(refundValue) && refundValue > 0) {
-                        // Kullanıcıyı bul
-                        const usersSnap = await database.ref('users').once('value');
-                        const users = usersSnap.val();
-                        let userId = null;
+                    if (refundAmount !== null) {
+                        const refundValue = parseFloat(refundAmount);
                         
-                        for (let [id, user] of Object.entries(users || {})) {
-                            if (user.email === order.email) {
-                                userId = id;
-                                break;
+                        if (!isNaN(refundValue) && refundValue > 0) {
+                            const usersSnap = await database.ref('users').once('value');
+                            const users = usersSnap.val();
+                            let userId = null;
+                            
+                            for (let [id, user] of Object.entries(users || {})) {
+                                if (user.email === order.email) {
+                                    userId = id;
+                                    break;
+                                }
                             }
+                            
+                            if (userId) {
+                                const oldBalance = users[userId].balance || 0;
+                                const newBalance = oldBalance + refundValue;
+                                await database.ref(`users/${userId}/balance`).set(newBalance);
+                                alert(`✅ ${refundValue} ₺ iade edildi! Yeni bakiye: ${newBalance} ₺`);
+                            }
+                        } else if (refundValue !== 0) {
+                            alert("❌ Geçersiz miktar!");
                         }
-                        
-                        if (userId) {
-                            // Bakiyeyi güncelle
-                            const oldBalance = users[userId].balance || 0;
-                            const newBalance = oldBalance + refundValue;
-                            await database.ref(`users/${userId}/balance`).set(newBalance);
-                            alert(`✅ İADE BAŞARILI!\n\n💰 İade Edilen: ${refundValue} ₺\n📌 Yeni Bakiye: ${newBalance} ₺`);
-                        } else {
-                            alert("⚠️ Kullanıcı bulunamadı! İade yapılamadı.");
-                        }
-                    } else if (refundValue === 0) {
-                        alert("❌ İADE YAPILMADI! Sipariş sadece iptal edildi.");
-                    } else {
-                        alert("❌ Geçersiz miktar! İade yapılmadı.");
                     }
                 }
             }
         }
+        
+        await database.ref(`orders/${orderId}/status`).set(status);
+        loadAllData();
     }
-    
-    // Sipariş durumunu güncelle
-    await database.ref(`orders/${orderId}/status`).set(status);
-    loadAllData();
-}
 
-    async function updateRemaining(orderId, btnElement) {
+    // ========== KALAN SAYI GÜNCELLE ==========
+    async function updateRemaining(orderId) {
         const inputElem = document.getElementById(`remaining_${orderId}`);
         const newVal = inputElem ? inputElem.value : prompt("Kalan miktarı girin:");
         if(newVal !== null && !isNaN(parseFloat(newVal))) {
             await database.ref(`orders/${orderId}/remaining`).set(parseFloat(newVal));
+            // Ana sitede güncellenmesi için remains alanını da güncelle
+            await database.ref(`orders/${orderId}/remains`).set(parseFloat(newVal));
             loadAllData();
+            alert("Kalan sayı güncellendi!");
         } else { alert("Geçerli sayı giriniz."); }
     }
 
+    // ========== BAKİYE ONAYLA ==========
     async function approveReq(id, email, amount) {
         const snap = await database.ref('users').once('value');
         const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
@@ -682,12 +687,14 @@
         } else { alert("Kullanıcı bulunamadı."); }
     }
 
+    // ========== TALEP REDDET ==========
     async function rejectReq(id) {
         await database.ref(`balance_requests/${id}`).remove();
         loadAllData();
         alert("Talep reddedildi.");
     }
 
+    // ========== BAKİYE EKLE (Direkt) ==========
     async function addBalance(email) {
         let miktar = prompt("Eklenecek bakiye (₺):", "0");
         if(miktar && !isNaN(parseFloat(miktar)) && parseFloat(miktar) > 0) {
@@ -702,6 +709,7 @@
         } else { alert("Geçerli bir miktar girin."); }
     }
 
+    // ========== KULLANICI SİL ==========
     async function delUser(userId, email) {
         if(confirm(`"${email}" kullanıcısını silmek istediğinize emin misiniz?`)) {
             await database.ref(`users/${userId}`).remove();
@@ -710,6 +718,7 @@
         }
     }
 
+    // ========== ŞİFRE GÖSTER/GİZLE ==========
     function showPass(email, el) {
         const user = allUsers.find(u => u.email === email);
         if(user) el.closest('td').innerHTML = `${user.password} <i class="fas fa-eye-slash eye-icon" onclick="hidePass('${email}', this)"></i>`;
@@ -718,6 +727,7 @@
         el.closest('td').innerHTML = `•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${email}', this)"></i>`;
     }
 
+    // ========== FİLTRELEME ==========
     function filterOrders() {
         const kw = document.getElementById('orderSearchInput').value.toLowerCase();
         const filtered = allOrders.filter(o => o.code.toLowerCase().includes(kw) || (o.email && o.email.toLowerCase().includes(kw)) || (o.name && o.name.toLowerCase().includes(kw)));
@@ -730,6 +740,7 @@
     }
     function refreshUsersTable() { loadAllData(); }
 
+    // ========== NOT KAYDET ==========
     async function saveAdminNote() {
         const note = document.getElementById('adminNoteText').value;
         await database.ref('admin_notes').set({ note, date: new Date().toISOString() });
@@ -740,6 +751,7 @@
         if(snap.val() && snap.val().note) document.getElementById('adminNoteText').value = snap.val().note;
     }
 
+    // ========== TAB GEÇİŞİ ==========
     function switchTab(name) {
         document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
         document.getElementById(`${name}Tab`).style.display = 'block';
@@ -753,6 +765,7 @@
         }
     }
 
+    // ========== SAYFA YÜKLENİNCE ==========
     window.onload = () => {
         if(localStorage.getItem('admin_session') === 'active') {
             document.getElementById('loginOverlay').classList.add('hidden');
