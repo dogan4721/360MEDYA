@@ -558,23 +558,23 @@
         `).join('');
     }
 
-    function renderPaymentsTable() {
-        const tbody = document.querySelector('#paymentRequestsTable tbody');
-        if(!allRequests.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Bekleyen bakiye talebi yok</td></tr>'; return; }
-        tbody.innerHTML = allRequests.map(r => `
-            <tr>
-                <td><strong>${r.userEmail}</strong></td>
-                <td>${r.name || '-'}</td>
-                <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
-                <td style="color:var(--success); font-weight:bold;">${r.amount} ₺</td>
-                <td><code>${r.code}</code></td>
-                <td>
-                    <button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
-                    <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button>
-                </td>
-            </tr>
-        `).join('');
-    }
+  function renderPaymentsTable() {
+    const tbody = document.querySelector('#paymentRequestsTable tbody');
+    if(!allRequests.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Bekleyen bakiye talebi yok</td></tr>'; return; }
+    tbody.innerHTML = allRequests.map(r => `
+        <tr>
+            <td><strong>${r.userEmail}</strong></td>
+            <td>${r.userName || r.name || r.fullname || '-'}</td> 
+            <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
+            <td style="color:var(--success); font-weight:bold;">${r.amount} ₺</td>
+            <td><code>${r.code}</code></td>
+            <td>
+                <button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
+                <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button>
+            </td>
+        </tr>
+    `).join('');
+}
 
     function renderUsersTable(users) {
         const tbody = document.querySelector('#usersManagementTable tbody');
