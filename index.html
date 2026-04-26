@@ -1090,33 +1090,35 @@
       }
     };
     
-    document.getElementById('authActionBtn').onclick = async () => {
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      if(!email || !password) { alert('E-posta ve şifre giriniz'); return; }
-      let users = await loadUsers();
-      if(isLoginMode) {
-        const user = users.find(u => u.email === email && u.password === password);
-        if(user) {
-          currentUser = user;
-          await saveCurrentUser();
-          updateBalanceUI();
-          closeAuthModal();
-          alert('Giriş başarılı!');
-          showPage('new-order');
-        } else alert('Hatalı e-posta veya şifre');
-      } else {
-        if(users.find(u => u.email === email)) { alert('Bu e-posta zaten kayıtlı'); return; }
-        const newUser = { email, password, balance: 0, orders: [], name: email.split('@')[0], createdAt: new Date().toISOString() };
-        users.push(newUser);
-        await saveUsers(users);
-        currentUser = newUser;
+   document.getElementById('authActionBtn').onclick = function() {
+  (async () => {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if(!email || !password) { alert('E-posta ve şifre giriniz'); return; }
+    let users = await loadUsers();
+    if(isLoginMode) {
+      const user = users.find(u => u.email === email && u.password === password);
+      if(user) {
+        currentUser = user;
         await saveCurrentUser();
         updateBalanceUI();
         closeAuthModal();
-        alert('Kayıt başarılı! Hoşgeldiniz.');
-      }
-    };
+        alert('Giriş başarılı!');
+        showPage('new-order');
+      } else alert('Hatalı e-posta veya şifre');
+    } else {
+      if(users.find(u => u.email === email)) { alert('Bu e-posta zaten kayıtlı'); return; }
+      const newUser = { email, password, balance: 0, name: email.split('@')[0], createdAt: new Date().toISOString() };
+      users.push(newUser);
+      await saveUsers(users);
+      currentUser = newUser;
+      await saveCurrentUser();
+      updateBalanceUI();
+      closeAuthModal();
+      alert('Kayıt başarılı! Hoşgeldiniz.');
+    }
+  })();
+};
     
     async function logout() {
       currentUser = null;
