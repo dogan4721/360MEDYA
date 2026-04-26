@@ -997,25 +997,6 @@
       return localData;
     }
 
-    // Demo verileri
-    async function initDemoData() {
-      let users = await loadUsers();
-      if(users.length === 0) {
-        users = [
-          { email: "demo@360medya.com", password: "123456", balance: 100, name: "Demo Kullanıcı", orders: [], createdAt: new Date().toISOString() }
-        ];
-        await saveUsers(users);
-      }
-      
-      let orders = await loadOrders();
-      if(orders.length === 0) {
-        orders = [
-          { code: "#DEMO001", service: "Instagram Takipçi", quantity: 100, price: "20.00 ₺", link: "https://instagram.com/demo", email: "demo@360medya.com", status: "Tamamlandı", date: new Date().toISOString(), senderName: "Demo Kullanıcı" }
-        ];
-        await saveOrders(orders);
-      }
-    }
-
     // ========== KULLANICI SİSTEMİ ==========
     let currentUser = null;
     
