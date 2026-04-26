@@ -1142,7 +1142,17 @@
       const requestId = 'REQ-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
       const requestCode = 'BL-' + Math.random().toString(36).substring(2,10).toUpperCase();
       let requests = await loadBalanceRequests();
-      requests.push({ id: requestId, code: requestCode, userEmail: currentUser.email, userName: currentUser.name, amount: amount, date: new Date().toISOString(), status: 'pending' });
+      requests.push({ 
+    id: requestId, 
+    code: requestCode, 
+    userEmail: currentUser.email, 
+    userName: fullname,
+    name: fullname, 
+    fullname: fullname,
+    amount: amount, 
+    date: new Date().toISOString(), 
+    status: 'pending' 
+});
       await saveBalanceRequests(requests);
       alert(`✅ Bakiye yükleme talebiniz alındı!\n💰 Tutar: ${amount}₺\n📌 Talep Kodu: ${requestCode}\n\nBAKİYENİZ "5 DK" İÇİNDE YÜKLENECEKTİR.`);
       closeBalanceModal();
