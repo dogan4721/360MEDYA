@@ -1232,29 +1232,40 @@ async function placeOrderWithBalance() {
 
 function renderOrders(ordersArray) {
     const container = document.getElementById('orderslist');
+    if (!container) return;
     container.innerHTML = '';
     if (ordersArray.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:gray;">Sipariş bulunamadı.</p>';
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:gray;">Henüz siparişiniz bulunmuyor.</div>';
         return;
     }
     [...ordersArray].reverse().forEach(order => {
         const card = document.createElement('div');
-        card.style = "background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 20px; color: #e6edf3;";
+        card.style = "background: #161b22; border: 1px solid #30363d; border-radius: 16px; padding: 20px; margin-bottom: 20px;";
+        
+        let statusColor = '#d29922';
+        if (order.status === 'Tamamlandı') statusColor = '#3fb950';
+        if (order.status === 'İptal') statusColor = '#f85149';
+        if (order.status === 'İşlemde') statusColor = '#58a6ff';
+        
         card.innerHTML = `
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 15px;">
-                <span style="color: #58a6ff; font-weight: bold;">${order.code}</span>
-                <span style="color: #d29922; border: 1px solid #d29922; padding: 2px 8px; border-radius: 5px; font-size: 12px;">${order.status}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <span style="color: #58a6ff; font-weight: bold; font-size: 1rem;">${order.code}</span>
+                <span style="color: ${statusColor}; border: 1px solid ${statusColor}; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem;">${order.status}</span>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
-                <div>Hizmet: <b>${order.service}</b></div>
-                <div>Miktar: <b>${order.quantity}</b></div>
-                <div>Tutar: <b style="color:#3fb950">${order.price}</b></div>
-                <div>Tarih: <b>${new Date(order.date).toLocaleString('tr-TR')}</b></div>
-                <div style="grid-column: span 2;">Link: <a href="${order.link}" target="_blank" style="color:#58a6ff;">${order.link}</a></div>
-                <div style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed #333; padding-top: 10px;">
-                    <span style="color: #ff7b72;">Kalan Sayı:</span> <b>${order.remains || 0}</b>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                <div>📦 Hizmet: <span style="color: #e6edf3;">${order.service}</span></div>
+                <div>🔢 Miktar: <span style="color: #e6edf3;">${order.quantity}</span></div>
+                <div>💰 Tutar: <span style="color: #3fb950; font-weight: bold;">${order.price}</span></div>
+                <div>📅 Tarih: <span style="color: #e6edf3;">${new Date(order.date).toLocaleString('tr-TR')}</span></div>
+                <div style="grid-column: span 2;">🔗 Link: <a href="${order.link}" target="_blank" style="color: #58a6ff; text-decoration: none;">${order.link.substring(0, 50)}...</a></div>
+            </div>
+            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed #30363d;">
+                <div style="background: rgba(88, 166, 255, 0.1); border-radius: 12px; padding: 10px; text-align: center;">
+                    <span style="color: #58a6ff;">📉 Kalan Sayı:</span>
+                    <span style="color: #ffffff; font-weight: bold; font-size: 1.1rem; margin-left: 10px;">${order.remaining !== undefined ? order.remaining : (order.quantity || 0)}</span>
                 </div>
-            </div>`;
+            </div>
+        `;
         container.appendChild(card);
     });
 }
