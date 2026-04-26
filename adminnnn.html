@@ -373,6 +373,7 @@
     </div>
 </div>
 
+<!-- Sidebar içine eklenecek butonlar (menü olarak) -->
 <aside class="sidebar">
     <div class="logo-area">360 ADMIN</div>
     <div class="menu-item active" onclick="switchTab('dashboard')">
@@ -389,6 +390,14 @@
     </div>
     <div class="menu-item logout-item" onclick="logoutSystem()">
         <i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span>
+    </div>
+    
+    <!-- 🔥 YENİ SİLME BUTONLARI (Sidebar'a ekle) -->
+    <div class="menu-item" style="margin-top: 20px; background: rgba(239,68,68,0.1);" onclick="tumSiparisleriSil()">
+        <i class="fas fa-trash-alt"></i> <span style="color: #ef4444;">🗑️ Siparişleri Sil</span>
+    </div>
+    <div class="menu-item" style="background: rgba(245,158,11,0.1);" onclick="tumTalepleriSil()">
+        <i class="fas fa-trash-alt"></i> <span style="color: #f59e0b;">📋 Talepleri Sil</span>
     </div>
 </aside>
 
@@ -774,6 +783,29 @@
             setInterval(loadAllData, 5000);
         }
     };
+    
+    // ========== SİLME FONKSİYONU ==========
+function tumSiparisleriSil() {
+    if(confirm('⚠️ TÜM SİPARİŞLERİ SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ?')) {
+        database.ref('orders').remove().then(() => {
+            database.ref('orders').set([]);
+            alert('✅ Tüm siparişler silindi!');
+            location.reload();
+        }).catch(err => {
+            alert('❌ Hata: ' + err.message);
+        });
+    }
+}
+
+function tumTalepleriSil() {
+    if(confirm('⚠️ TÜM BAKİYE TALEPLERİNİ SİLMEK İSTEDİĞİNİZE EMİN MİSİNİZ?')) {
+        database.ref('balance_requests').remove().then(() => {
+            database.ref('balance_requests').set([]);
+            alert('✅ Tüm talepler silindi!');
+            location.reload();
+        });
+    }
+}
 </script>
 </body>
 </html>
