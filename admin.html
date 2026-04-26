@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>360 Medya | Admin Paneli</title>
+    <meta name="description" content="360 Medya - Profesyonel SMM Panel Yönetim Sistemi">
+    <title>360 Medya | Kurumsal Yönetim Paneli</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
@@ -15,41 +16,68 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
-
+        
         :root {
             --primary: #6366f1;
+            --primary-light: #8183f5;
             --primary-dark: #4f46e5;
             --secondary: #ec4899;
-            --dark: #0f0f1a;
-            --darker: #0a0a12;
-            --card: #16162a;
-            --text: #e2e8f0;
+            --secondary-dark: #db2777;
+            --dark: #0a0a12;
+            --darker: #05050a;
+            --card: #11111f;
+            --card-hover: #181830;
+            --text: #f1f5f9;
             --text-muted: #94a3b8;
-            --success: #22c55e;
+            --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --info: #3b82f6;
             --border: rgba(99, 102, 241, 0.2);
+            --glass: rgba(17, 17, 31, 0.8);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-dark: linear-gradient(135deg, #0a0a12 0%, #11111f 100%);
         }
-
+        
         body {
-            background: var(--dark);
+            background: var(--darker);
             color: var(--text);
             min-height: 100vh;
             display: flex;
+            position: relative;
         }
-
-        /* LOGIN MODAL */
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+        
         #loginOverlay {
             position: fixed;
             inset: 0;
             background: rgba(5, 5, 15, 0.98);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
         }
         #loginOverlay.hidden { display: none; }
         .login-card {
@@ -57,12 +85,38 @@
             border-radius: 2rem;
             padding: 2.5rem;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
             border: 1px solid var(--border);
             text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.5s ease;
         }
-        .login-card i { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
-        .login-card h2 { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.5rem; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-logo {
+            font-size: 3.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .login-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
         .login-card input {
             width: 100%;
             padding: 14px 18px;
@@ -72,59 +126,70 @@
             border-radius: 1rem;
             color: white;
             font-size: 0.95rem;
+            transition: all 0.2s;
         }
-        .login-card input:focus { outline: none; border-color: var(--primary); }
+        .login-card input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
         .login-btn {
-            background: var(--primary);
+            background: var(--gradient-primary);
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: none;
             border-radius: 2rem;
-            font-weight: bold;
+            font-weight: 600;
             color: white;
-            font-size: 1rem;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
         }
-        .login-btn:hover { background: var(--primary-dark); }
-
-        /* SIDEBAR */
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+        }
+        
         .sidebar {
             width: 280px;
             background: var(--card);
             border-right: 1px solid var(--border);
             padding: 2rem 1.2rem;
-            position: sticky;
-            top: 0;
             height: 100vh;
             overflow-y: auto;
+            position: sticky;
+            top: 0;
             transition: all 0.3s;
         }
         .logo-area {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             text-align: center;
+            letter-spacing: -0.5px;
         }
         .menu-item {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 12px 16px;
-            margin: 8px 0;
+            padding: 12px 18px;
+            margin: 6px 0;
             border-radius: 1rem;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s;
+            font-weight: 500;
         }
-        .menu-item i { width: 24px; font-size: 1.2rem; }
+        .menu-item i { width: 22px; font-size: 1.2rem; }
         .menu-item:hover, .menu-item.active {
-            background: rgba(99, 102, 241, 0.15);
+            background: rgba(99, 102, 241, 0.12);
             color: var(--primary);
+            transform: translateX(4px);
         }
         .logout-item {
             margin-top: 40px;
@@ -132,18 +197,21 @@
             border-top: 1px solid var(--border);
             padding-top: 20px;
         }
-        .logout-item:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
-
-        /* MAIN */
+        .logout-item:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
         .main-content {
             flex: 1;
             padding: 2rem;
             overflow-x: auto;
+            background: var(--gradient-dark);
         }
-        h3 { font-size: 1.3rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.6rem; }
+        
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -151,10 +219,36 @@
             background: var(--card);
             padding: 1.5rem;
             border-radius: 1.5rem;
-            border-left: 4px solid var(--primary);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .stat-card h4 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 1px; }
-        .stat-card .value { font-size: 2rem; font-weight: 800; color: var(--primary); }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+        .stat-card h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
         .table-wrapper {
             background: var(--card);
             border-radius: 1.5rem;
@@ -164,14 +258,22 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
+            min-width: 800px;
         }
         th, td {
             padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        th { background: rgba(99,102,241,0.05); color: var(--primary); font-weight: 600; font-size: 0.75rem; }
+        th {
+            background: rgba(99,102,241,0.08);
+            color: var(--primary-light);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
         .badge {
             padding: 4px 12px;
             border-radius: 40px;
@@ -179,10 +281,11 @@
             font-weight: 600;
             display: inline-block;
         }
-        .badge-pending { background: rgba(245,158,11,0.2); color: var(--warning); }
-        .badge-processing { background: rgba(99,102,241,0.2); color: var(--primary); }
-        .badge-completed { background: rgba(34,197,94,0.2); color: var(--success); }
-        .badge-cancelled { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .badge-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-processing { background: rgba(99,102,241,0.15); color: var(--primary); }
+        .badge-completed { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-cancelled { background: rgba(239,68,68,0.15); color: var(--danger); }
+        
         .btn-sm {
             padding: 5px 12px;
             border-radius: 2rem;
@@ -191,58 +294,86 @@
             font-size: 0.7rem;
             cursor: pointer;
             margin: 2px;
+            transition: all 0.2s;
         }
-        .btn-success { background: var(--success); color: white; }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--gradient-success); color: white; }
+        .btn-primary { background: var(--gradient-primary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
-        .link-cell a { color: var(--primary); text-decoration: none; font-size: 0.8rem; word-break: break-all; }
-        .link-cell a:hover { text-decoration: underline; }
+        .btn-warning { background: var(--warning); color: #1a1a2e; }
+        
         .search-area {
-            margin-bottom: 1.5rem;
             display: flex;
             gap: 12px;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
-            align-items: center;
         }
         .search-area input {
             background: var(--darker);
             border: 1px solid var(--border);
-            padding: 10px 16px;
+            padding: 12px 20px;
             border-radius: 2rem;
             color: white;
             flex: 1;
-            min-width: 200px;
+            font-size: 0.9rem;
         }
-        .eye-icon { cursor: pointer; margin-left: 6px; color: var(--text-muted); }
-        .eye-icon:hover { color: var(--primary); }
-        .loading { text-align: center; padding: 40px; color: var(--text-muted); }
+        
+        .eye-icon { cursor: pointer; margin-left: 8px; opacity: 0.7; }
+        
+        .admin-note {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-top: 24px;
+            border-left: 3px solid var(--warning);
+        }
+        .admin-note textarea {
+            width: 100%;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 0.8rem;
+            color: white;
+            padding: 12px;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         
         @media (max-width: 768px) {
-            .sidebar { width: 85px; padding: 1rem 0.5rem; }
-            .logo-area { font-size: 0; }
-            .logo-area:before { content: "360"; font-size: 1.2rem; display: block; text-align: center; background: none; -webkit-text-fill-color: initial; color: var(--primary); font-weight: bold; }
+            .sidebar { width: 80px; padding: 1.5rem 0.5rem; }
+            .logo-area { font-size: 0; margin-bottom: 1.5rem; }
+            .logo-area:before { content: "360"; font-size: 1.3rem; font-weight: 800; display: block; text-align: center; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
             .menu-item span { display: none; }
-            .menu-item i { margin: 0 auto; font-size: 1.4rem; }
-            .menu-item { justify-content: center; }
+            .menu-item i { margin: 0 auto; font-size: 1.3rem; }
             .main-content { padding: 1rem; }
         }
+        
+        .loading { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .link-cell a { color: var(--primary); text-decoration: none; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-card">
-        <i class="fas fa-chart-line"></i>
+        <i class="fas fa-chart-line login-logo"></i>
         <h2>360 Medya</h2>
-        <p style="color:var(--text-muted); margin-bottom:1rem;">Yetkili Giriş Paneli</p>
-        <input type="text" id="loginUsername" placeholder="Kullanıcı Adı" autocomplete="off">
+        <p class="login-subtitle">Kurumsal Yönetim Paneli</p>
+        <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
         <input type="password" id="loginPassword" placeholder="Şifre">
-        <button class="login-btn" onclick="attemptLogin()"><i class="fas fa-key"></i> Giriş Yap</button>
+        <button class="login-btn" onclick="attemptLogin()"><i class="fas fa-arrow-right-to-bracket"></i> Giriş Yap</button>
     </div>
 </div>
 
-<aside class="sidebar" id="sidebar">
-    <div class="logo-area">360 MEDYA</div>
+<aside class="sidebar">
+    <div class="logo-area">360 ADMIN</div>
     <div class="menu-item active" onclick="switchTab('dashboard')">
         <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
     </div>
@@ -260,65 +391,72 @@
     </div>
 </aside>
 
-<main class="main-content" id="mainContent">
+<main class="main-content">
     <div id="dashboardTab" class="tab-pane">
         <div class="stats-grid">
-            <div class="stat-card"><h4><i class="fas fa-box"></i> Toplam Sipariş</h4><div class="value" id="statTotalOrders">0</div></div>
-            <div class="stat-card"><h4><i class="fas fa-hourglass-half"></i> Bekleyen Sipariş</h4><div class="value" id="statPendingOrders">0</div></div>
-            <div class="stat-card"><h4><i class="fas fa-check-circle"></i> Tamamlanan</h4><div class="value" id="statCompletedOrders">0</div></div>
-            <div class="stat-card"><h4><i class="fas fa-user-group"></i> Toplam Kullanıcı</h4><div class="value" id="statTotalUsers">0</div></div>
+            <div class="stat-card"><h4>📦 Toplam Sipariş</h4><div class="value" id="statTotalOrders">0</div></div>
+            <div class="stat-card"><h4>⏳ Bekleyen / İşlemde</h4><div class="value" id="statPendingOrders">0</div></div>
+            <div class="stat-card"><h4>✅ Tamamlanan</h4><div class="value" id="statCompletedOrders">0</div></div>
+            <div class="stat-card"><h4>👥 Aktif Kullanıcı</h4><div class="value" id="statTotalUsers">0</div></div>
         </div>
-        <div style="background: var(--card); border-radius: 1.5rem; padding: 1.5rem;">
-            <h3><i class="fas fa-history"></i> Son İşlemler</h3>
+        <div style="background: var(--card); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border);">
+            <h3 style="margin-bottom: 1rem;">🕒 Son Siparişler</h3>
             <div class="table-wrapper">
                 <table id="recentOrdersTable">
-                    <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Link</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
-                    <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr></tbody>
+                    <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
+                    <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <div id="ordersTab" class="tab-pane" style="display:none;">
-        <h3><i class="fas fa-list-ul"></i> Tüm Siparişler</h3>
+        <div class="section-title"><i class="fas fa-truck-fast" style="color: var(--primary);"></i> Tüm Sipariş Yönetimi</div>
         <div class="search-area">
-            <input type="text" id="orderSearchInput" placeholder="Kullanıcı / Kod / Link ara..." onkeyup="filterOrders()">
+            <input type="text" id="orderSearchInput" placeholder="🔍 Sipariş kodu, kullanıcı e-posta veya isim ile ara..." onkeyup="filterOrders()">
         </div>
         <div class="table-wrapper">
             <table id="allOrdersTable">
-                <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Hizmet</th><th>Miktar</th><th>Link</th><th>Tutar</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="9" class="loading">Yükleniyor...</td></tr></tbody>
+                <thead>
+                    <tr>
+                        <th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Hizmet</th><th>Miktar</th><th>Link</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody><tr><td colspan="11" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
             </table>
+        </div>
+        <div class="admin-note">
+            <textarea id="adminNoteText" rows="2" placeholder="📝 Yönetici notu burada görünür..."></textarea>
+            <button class="btn-sm btn-warning" onclick="saveAdminNote()"><i class="fas fa-save"></i> Notu Kaydet</button>
         </div>
     </div>
 
     <div id="paymentsTab" class="tab-pane" style="display:none;">
-        <h3><i class="fas fa-hand-holding-usd"></i> Bakiye Yükleme Onay Sistemi</h3>
+        <div class="section-title"><i class="fas fa-money-bill-wave" style="color: var(--success);"></i> Bakiye Yükleme Talepleri</div>
         <div class="table-wrapper">
             <table id="paymentRequestsTable">
-                <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Talep Tarihi</th><th>Miktar (₺)</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr></tbody>
+                <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
+                <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
             </table>
         </div>
     </div>
 
     <div id="usersTab" class="tab-pane" style="display:none;">
-        <h3><i class="fas fa-user-cog"></i> Kullanıcı Yönetimi</h3>
+        <div class="section-title"><i class="fas fa-users" style="color: var(--secondary);"></i> Kullanıcı Yönetimi</div>
         <div class="search-area">
-            <input type="text" id="userSearchInput" placeholder="E-posta / İsim ara..." onkeyup="filterUsers()">
+            <input type="text" id="userSearchInput" placeholder="🔍 E-posta veya isim ile ara..." onkeyup="filterUsers()">
             <button class="btn-sm btn-primary" onclick="refreshUsersTable()"><i class="fas fa-sync-alt"></i> Yenile</button>
         </div>
         <div class="table-wrapper">
             <table id="usersManagementTable">
                 <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
-                <tbody><tr><td colspan="7" class="loading">Yükleniyor...</td></tr></tbody>
+                <tbody><tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
             </table>
         </div>
     </div>
 </main>
 
 <script>
-    // Firebase Yapılandırması
     const firebaseConfig = {
         apiKey: "AIzaSyBygrzMYNAcYhEoKjhREzn4JPIemW6wxoc",
         authDomain: "smmpanel-1bd3b.firebaseapp.com",
@@ -326,339 +464,241 @@
         projectId: "smmpanel-1bd3b",
         storageBucket: "smmpanel-1bd3b.firebasestorage.app",
         messagingSenderId: "276335468127",
-        appId: "1:276335468127:web:aa1c01275f5a86414805ea",
-        measurementId: "G-FT92RRQBBY"
+        appId: "1:276335468127:web:aa1c01275f5a86414805ea"
     };
-
-    // Firebase'i başlat
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Admin bilgileri
     const ADMINS = [
         { username: "doganb", password: "472131" },
-        { username: "360admin", password: "360123" },
-        { username: "lokmanb", password: "472131" }
+        { username: "360admin", password: "360123" }
     ];
 
     let logged = false;
-    let allOrders = [];
-    let allUsers = [];
-    let allRequests = [];
+    let allOrders = [], allUsers = [], allRequests = [];
 
-    // Giriş kontrolü
     function attemptLogin() {
         const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
-        
-        const valid = ADMINS.some(admin => admin.username === username && admin.password === password);
-        
-        if(valid) {
+        if(ADMINS.some(a => a.username === username && a.password === password)) {
             logged = true;
             localStorage.setItem('admin_session', 'active');
             document.getElementById('loginOverlay').classList.add('hidden');
-            loadAllFromFirebase();
-            setInterval(() => { if(logged) loadAllFromFirebase(); }, 5000);
-        } else {
-            alert("❌ Hatalı kullanıcı adı veya şifre!");
-        }
+            loadAllData();
+            setInterval(loadAllData, 5000);
+            loadAdminNote();
+        } else { alert("❌ Hatalı kullanıcı adı veya şifre!"); }
     }
 
     function logoutSystem() {
-        logged = false;
         localStorage.removeItem('admin_session');
         location.reload();
     }
 
-    // Firebase'den tüm verileri çek
-    async function loadAllFromFirebase() {
+    async function loadAllData() {
         try {
-            // Kullanıcıları çek
-            const usersSnapshot = await database.ref('users').once('value');
-            const usersData = usersSnapshot.val();
-            allUsers = usersData ? Object.values(usersData) : [];
-            
-            // Siparişleri çek
-            const ordersSnapshot = await database.ref('orders').once('value');
-            const ordersData = ordersSnapshot.val();
-            allOrders = ordersData ? Object.values(ordersData) : [];
-            
-            // Bakiye taleplerini çek
-            const requestsSnapshot = await database.ref('balance_requests').once('value');
-            const requestsData = requestsSnapshot.val();
-            allRequests = requestsData ? Object.values(requestsData) : [];
-            
-            // Tüm tabloları güncelle
-            updateAllDisplays();
-        } catch(error) {
-            console.error("Firebase hatası:", error);
-            // Demo veriler göster
-            loadDemoData();
-        }
+            const usersSnap = await database.ref('users').once('value');
+            allUsers = usersSnap.val() ? Object.values(usersSnap.val()) : [];
+            const ordersSnap = await database.ref('orders').once('value');
+            allOrders = ordersSnap.val() ? Object.values(ordersSnap.val()) : [];
+            const reqSnap = await database.ref('balance_requests').once('value');
+            allRequests = reqSnap.val() ? Object.entries(reqSnap.val() || {}).map(([id, val]) => ({...val, id})) : [];
+            updateUI();
+        } catch(e) { console.error("Veri yükleme hatası:", e); }
     }
 
-    function loadDemoData() {
-        allUsers = [
-            { email: "ahmet@example.com", name: "Ahmet Yılmaz", password: "123456", balance: 450, orders: [], createdAt: new Date().toISOString() },
-            { email: "mehmet@test.com", name: "Mehmet Demir", password: "pass789", balance: 120, orders: [], createdAt: new Date().toISOString() }
-        ];
-        allOrders = [
-            { code: "SIP-1001", email: "ahmet@example.com", service: "Instagram Beğeni", quantity: 1000, link: "https://instagram.com/p/example", price: "150₺", status: "Tamamlandı", date: new Date().toISOString() },
-            { code: "SIP-1002", email: "mehmet@test.com", service: "TikTok Takipçi", quantity: 500, link: "https://tiktok.com/@test", price: "275₺", status: "Beklemede", date: new Date().toISOString() }
-        ];
-        allRequests = [];
-        updateAllDisplays();
-    }
-
-    // Sipariş durumu güncelleme
-    async function updateOrderStatus(orderCode, newStatus) {
-        const order = allOrders.find(o => o.code === orderCode);
-        if(order) {
-            order.status = newStatus;
-            // Firebase'de güncelle
-            const ordersRef = database.ref('orders');
-            const snapshot = await ordersRef.once('value');
-            const ordersData = snapshot.val();
-            const entry = Object.entries(ordersData || {}).find(([key, val]) => val.code === orderCode);
-            if(entry) {
-                await database.ref(`orders/${entry[0]}/status`).set(newStatus);
-            }
-            await loadAllFromFirebase();
-            alert(`✅ Sipariş ${orderCode} durumu "${newStatus}" olarak güncellendi.`);
-        }
-    }
-
-    // Bakiye talebi onaylama
-    async function approvePayment(requestId, userEmail, amount, userName) {
-        const request = allRequests.find(r => r.id === requestId);
-        if(request) {
-            const user = allUsers.find(u => u.email === userEmail);
-            if(user) {
-                user.balance = (user.balance || 0) + amount;
-                
-                // Firebase'de kullanıcı bakiyesini güncelle
-                const usersRef = database.ref('users');
-                const snapshot = await usersRef.once('value');
-                const usersData = snapshot.val();
-                const userEntry = Object.entries(usersData || {}).find(([key, val]) => val.email === userEmail);
-                if(userEntry) {
-                    await database.ref(`users/${userEntry[0]}/balance`).set(user.balance);
-                }
-                
-                // Talebi sil
-                const reqRef = database.ref('balance_requests');
-                const reqSnapshot = await reqRef.once('value');
-                const reqData = reqSnapshot.val();
-                const reqEntry = Object.entries(reqData || {}).find(([key, val]) => val.id === requestId);
-                if(reqEntry) {
-                    await database.ref(`balance_requests/${reqEntry[0]}`).remove();
-                }
-                
-                await loadAllFromFirebase();
-                alert(`💰 ${amount}₺ bakiye ${userEmail} kullanıcısına eklendi.`);
-            }
-        }
-    }
-
-    async function rejectPayment(requestId) {
-        const reqRef = database.ref('balance_requests');
-        const snapshot = await reqRef.once('value');
-        const reqData = snapshot.val();
-        const entry = Object.entries(reqData || {}).find(([key, val]) => val.id === requestId);
-        if(entry) {
-            await database.ref(`balance_requests/${entry[0]}`).remove();
-            await loadAllFromFirebase();
-            alert("❌ Bakiye talebi reddedildi.");
-        }
-    }
-
-    // Kullanıcı silme
-    async function deleteUser(email) {
-        if(confirm(`${email} adlı kullanıcıyı silmek istediğinize emin misiniz?`)) {
-            const usersRef = database.ref('users');
-            const snapshot = await usersRef.once('value');
-            const usersData = snapshot.val();
-            const entry = Object.entries(usersData || {}).find(([key, val]) => val.email === email);
-            if(entry) {
-                await database.ref(`users/${entry[0]}`).remove();
-                await loadAllFromFirebase();
-                alert("Kullanıcı başarıyla silindi.");
-            }
-        }
-    }
-
-    // Manuel bakiye ekleme
-    async function addBalanceManually(email) {
-        let amount = prompt("Eklemek istediğiniz bakiye miktarını (₺) girin:");
-        if(amount && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0) {
-            amount = parseFloat(amount);
-            const user = allUsers.find(u => u.email === email);
-            if(user) {
-                user.balance = (user.balance || 0) + amount;
-                const usersRef = database.ref('users');
-                const snapshot = await usersRef.once('value');
-                const usersData = snapshot.val();
-                const entry = Object.entries(usersData || {}).find(([key, val]) => val.email === email);
-                if(entry) {
-                    await database.ref(`users/${entry[0]}/balance`).set(user.balance);
-                    await loadAllFromFirebase();
-                    alert(`${amount}₺ bakiye ${email} kullanıcısına eklendi.`);
-                }
-            }
-        }
-    }
-
-    // Şifre görünür yapma
-    let passwordVisibleStates = {};
-    function togglePassword(email, element) {
-        const user = allUsers.find(u => u.email === email);
-        if(!user) return;
-        if(!passwordVisibleStates[email]) passwordVisibleStates[email] = false;
-        passwordVisibleStates[email] = !passwordVisibleStates[email];
-        const td = element.closest('td');
-        if(passwordVisibleStates[email]) {
-            td.innerHTML = `<span style="font-family:monospace">${user.password}</span> <i class="fas fa-eye-slash eye-icon" onclick="togglePassword('${email}', this)"></i>`;
-        } else {
-            td.innerHTML = `<span style="font-family:monospace">••••••</span> <i class="fas fa-eye eye-icon" onclick="togglePassword('${email}', this)"></i>`;
-        }
-    }
-
-    // Dashboard istatistikleri
-    function updateDashboard() {
+    function updateUI() {
         document.getElementById('statTotalOrders').innerText = allOrders.length;
         document.getElementById('statPendingOrders').innerText = allOrders.filter(o => o.status === 'Beklemede' || o.status === 'İşlemde').length;
         document.getElementById('statCompletedOrders').innerText = allOrders.filter(o => o.status === 'Tamamlandı').length;
         document.getElementById('statTotalUsers').innerText = allUsers.length;
         
         const recent = [...allOrders].reverse().slice(0,5);
-        const tbody = document.querySelector('#recentOrdersTable tbody');
-        tbody.innerHTML = recent.map(o => `
+        document.querySelector('#recentOrdersTable tbody').innerHTML = recent.map(o => `
             <tr>
-                <td style="font-family:monospace">${o.code}</td>
-                <td>${o.email || '-'}</td>
-                <td class="link-cell"><a href="${o.link || '#'}" target="_blank">${o.link ? (o.link.length > 40 ? o.link.slice(0,40)+'...' : o.link) : '-'}</a></td>
+                <td><strong>${o.code}</strong></td>
+                <td>${o.email}</td>
+                <td>${o.name || '-'}</td>
                 <td>${o.price}</td>
-                <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
+                <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
                 <td><small>${new Date(o.date).toLocaleDateString('tr-TR')}</small></td>
             </tr>
         `).join('');
-        if(recent.length === 0) tbody.innerHTML = '<tr><td colspan="6">Sipariş bulunmuyor</td></tr>';
-    }
-
-    function renderOrdersTable(orders) {
-        const tbody = document.querySelector('#allOrdersTable tbody');
-        tbody.innerHTML = orders.map(o => `
-            <tr>
-                <td style="font-family:monospace">${o.code}</td>
-                <td>${o.email || '-'}</td>
-                <td>${o.service || '-'}</td>
-                <td>${o.quantity || '-'}</td>
-                <td class="link-cell"><a href="${o.link || '#'}" target="_blank">${o.link ? (o.link.length > 40 ? o.link.slice(0,40)+'...' : o.link) : '-'}</a></td>
-                <td>${o.price}</td>
-                <td><small>${new Date(o.date).toLocaleString('tr-TR')}</small></td>
-                <td><span class="badge ${getBadgeClass(o.status)}">${o.status}</span></td>
-                <td class="action-buttons">
-                    <button class="btn-sm btn-primary" onclick="updateOrderStatus('${o.code}','İşlemde')">İşlemde</button>
-                    <button class="btn-sm btn-success" onclick="updateOrderStatus('${o.code}','Tamamlandı')">Tamamla</button>
-                    <button class="btn-sm btn-danger" onclick="updateOrderStatus('${o.code}','İptal')">İptal</button>
-                </td>
-            </tr>
-        `).join('');
-        if(orders.length === 0) tbody.innerHTML = '<tr><td colspan="9">Sipariş yok</td></tr>';
-    }
-
-    function renderPaymentsTable() {
-        const tbody = document.querySelector('#paymentRequestsTable tbody');
-        tbody.innerHTML = allRequests.map(r => `
-            <tr>
-                <td><strong>${r.userEmail}</strong></td>
-                <td>${r.name || '-'}</td>
-                <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
-                <td style="color:var(--success);font-weight:bold;">${r.amount} ₺</td>
-                <td><code>${r.code}</code></td>
-                <td>
-                    <button class="btn-sm btn-success" onclick="approvePayment('${r.id}','${r.userEmail}',${r.amount},'${r.name}')">Onayla</button>
-                    <button class="btn-sm btn-danger" onclick="rejectPayment('${r.id}')">Reddet</button>
-                </td>
-            </tr>
-        `).join('');
-        if(allRequests.length === 0) tbody.innerHTML = '<tr><td colspan="6">Bekleyen bakiye talebi yok</td></tr>';
-    }
-
-    function renderUsersTable(users) {
-        const tbody = document.querySelector('#usersManagementTable tbody');
-        tbody.innerHTML = users.map(u => `
-            <tr>
-                <td><strong>${u.email}</strong></td>
-                <td>${u.name || '-'}</td>
-                <td><span style="font-family:monospace">••••••</span> <i class="fas fa-eye eye-icon" onclick="togglePassword('${u.email}', this)"></i></td>
-                <td style="color:var(--success);font-weight:bold;">${(u.balance || 0).toFixed(2)} ₺</td>
-                <td>${(u.orders || []).length}</td>
-                <td><small>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : '-'}</small></td>
-                <td class="action-buttons">
-                    <button class="btn-sm btn-success" onclick="addBalanceManually('${u.email}')"><i class="fas fa-plus-circle"></i> Bakiye Ekle</button>
-                    <button class="btn-sm btn-danger" onclick="deleteUser('${u.email}')"><i class="fas fa-trash"></i> Sil</button>
-                </td>
-            </tr>
-        `).join('');
-        if(users.length === 0) tbody.innerHTML = '<tr><td colspan="7">Kullanıcı bulunamadı</td></tr>';
-    }
-
-    function filterOrders() {
-        const keyword = document.getElementById('orderSearchInput').value.toLowerCase();
-        const filtered = allOrders.filter(o => 
-            o.code.toLowerCase().includes(keyword) || 
-            (o.email && o.email.toLowerCase().includes(keyword)) || 
-            (o.link && o.link.toLowerCase().includes(keyword))
-        );
-        renderOrdersTable(filtered);
-    }
-
-    function filterUsers() {
-        const keyword = document.getElementById('userSearchInput').value.toLowerCase();
-        const filtered = allUsers.filter(u => 
-            u.email.toLowerCase().includes(keyword) || 
-            (u.name && u.name.toLowerCase().includes(keyword))
-        );
-        renderUsersTable(filtered);
-    }
-
-    function refreshUsersTable() { renderUsersTable(allUsers); }
-
-    function getBadgeClass(status) {
-        if(status === 'Beklemede') return 'badge-pending';
-        if(status === 'İşlemde') return 'badge-processing';
-        if(status === 'Tamamlandı') return 'badge-completed';
-        if(status === 'İptal') return 'badge-cancelled';
-        return 'badge-pending';
-    }
-
-    function updateAllDisplays() {
-        updateDashboard();
+        
         renderOrdersTable(allOrders);
         renderPaymentsTable();
         renderUsersTable(allUsers);
     }
 
-    // Tab geçişleri
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-pane').forEach(pane => pane.style.display = 'none');
-        document.getElementById(`${tabName}Tab`).style.display = 'block';
-        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        updateAllDisplays();
+    function renderOrdersTable(orders) {
+        const tbody = document.querySelector('#allOrdersTable tbody');
+        if(!orders.length) { tbody.innerHTML = '<tr><td colspan="11" class="loading">📭 Sipariş bulunamadı</td></tr>'; return; }
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td><strong>${o.code}</strong></td>
+                <td>${o.email}</td>
+                <td>${o.name || '-'}</td>
+                <td>${o.service || '-'}</td>
+                <td>${o.quantity || '-'}</td>
+                <td class="link-cell"><a href="${o.link || '#'}" target="_blank"><i class="fas fa-external-link-alt"></i> Link</a></td>
+                <td>${o.price}</td>
+                <td>${o.remaining || o.quantity || '0'} <button class="btn-sm btn-warning" onclick="updateRemaining('${o.code}')"><i class="fas fa-edit"></i></button></td>
+                <td><small>${new Date(o.date).toLocaleString('tr-TR')}</small></td>
+                <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
+                <td>
+                    <button class="btn-sm btn-primary" onclick="updateStatus('${o.code}','İşlemde')">İşlemde</button>
+                    <button class="btn-sm btn-success" onclick="updateStatus('${o.code}','Tamamlandı')">Tamamla</button>
+                    <button class="btn-sm btn-danger" onclick="updateStatus('${o.code}','İptal')">İptal</button>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    // Sayfa yüklendiğinde
+    function renderPaymentsTable() {
+        const tbody = document.querySelector('#paymentRequestsTable tbody');
+        if(!allRequests.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Bekleyen bakiye talebi yok</td></tr>'; return; }
+        tbody.innerHTML = allRequests.map(r => `
+            <tr>
+                <td><strong>${r.userEmail}</strong></td>
+                <td>${r.name || '-'}</td>
+                <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
+                <td style="color:var(--success); font-weight:bold;">${r.amount} ₺</td>
+                <td><code>${r.code}</code></td>
+                <td>
+                    <button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
+                    <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function renderUsersTable(users) {
+        const tbody = document.querySelector('#usersManagementTable tbody');
+        if(!users.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading">👤 Kullanıcı bulunamadı</td></tr>'; return; }
+        tbody.innerHTML = users.map(u => `
+            <tr>
+                <td>${u.email}</td>
+                <td>${u.name || '-'}</td>
+                <td>•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${u.email}', this)"></i></td>
+                <td style="color:var(--success); font-weight:600;">${(u.balance || 0).toFixed(2)} ₺</td>
+                <td>${(u.orders || []).length}</td>
+                <td><small>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : '-'}</small></td>
+                <td>
+                    <button class="btn-sm btn-success" onclick="addBalance('${u.email}')">Bakiye Ekle</button>
+                    <button class="btn-sm btn-danger" onclick="delUser('${u.email}')">Sil</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function getStatusClass(status) {
+        const s = status?.toLowerCase();
+        if(s === 'beklemede') return 'pending';
+        if(s === 'işlemde') return 'processing';
+        if(s === 'tamamlandı') return 'completed';
+        if(s === 'iptal') return 'cancelled';
+        return 'pending';
+    }
+
+    async function updateStatus(code, status) {
+        const snap = await database.ref('orders').once('value');
+        const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code);
+        if(entry) await database.ref(`orders/${entry[0]}/status`).set(status);
+        loadAllData();
+    }
+
+    async function updateRemaining(code) {
+        const newVal = prompt("Kalan miktarı girin:", "0");
+        if(newVal !== null) {
+            const snap = await database.ref('orders').once('value');
+            const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code);
+            if(entry) await database.ref(`orders/${entry[0]}/remaining`).set(newVal);
+            loadAllData();
+        }
+    }
+
+    async function approveReq(id, email, amount) {
+        const snap = await database.ref('users').once('value');
+        const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+        if(entry) {
+            const oldBal = snap.val()[entry[0]].balance || 0;
+            await database.ref(`users/${entry[0]}/balance`).set(oldBal + parseFloat(amount));
+            await database.ref(`balance_requests/${id}`).remove();
+            loadAllData();
+        }
+    }
+
+    async function rejectReq(id) {
+        await database.ref(`balance_requests/${id}`).remove();
+        loadAllData();
+    }
+
+    async function addBalance(email) {
+        let miktar = prompt("Eklenecek bakiye (₺):", "0");
+        if(miktar && !isNaN(miktar)) {
+            const snap = await database.ref('users').once('value');
+            const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+            if(entry) {
+                const oldBal = snap.val()[entry[0]].balance || 0;
+                await database.ref(`users/${entry[0]}/balance`).set(oldBal + parseFloat(miktar));
+                loadAllData();
+            }
+        }
+    }
+
+    async function delUser(email) {
+        if(confirm("Kullanıcı silinsin mi?")) {
+            const snap = await database.ref('users').once('value');
+            const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+            if(entry) await database.ref(`users/${entry[0]}`).remove();
+            loadAllData();
+        }
+    }
+
+    function showPass(email, el) {
+        const user = allUsers.find(u => u.email === email);
+        if(user) el.closest('td').innerHTML = `${user.password} <i class="fas fa-eye-slash eye-icon" onclick="hidePass('${email}', this)"></i>`;
+    }
+    function hidePass(email, el) {
+        el.closest('td').innerHTML = `•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${email}', this)"></i>`;
+    }
+
+    function filterOrders() {
+        const kw = document.getElementById('orderSearchInput').value.toLowerCase();
+        const filtered = allOrders.filter(o => o.code.toLowerCase().includes(kw) || (o.email && o.email.toLowerCase().includes(kw)));
+        renderOrdersTable(filtered);
+    }
+    function filterUsers() {
+        const kw = document.getElementById('userSearchInput').value.toLowerCase();
+        const filtered = allUsers.filter(u => u.email.toLowerCase().includes(kw) || (u.name && u.name.toLowerCase().includes(kw)));
+        renderUsersTable(filtered);
+    }
+    function refreshUsersTable() { loadAllData(); }
+
+    async function saveAdminNote() {
+        const note = document.getElementById('adminNoteText').value;
+        await database.ref('admin_notes').set({ note, date: new Date().toISOString() });
+        alert("Not kaydedildi.");
+    }
+    async function loadAdminNote() {
+        const snap = await database.ref('admin_notes').once('value');
+        if(snap.val()) document.getElementById('adminNoteText').value = snap.val().note;
+    }
+
+    function switchTab(name) {
+        document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+        document.getElementById(`${name}Tab`).style.display = 'block';
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        const activeMenu = document.querySelector(`.menu-item[onclick*="${name}"]`);
+        if(activeMenu) activeMenu.classList.add('active');
+    }
+
     window.onload = () => {
-        const session = localStorage.getItem('admin_session');
-        if(session === 'active') {
-            logged = true;
+        if(localStorage.getItem('admin_session') === 'active') {
             document.getElementById('loginOverlay').classList.add('hidden');
-            loadAllFromFirebase();
-            setInterval(() => { if(logged) loadAllFromFirebase(); }, 5000);
-        } else {
-            document.getElementById('loginOverlay').classList.remove('hidden');
+            loadAllData();
+            loadAdminNote();
+            setInterval(loadAllData, 5000);
         }
     };
 </script>
