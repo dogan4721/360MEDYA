@@ -1009,9 +1009,7 @@
       
       let orders = await loadOrders();
       if(orders.length === 0) {
-        orders = [
-          { code: "#DEMO001", service: "Instagram Takipçi", quantity: 100, price: "20.00 ₺", link: "https://instagram.com/demo", email: "demo@360medya.com", status: "Tamamlandı", date: new Date().toISOString(), senderName: "Demo Kullanıcı" }
-        ];
+        orders = [];
         await saveOrders(orders);
       }
     }
@@ -1137,26 +1135,29 @@
     
     async function requestBalanceTopup() {
       if(!currentUser) { alert('Giriş yapın'); return; }
+      const fullname = document.getElementById('fullname').value.trim();
+      if(!fullname) { alert('Ad Soyad giriniz!'); return; }
       const amount = parseFloat(document.getElementById('topupAmount').value);
       if(isNaN(amount) || amount < 10) { alert('Geçerli bir tutar girin (min 10₺)'); return; }
       const requestId = 'REQ-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
       const requestCode = 'BL-' + Math.random().toString(36).substring(2,10).toUpperCase();
       let requests = await loadBalanceRequests();
       requests.push({ 
-    id: requestId, 
-    code: requestCode, 
-    userEmail: currentUser.email, 
-    userName: fullname,
-    name: fullname, 
-    fullname: fullname,
-    amount: amount, 
-    date: new Date().toISOString(), 
-    status: 'pending' 
-});
+        id: requestId, 
+        code: requestCode, 
+        userEmail: currentUser.email, 
+        userName: fullname,
+        name: fullname, 
+        fullname: fullname,
+        amount: amount, 
+        date: new Date().toISOString(), 
+        status: 'pending' 
+      });
       await saveBalanceRequests(requests);
       alert(`✅ Bakiye yükleme talebiniz alındı!\n💰 Tutar: ${amount}₺\n📌 Talep Kodu: ${requestCode}\n\nBAKİYENİZ "5 DK" İÇİNDE YÜKLENECEKTİR.`);
       closeBalanceModal();
       document.getElementById('topupAmount').value = '';
+      document.getElementById('fullname').value = '';
     }
     
     // Sipariş
@@ -1226,7 +1227,7 @@ async function placeOrderWithBalance() {
 
   const orderCode = '#' + Math.random().toString(36).substring(2,10).toUpperCase();
   const newOrder = { 
-    code: orderCode, service, quantity: qty, remains: qty,
+    code: orderCode, service, quantity: qty, remaining: qty,
     price: total.toFixed(2) + ' ₺', link, email: currentUser.email, 
     status: 'Beklemede', date: new Date().toISOString() 
   };
@@ -1291,7 +1292,7 @@ async function searchOrder() {
     const query = document.getElementById('queryInput').value.trim().toUpperCase();
     if (!query) return;
     const orders = await loadOrders();
-    const found = orders.filter(o => o.code.toUpperCase().includes(query) && o.email === currentUser.email);
+    const found = orders.filter(o => o.code.toUpperCase().includes(query) && o.email === currentUser?.email);
     if (found.length > 0) { renderOrders(found); showPage('my-orders'); } 
     else { alert("Sipariş bulunamadı!"); }
 }
