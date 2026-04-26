@@ -356,8 +356,7 @@
         }
         
         .loading { text-align: center; padding: 2rem; color: var(--text-muted); }
-        .link-cell a { color: var(--primary); text-decoration: none; font-size: 0.8rem; }
-        .remaining-input { width: 70px; background: var(--darker); border: 1px solid var(--border); border-radius: 8px; color: white; padding: 4px; text-align: center; }
+        .remaining-input { width: 80px; background: var(--darker); border: 1px solid var(--border); border-radius: 8px; color: white; padding: 6px; text-align: center; }
     </style>
 </head>
 <body>
@@ -405,56 +404,60 @@
             <div class="table-wrapper">
                 <table id="recentOrdersTable">
                     <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
-                    <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="ordersTab" class="tab-pane" style="display:none;">
-        <div class="section-title"><i class="fas fa-truck-fast" style="color: var(--primary);"></i> Tüm Sipariş Yönetimi</div>
-        <div class="search-area">
-            <input type="text" id="orderSearchInput" placeholder="🔍 Sipariş kodu, kullanıcı e-posta veya isim ile ara..." onkeyup="filterOrders()">
-        </div>
-        <div class="table-wrapper">
-            <table id="allOrdersTable">
-                <thead>
-                    <tr>
-                        <th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Hizmet</th><th>Miktar</th><th>Link</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
-                    </tr>
-                </thead>
-                <tbody><tr><td colspan="11" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
-            </table>
-        </div>
-        <div class="admin-note">
-            <textarea id="adminNoteText" rows="2" placeholder="📝 Yönetici notu burada görünür..."></textarea>
-            <button class="btn-sm btn-warning" onclick="saveAdminNote()"><i class="fas fa-save"></i> Notu Kaydet</button>
-        </div>
-    </div>
-
-    <div id="paymentsTab" class="tab-pane" style="display:none;">
-        <div class="section-title"><i class="fas fa-money-bill-wave" style="color: var(--success);"></i> Bakiye Yükleme Talepleri</div>
-        <div class="table-wrapper">
-            <table id="paymentRequestsTable">
-                <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
+                    <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
+</div>
 
-    <div id="usersTab" class="tab-pane" style="display:none;">
-        <div class="section-title"><i class="fas fa-users" style="color: var(--secondary);"></i> Kullanıcı Yönetimi</div>
-        <div class="search-area">
-            <input type="text" id="userSearchInput" placeholder="🔍 E-posta veya isim ile ara..." onkeyup="filterUsers()">
-            <button class="btn-sm btn-primary" onclick="refreshUsersTable()"><i class="fas fa-sync-alt"></i> Yenile</button>
-        </div>
-        <div class="table-wrapper">
-            <table id="usersManagementTable">
-                <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
-                <tbody><tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr></tbody>
-            </table>
-        </div>
+<div id="ordersTab" class="tab-pane" style="display:none;">
+    <div class="section-title"><i class="fas fa-truck-fast" style="color: var(--primary);"></i> Tüm Sipariş Yönetimi</div>
+    <div class="search-area">
+        <input type="text" id="orderSearchInput" placeholder="🔍 Sipariş kodu, kullanıcı e-posta veya isim ile ara..." onkeyup="filterOrders()">
     </div>
+    <div class="table-wrapper">
+        <table id="allOrdersTable">
+            <thead>
+                <tr>
+                    <th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody><tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="admin-note">
+        <textarea id="adminNoteText" rows="2" placeholder="📝 Yönetici notu burada görünür..."></textarea>
+        <button class="btn-sm btn-warning" onclick="saveAdminNote()"><i class="fas fa-save"></i> Notu Kaydet</button>
+    </div>
+</div>
+
+<div id="paymentsTab" class="tab-pane" style="display:none;">
+    <div class="section-title"><i class="fas fa-money-bill-wave" style="color: var(--success);"></i> Bakiye Yükleme Talepleri</div>
+    <div class="table-wrapper">
+        <table id="paymentRequestsTable">
+            <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
+            <tbody><tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="usersTab" class="tab-pane" style="display:none;">
+    <div class="section-title"><i class="fas fa-users" style="color: var(--secondary);"></i> Kullanıcı Yönetimi</div>
+    <div class="search-area">
+        <input type="text" id="userSearchInput" placeholder="🔍 E-posta veya isim ile ara..." onkeyup="filterUsers()">
+        <button class="btn-sm btn-primary" onclick="refreshUsersTable()"><i class="fas fa-sync-alt"></i> Yenile</button>
+    </div>
+    <div class="table-wrapper">
+        <table id="usersManagementTable">
+            <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
+            <tbody><tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-pulse"></i> Yükleniyor...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </main>
 
 <script>
@@ -533,18 +536,15 @@
 
     function renderOrdersTable(orders) {
         const tbody = document.querySelector('#allOrdersTable tbody');
-        if(!orders.length) { tbody.innerHTML = '<tr><td colspan="11" class="loading">📭 Sipariş bulunamadı</td></tr>'; return; }
+        if(!orders.length) { tbody.innerHTML = '<tr><td colspan="8" class="loading">📭 Sipariş bulunamadı</td></tr>'; return; }
         tbody.innerHTML = orders.map(o => `
             <tr>
                 <td><strong>${o.code}</strong></td>
                 <td>${o.email}</td>
                 <td>${o.name || '-'}</td>
-                <td>${o.service || '-'}</td>
-                <td>${o.quantity || '-'}</td>
-                <td class="link-cell"><a href="${o.link || '#'}" target="_blank"><i class="fas fa-external-link-alt"></i> Link</a></td>
                 <td>${o.price || 0} ₺</td>
                 <td>
-                    <input type="number" id="remaining_${o.id}" value="${o.remaining !== undefined ? o.remaining : (o.quantity || 0)}" class="remaining-input" style="width:70px;">
+                    <input type="number" id="remaining_${o.id}" value="${o.remaining !== undefined ? o.remaining : (o.quantity || 0)}" class="remaining-input">
                     <button class="btn-sm btn-warning" onclick="updateRemaining('${o.id}', this)"><i class="fas fa-save"></i></button>
                 </td>
                 <td><small>${new Date(o.date).toLocaleString('tr-TR')}</small></td>
@@ -692,8 +692,13 @@
         document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
         document.getElementById(`${name}Tab`).style.display = 'block';
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        const activeMenu = Array.from(document.querySelectorAll('.menu-item')).find(m => m.textContent.toLowerCase().includes(name === 'dashboard' ? 'dashboard' : name === 'orders' ? 'siparişler' : name === 'payments' ? 'bakiye' : 'kullanıcılar'));
-        if(activeMenu) activeMenu.classList.add('active');
+        const menuItems = document.querySelectorAll('.menu-item');
+        for(let item of menuItems) {
+            if(item.innerText.toLowerCase().includes(name === 'dashboard' ? 'dashboard' : name === 'orders' ? 'siparişler' : name === 'payments' ? 'bakiye' : 'kullanıcılar')) {
+                item.classList.add('active');
+                break;
+            }
+        }
     }
 
     window.onload = () => {
