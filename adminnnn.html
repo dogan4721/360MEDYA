@@ -534,29 +534,31 @@
         renderUsersTable(allUsers);
     }
 
-    function renderOrdersTable(orders) {
-        const tbody = document.querySelector('#allOrdersTable tbody');
-        if(!orders.length) { tbody.innerHTML = '<tr><td colspan="8" class="loading">📭 Sipariş bulunamadı</td></tr>'; return; }
-        tbody.innerHTML = orders.map(o => `
-            <tr>
-                <td><strong>${o.code}</strong></td>
-                <td>${o.email}</td>
-                <td>${o.name || '-'}</td>
-                <td>${o.price || 0} ₺</td>
-                <td>
-                    <input type="number" id="remaining_${o.id}" value="${o.remaining !== undefined ? o.remaining : (o.quantity || 0)}" class="remaining-input">
-                    <button class="btn-sm btn-warning" onclick="updateRemaining('${o.id}', this)"><i class="fas fa-save"></i></button>
-                </td>
-                <td><small>${new Date(o.date).toLocaleString('tr-TR')}</small></td>
-                <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
-                <td>
-                    <button class="btn-sm btn-primary" onclick="updateStatus('${o.id}','İşlemde')">İşlemde</button>
-                    <button class="btn-sm btn-success" onclick="updateStatus('${o.id}','Tamamlandı')">Tamamla</button>
-                    <button class="btn-sm btn-danger" onclick="updateStatus('${o.id}','İptal')">İptal</button>
-                </td>
-            </tr>
-        `).join('');
-    }
+   function renderOrdersTable(orders) {
+    const tbody = document.querySelector('#allOrdersTable tbody');
+    if(!orders.length) { tbody.innerHTML = '<tr><td colspan="10" class="loading">📭 Sipariş bulunamadı</td></tr>'; return; }
+    tbody.innerHTML = orders.map(o => `
+        <tr>
+            <td><strong>${o.code}</strong></td>
+            <td>${o.email}</td>
+            <td>${o.name || '-'}</td>
+            <td>${o.service || o.category || '-'}</td>
+            <td><a href="${o.link || '#'}" target="_blank" style="color:var(--primary); text-decoration:none;">${o.link ? '🔗 Link' : '-'}</a></td>
+            <td>${o.price || 0} ₺</td>
+            <td>
+                <input type="number" id="remaining_${o.id}" value="${o.remaining !== undefined ? o.remaining : (o.quantity || 0)}" class="remaining-input" style="width:70px;">
+                <button class="btn-sm btn-warning" onclick="updateRemaining('${o.id}')"><i class="fas fa-save"></i></button>
+             </td>
+            <td><small>${new Date(o.date).toLocaleString('tr-TR')}</small></td>
+            <td><span class="badge badge-${getStatusClass(o.status)}">${o.status}</span></td>
+            <td>
+                <button class="btn-sm btn-primary" onclick="updateStatus('${o.id}','İşlemde')">İşlemde</button>
+                <button class="btn-sm btn-success" onclick="updateStatus('${o.id}','Tamamlandı')">Tamamla</button>
+                <button class="btn-sm btn-danger" onclick="updateStatus('${o.id}','İptal')">İptal</button>
+             </td>
+        </tr>
+    `).join('');
+}
 
   function renderPaymentsTable() {
     const tbody = document.querySelector('#paymentRequestsTable tbody');
