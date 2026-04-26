@@ -1009,7 +1009,9 @@
       
       let orders = await loadOrders();
       if(orders.length === 0) {
-        orders = [];
+        orders = [
+          { code: "#DEMO001", service: "Instagram Takipçi", quantity: 100, price: "20.00 ₺", link: "https://instagram.com/demo", email: "demo@360medya.com", status: "Tamamlandı", date: new Date().toISOString(), senderName: "Demo Kullanıcı" }
+        ];
         await saveOrders(orders);
       }
     }
@@ -1090,35 +1092,33 @@
       }
     };
     
-   document.getElementById('authActionBtn').onclick = function() {
-  (async () => {
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value;
-    if(!email || !password) { alert('E-posta ve şifre giriniz'); return; }
-    let users = await loadUsers();
-    if(isLoginMode) {
-      const user = users.find(u => u.email === email && u.password === password);
-      if(user) {
-        currentUser = user;
+    document.getElementById('authActionBtn').onclick = async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      if(!email || !password) { alert('E-posta ve şifre giriniz'); return; }
+      let users = await loadUsers();
+      if(isLoginMode) {
+        const user = users.find(u => u.email === email && u.password === password);
+        if(user) {
+          currentUser = user;
+          await saveCurrentUser();
+          updateBalanceUI();
+          closeAuthModal();
+          alert('Giriş başarılı!');
+          showPage('new-order');
+        } else alert('Hatalı e-posta veya şifre');
+      } else {
+        if(users.find(u => u.email === email)) { alert('Bu e-posta zaten kayıtlı'); return; }
+        const newUser = { email, password, balance: 0, orders: [], name: email.split('@')[0], createdAt: new Date().toISOString() };
+        users.push(newUser);
+        await saveUsers(users);
+        currentUser = newUser;
         await saveCurrentUser();
         updateBalanceUI();
         closeAuthModal();
-        alert('Giriş başarılı!');
-        showPage('new-order');
-      } else alert('Hatalı e-posta veya şifre');
-    } else {
-      if(users.find(u => u.email === email)) { alert('Bu e-posta zaten kayıtlı'); return; }
-      const newUser = { email, password, balance: 0, name: email.split('@')[0], createdAt: new Date().toISOString() };
-      users.push(newUser);
-      await saveUsers(users);
-      currentUser = newUser;
-      await saveCurrentUser();
-      updateBalanceUI();
-      closeAuthModal();
-      alert('Kayıt başarılı! Hoşgeldiniz.');
-    }
-  })();
-};
+        alert('Kayıt başarılı! Hoşgeldiniz.');
+      }
+    };
     
     async function logout() {
       currentUser = null;
@@ -1137,29 +1137,26 @@
     
     async function requestBalanceTopup() {
       if(!currentUser) { alert('Giriş yapın'); return; }
-      const fullname = document.getElementById('fullname').value.trim();
-      if(!fullname) { alert('Ad Soyad giriniz!'); return; }
       const amount = parseFloat(document.getElementById('topupAmount').value);
       if(isNaN(amount) || amount < 10) { alert('Geçerli bir tutar girin (min 10₺)'); return; }
       const requestId = 'REQ-' + Date.now() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
       const requestCode = 'BL-' + Math.random().toString(36).substring(2,10).toUpperCase();
       let requests = await loadBalanceRequests();
       requests.push({ 
-        id: requestId, 
-        code: requestCode, 
-        userEmail: currentUser.email, 
-        userName: fullname,
-        name: fullname, 
-        fullname: fullname,
-        amount: amount, 
-        date: new Date().toISOString(), 
-        status: 'pending' 
-      });
+    id: requestId, 
+    code: requestCode, 
+    userEmail: currentUser.email, 
+    userName: fullname,
+    name: fullname, 
+    fullname: fullname,
+    amount: amount, 
+    date: new Date().toISOString(), 
+    status: 'pending' 
+});
       await saveBalanceRequests(requests);
       alert(`✅ Bakiye yükleme talebiniz alındı!\n💰 Tutar: ${amount}₺\n📌 Talep Kodu: ${requestCode}\n\nBAKİYENİZ "5 DK" İÇİNDE YÜKLENECEKTİR.`);
       closeBalanceModal();
       document.getElementById('topupAmount').value = '';
-      document.getElementById('fullname').value = '';
     }
     
     // Sipariş
@@ -1229,7 +1226,7 @@ async function placeOrderWithBalance() {
 
   const orderCode = '#' + Math.random().toString(36).substring(2,10).toUpperCase();
   const newOrder = { 
-    code: orderCode, service, quantity: qty, remaining: qty,
+    code: orderCode, service, quantity: qty, remains: qty,
     price: total.toFixed(2) + ' ₺', link, email: currentUser.email, 
     status: 'Beklemede', date: new Date().toISOString() 
   };
@@ -1294,7 +1291,7 @@ async function searchOrder() {
     const query = document.getElementById('queryInput').value.trim().toUpperCase();
     if (!query) return;
     const orders = await loadOrders();
-    const found = orders.filter(o => o.code.toUpperCase().includes(query) && o.email === currentUser?.email);
+    const found = orders.filter(o => o.code.toUpperCase().includes(query) && o.email === currentUser.email);
     if (found.length > 0) { renderOrders(found); showPage('my-orders'); } 
     else { alert("Sipariş bulunamadı!"); }
 }
