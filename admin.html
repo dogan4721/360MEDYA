@@ -493,15 +493,17 @@
                 <button class="btn-sm btn-success" onclick="addCategory()" style="padding: 0 20px;">Kategori Ekle</button>
             </div>
         </div>
-        <div id="servicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
-            <h4 id="servicePanelTitle">➕ Hizmet Ekle</h4>
-            <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
-                <input type="text" id="servName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-                <input type="number" id="servPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-                <input type="number" id="servMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-                <button class="btn-sm btn-primary" onclick="addService()">Hizmet Ekle</button>
-                <button class="btn-sm btn-danger" onclick="closeServicePanel()">İptal</button>
-            </div>
+        <<div id="servicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
+    <h4 id="servicePanelTitle">➕ Hizmet Ekle</h4>
+    <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
+        <input type="text" id="servName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <input type="text" id="servDesc" placeholder="📝 Açıklama (Örn: 1000 takipçi 1-3 günde gelir)" style="flex:3; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <input type="number" id="servPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <input type="number" id="servMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <button class="btn-sm btn-primary" onclick="addService()">Hizmet Ekle</button>
+        <button class="btn-sm btn-danger" onclick="closeServicePanel()">İptal</button>
+    </div>
+</div>
         </div>
         <div id="editServicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
             <h4>✏️ Hizmet Düzenle</h4>
@@ -738,9 +740,58 @@
     async function updateCategoryName(code, newName) { if(allCategories[code]) { allCategories[code].displayName = newName; await database.ref('service_categories').set(allCategories); showToast('Kategori adı güncellendi'); } }
     async function addCategory() { const code = document.getElementById('newCatCode').value.trim().toLowerCase(); const name = document.getElementById('newCatName').value.trim(); if(!code || !name) { alert("Kategori kodu ve adı girin!"); return; } if(allCategories[code]) { alert("Zaten var!"); return; } allCategories[code] = { displayName: name, services: [] }; await database.ref('service_categories').set(allCategories); renderCategoriesTable(); document.getElementById('newCatCode').value = ''; document.getElementById('newCatName').value = ''; showToast(`✅ "${name}" eklendi!`); }
     async function deleteCategory(code) { if(confirm(`"${code}" silinsin mi?`)) { delete allCategories[code]; await database.ref('service_categories').set(allCategories); renderCategoriesTable(); showToast("Kategori silindi"); } }
-    function showServices(catCode) { const cat = allCategories[catCode]; if(!cat?.services?.length) { alert("Hizmet yok"); return; } let msg = `📋 ${cat.displayName}\n\n`; cat.services.forEach((s, i) => { msg += `${i+1}. ${s.name}\n   💰 ${s.price}₺ | Min: ${s.min}\n\n`; }); alert(msg); }
-    function openServicePanel(catCode, catName) { currentCategoryCode = catCode; document.getElementById('servicePanelTitle').innerHTML = `➕ Hizmet Ekle: ${catName}`; document.getElementById('servicePanel').style.display = 'block'; document.getElementById('servName').value = ''; document.getElementById('servPrice').value = ''; document.getElementById('servMin').value = ''; }
-    async function addService() { const name = document.getElementById('servName').value.trim(); const price = parseFloat(document.getElementById('servPrice').value); const min = parseInt(document.getElementById('servMin').value); if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } if(!allCategories[currentCategoryCode]) { alert("Kategori bulunamadı!"); return; } if(!allCategories[currentCategoryCode].services) allCategories[currentCategoryCode].services = []; allCategories[currentCategoryCode].services.push({ name, price, min }); await database.ref('service_categories').set(allCategories); document.getElementById('servicePanel').style.display = 'none'; renderCategoriesTable(); alert(`✅ "${name}" eklendi!`); }
+    function showServices(catCode) { 
+    const cat = allCategories[catCode]; 
+    if(!cat?.services?.length) { 
+        alert("Hizmet yok"); 
+        return; 
+    } 
+    let msg = `📋 ${cat.displayName}\n\n`; 
+    cat.services.forEach((s, i) => { 
+        msg += `${i+1}. ${s.name}\n`;
+        msg += `   📝 ${s.desc || "Açıklama yok"}\n`;   // Açıklama satırı
+        msg += `   💰 ${s.price}₺ | Min: ${s.min}\n\n`; 
+    }); 
+    alert(msg); 
+}
+    function openServicePanel(catCode, catName) { 
+    currentCategoryCode = catCode; 
+    document.getElementById('servicePanelTitle').innerHTML = `➕ Hizmet Ekle: ${catName}`; 
+    document.getElementById('servicePanel').style.display = 'block'; 
+    document.getElementById('servName').value = ''; 
+    document.getElementById('servDesc').value = '';   // YENİ
+    document.getElementById('servPrice').value = ''; 
+    document.getElementById('servMin').value = ''; 
+}
+    async function addService() { 
+    const name = document.getElementById('servName').value.trim(); 
+    const desc = document.getElementById('servDesc').value.trim();   // YENİ
+    const price = parseFloat(document.getElementById('servPrice').value); 
+    const min = parseInt(document.getElementById('servMin').value); 
+    if(!name || isNaN(price) || isNaN(min)) { 
+        alert("Tüm alanları doldurun!"); 
+        return; 
+    } 
+    if(!allCategories[currentCategoryCode]) { 
+        alert("Kategori bulunamadı!"); 
+        return; 
+    } 
+    if(!allCategories[currentCategoryCode].services) 
+        allCategories[currentCategoryCode].services = []; 
+    
+    // Açıklama ile birlikte kaydet
+    allCategories[currentCategoryCode].services.push({ 
+        name: name, 
+        desc: desc || "Hızlı teslimat, kaliteli hizmet",  // Varsayılan açıklama
+        price: price, 
+        min: min 
+    }); 
+    
+    await database.ref('service_categories').set(allCategories); 
+    document.getElementById('servicePanel').style.display = 'none'; 
+    renderCategoriesTable(); 
+    alert(`✅ "${name}" eklendi!`); 
+}
     function closeServicePanel() { document.getElementById('servicePanel').style.display = 'none'; }
     function closeEditPanel() { document.getElementById('editServicePanel').style.display = 'none'; }
     async function updateService() { const name = document.getElementById('editServName').value.trim(); const price = parseFloat(document.getElementById('editServPrice').value); const min = parseInt(document.getElementById('editServMin').value); if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } alert("Güncelleme özelliği aktif değil"); closeEditPanel(); }
