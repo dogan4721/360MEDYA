@@ -384,6 +384,7 @@
     <div class="menu-item" onclick="switchTab('users')"><i class="fas fa-users"></i> <span>Kullanıcılar</span></div>
     <div class="menu-item" onclick="switchTab('settings')"><i class="fas fa-cog"></i> <span>Ayarlar</span></div>
     <div class="menu-item" onclick="switchTab('categories')"><i class="fas fa-layer-group"></i> <span>Kategoriler</span></div>
+    <div class="menu-item" onclick="switchTab('support')"><i class="fas fa-headset"></i> <span>Destek Talepleri</span></div>
     <div class="menu-item logout-item" onclick="logoutSystem()"><i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span></div>
 </aside>
 
@@ -402,7 +403,7 @@
             <div class="table-wrapper">
                 <table id="recentOrdersTable">
                     <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
-                    <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr></tbody>
+                    <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr>
                 </table>
             </div>
         </div>
@@ -423,7 +424,8 @@
         <div class="table-wrapper">
             <table id="allOrdersTable">
                 <thead><tr><th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Hizmet</th><th>Miktar</th><th>Link</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="11" class="loading">Yükleniyor...</td></tr></tbody>
+                <tbody><tr><td colspan="11" class="loading">Yükleniyor...</td></tr>
+                </tbody>
             </table>
         </div>
         <div class="admin-note">
@@ -437,7 +439,8 @@
         <div class="table-wrapper">
             <table id="paymentRequestsTable">
                 <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr></tbody>
+                <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -453,7 +456,8 @@
         <div class="table-wrapper">
             <table id="usersManagementTable">
                 <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
-                <tbody><tr><td colspan="7" class="loading">Yükleniyor...</td></tr></tbody>
+                <tbody><tr><td colspan="7" class="loading">Yükleniyor...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -477,7 +481,8 @@
         <div class="table-wrapper">
             <table id="categoriesTable">
                 <thead><tr><th>Kategori Kodu</th><th>Kategori Adı</th><th>Hizmet Sayısı</th><th>İşlemler</th></tr></thead>
-                <tbody id="categoriesList"><tr><td colspan="4" class="loading">Yükleniyor...</td></tr></tbody>
+                <tbody id="categoriesList"><tr><td colspan="4" class="loading">Yükleniyor...</td></tr>
+                </tbody>
             </table>
         </div>
         <div class="admin-note" style="border-left-color: var(--success); margin-top: 20px;">
@@ -506,6 +511,37 @@
                 <input type="number" id="editServMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
                 <button class="btn-sm btn-success" onclick="updateService()">Güncelle</button>
                 <button class="btn-sm btn-danger" onclick="closeEditPanel()">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESTEK TALEPLERİ TAB'İ -->
+    <div id="supportTab" class="tab-pane" style="display:none;">
+        <div class="section-title">
+            <i class="fas fa-headset" style="color: var(--primary);"></i> 
+            Müşteri Destek Talepleri
+            <button class="btn-sm btn-primary" onclick="adminLoadAllTickets()" style="margin-left: auto;">
+                <i class="fas fa-sync-alt"></i> Yenile
+            </button>
+        </div>
+        <div id="adminTicketsContainer" style="display: flex; flex-direction: column; gap: 15px;">
+            <p class="loading">Yükleniyor...</p>
+        </div>
+    </div>
+
+    <!-- TALEP DETAY MODALI -->
+    <div id="ticketDetailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: var(--card); border-radius: 20px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 25px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="detailTicketSubject">Talep Detayı</h3>
+                <i class="fas fa-times" style="font-size: 24px; cursor: pointer; color: var(--text-muted);" onclick="closeTicketDetailModalAdmin()"></i>
+            </div>
+            <div id="detailTicketStatus" style="margin-bottom: 15px; padding: 10px; background: var(--darker); border-radius: 12px;"></div>
+            <div id="ticketMessagesContainer" style="margin: 15px 0; max-height: 300px; overflow-y: auto; padding: 10px; background: var(--darker); border-radius: 12px;"></div>
+            <textarea id="replyMessageAdmin" rows="3" style="width: 100%; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white; margin: 10px 0;" placeholder="Cevabınızı yazın..."></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-sm btn-primary" onclick="adminSendReplyToTicket()" style="flex: 1;"><i class="fas fa-paper-plane"></i> Cevapla</button>
+                <button class="btn-sm btn-warning" onclick="closeTicketDetailModalAdmin()" style="flex: 1;">Kapat</button>
             </div>
         </div>
     </div>
@@ -587,8 +623,13 @@
         const tbody = document.querySelector('#allOrdersTable tbody');
         if(!orders.length) { tbody.innerHTML = '<tr><td colspan="11" class="loading">📭 Sipariş yok</td></tr>'; return; }
         tbody.innerHTML = orders.map(o => `<tr>
-            <td><strong>${o.code}</strong></td><td>${o.email}</td><td>${o.name || '-'}</td><td>${o.service || '-'}</td><td>${o.quantity}</td>
-            <td class="link-cell"><a href="${o.link}" target="_blank">Link</a></td><td>${o.price}</td>
+            <td><strong>${o.code}</strong></td>
+            <td>${o.email}</td>
+            <td>${o.name || '-'}</td>
+            <td>${o.service || '-'}</td>
+            <td>${o.quantity}</td>
+            <td class="link-cell"><a href="${o.link}" target="_blank">Link</a></td>
+            <td>${o.price}</td>
             <td>${o.remaining || o.quantity} <button class="btn-sm btn-warning" onclick="updateRemaining('${o.code}')"><i class="fas fa-edit"></i></button></td>
             <td><small>${o.date ? new Date(o.date).toLocaleString('tr-TR') : '-'}</small></td>
             <td><span class="badge badge-pending">${o.status}</span></td>
@@ -604,19 +645,22 @@
         const tbody = document.querySelector('#paymentRequestsTable tbody');
         if(!allRequests.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Talep yok</td></tr>'; return; }
         tbody.innerHTML = allRequests.map(r => `<tr>
-            <td><strong>${r.userEmail}</strong></td><td>${r.userName || '-'}</td>
-            <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td><td style="color:var(--success);">${r.amount} ₺</td>
+            <td><strong>${r.userEmail}</strong></td>
+            <td>${r.userName || '-'}</td>
+            <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
+            <td style="color:var(--success);">${r.amount} ₺</td>
             <td><code>${r.code}</code></td>
             <td><button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
                 <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button></td>
-        </tr>`).join('');
+         </tr>`).join('');
     }
 
     function renderUsersTable(users) {
         const tbody = document.querySelector('#usersManagementTable tbody');
         if(!users.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading">👤 Kullanıcı yok</td></tr>'; return; }
         tbody.innerHTML = users.map(u => `<tr>
-            <td>${u.email}</td><td>${u.name || '-'}</td>
+            <td>${u.email}</td>
+            <td>${u.name || '-'}</td>
             <td>•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${u.email}', this)"></i></td>
             <td style="color:var(--success);">${(u.balance || 0).toFixed(2)} ₺</td>
             <td>${(u.orders || []).length}</td>
@@ -624,10 +668,8 @@
             <td><button class="btn-sm btn-success" onclick="addBalance('${u.email}')">Bakiye</button>
                 <button class="btn-sm btn-primary" onclick="editUser('${u.email}')">Düzenle</button>
                 <button class="btn-sm btn-danger" onclick="delUser('${u.email}')">Sil</button></td>
-        </tr>`).join('');
+         </tr>`).join('');
     }
-
-    function getStatusClass(s) { const st = s?.toLowerCase(); if(st === 'beklemede') return 'pending'; if(st === 'işlemde') return 'processing'; if(st === 'tamamlandı') return 'completed'; if(st === 'iptal') return 'cancelled'; return 'pending'; }
 
     async function updateStatus(code, status) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/status`).set(status); showToast(`Sipariş ${status}`); loadAllData(); } }
     async function updateRemaining(code) { const newVal = prompt("Kalan miktar:"); if(newVal) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/remaining`).set(parseInt(newVal)); loadAllData(); } } }
@@ -703,6 +745,180 @@
     function closeEditPanel() { document.getElementById('editServicePanel').style.display = 'none'; }
     async function updateService() { const name = document.getElementById('editServName').value.trim(); const price = parseFloat(document.getElementById('editServPrice').value); const min = parseInt(document.getElementById('editServMin').value); if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } alert("Güncelleme özelliği aktif değil"); closeEditPanel(); }
 
+    // ======================= DESTEK TALEP SİSTEMİ =======================
+    
+    async function loadAllSupportTickets() {
+        try {
+            const snapshot = await database.ref('support_tickets').once('value');
+            const tickets = snapshot.val();
+            if (!tickets) return {};
+            return tickets;
+        } catch(e) {
+            console.error("Destek talepleri yüklenemedi:", e);
+            return {};
+        }
+    }
+
+    async function adminLoadAllTickets() {
+        const allTickets = await loadAllSupportTickets();
+        const ticketsArray = Object.entries(allTickets).map(([id, t]) => ({ ...t, firebaseId: id }));
+        ticketsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        const container = document.getElementById('adminTicketsContainer');
+        if (!container) return;
+        
+        if (ticketsArray.length === 0) {
+            container.innerHTML = '<p class="loading">📭 Henüz destek talebi yok.</p>';
+            return;
+        }
+        
+        container.innerHTML = ticketsArray.map(ticket => `
+            <div style="background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-family: monospace; color: var(--primary); font-weight: bold;">${escapeHtmlSupport(ticket.ticketId)}</span>
+                    <select onchange="adminChangeTicketStatus('${ticket.firebaseId}', this.value)" style="background: var(--darker); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; color: white;">
+                        <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>🟡 Açık (Beklemede)</option>
+                        <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>✅ Çözüldü (Kapalı)</option>
+                    </select>
+                </div>
+                <div><strong>📌 ${escapeHtmlSupport(ticket.subject)}</strong></div>
+                <div style="font-size:0.85rem; margin: 5px 0;">👤 ${escapeHtmlSupport(ticket.userName)} (${ticket.userId})</div>
+                <div style="font-size:0.75rem; color: var(--text-muted);">📅 ${new Date(ticket.createdAt).toLocaleString('tr-TR')} | 💬 ${ticket.messages.length} mesaj</div>
+                <button style="margin-top: 10px; background: var(--primary); border: none; padding: 6px 12px; border-radius: 20px; color: white; cursor: pointer;" onclick="adminOpenTicketDetail('${ticket.firebaseId}')">
+                    <i class="fas fa-reply"></i> Cevapla
+                </button>
+            </div>
+        `).join('');
+    }
+
+    let currentTicketFirebaseId = null;
+    let currentTicketData = null;
+
+    async function adminOpenTicketDetail(ticketFirebaseId) {
+        const allTickets = await loadAllSupportTickets();
+        const ticket = allTickets[ticketFirebaseId];
+        
+        if (!ticket) {
+            alert('Talep bulunamadı');
+            return;
+        }
+        
+        currentTicketFirebaseId = ticketFirebaseId;
+        currentTicketData = ticket;
+        
+        document.getElementById('detailTicketSubject').innerHTML = `<i class="fas fa-ticket-alt"></i> ${escapeHtmlSupport(ticket.subject)} <span style="font-size:0.8rem;">(${ticket.ticketId})</span>`;
+        document.getElementById('detailTicketStatus').innerHTML = `Durum: <span style="color: ${ticket.status === 'open' ? '#f59e0b' : '#22c55e'}">${ticket.status === 'open' ? '🟡 Beklemede' : '✅ Çözüldü'}</span> | 👤 ${escapeHtmlSupport(ticket.userName)} | 📧 ${ticket.userId}`;
+        
+        const container = document.getElementById('ticketMessagesContainer');
+        container.innerHTML = ticket.messages.map(msg => `
+            <div style="margin-bottom: 15px; padding: 12px; background: ${msg.sender === 'admin' ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius: 12px; border-left: 3px solid ${msg.sender === 'admin' ? 'var(--primary)' : 'var(--secondary)'}">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong>${escapeHtmlSupport(msg.senderName)} ${msg.sender === 'admin' ? '<span style="font-size:0.7rem;">(Destek Ekibi)</span>' : '(Müşteri)'}</strong>
+                    <span style="font-size:0.7rem; color: var(--text-muted);">${new Date(msg.timestamp).toLocaleString('tr-TR')}</span>
+                </div>
+                <div style="font-size:0.9rem; line-height: 1.5;">${escapeHtmlSupport(msg.message).replace(/\n/g, '<br>')}</div>
+            </div>
+        `).join('');
+        
+        document.getElementById('replyMessageAdmin').value = '';
+        document.getElementById('ticketDetailModal').style.display = 'flex';
+    }
+
+    async function adminSendReplyToTicket() {
+        if (!currentTicketFirebaseId || !currentTicketData) {
+            alert('Talep bilgisi bulunamadı');
+            return;
+        }
+        
+        const reply = document.getElementById('replyMessageAdmin').value.trim();
+        if (!reply) {
+            alert('Lütfen bir yanıt yazın.');
+            return;
+        }
+        
+        const newMessage = {
+            sender: 'admin',
+            senderName: '360 Medya Destek',
+            message: reply,
+            timestamp: new Date().toISOString()
+        };
+        
+        try {
+            const ticketRef = database.ref(`support_tickets/${currentTicketFirebaseId}`);
+            const updatedMessages = [...currentTicketData.messages, newMessage];
+            await ticketRef.update({
+                messages: updatedMessages,
+                lastUpdated: new Date().toISOString(),
+                status: 'open'
+            });
+            
+            currentTicketData.messages = updatedMessages;
+            
+            const container = document.getElementById('ticketMessagesContainer');
+            container.innerHTML += `
+                <div style="margin-bottom: 15px; padding: 12px; background: rgba(99,102,241,0.15); border-radius: 12px; border-left: 3px solid var(--primary)">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>360 Medya Destek (Destek Ekibi)</strong>
+                        <span style="font-size:0.7rem; color: var(--text-muted);">${new Date().toLocaleString('tr-TR')}</span>
+                    </div>
+                    <div style="font-size:0.9rem;">${escapeHtmlSupport(reply).replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+            document.getElementById('replyMessageAdmin').value = '';
+            adminLoadAllTickets();
+            showToastAdminMsg('✅ Cevap gönderildi!');
+            
+        } catch(e) {
+            console.error("Yanıt gönderme hatası:", e);
+            alert('Yanıt gönderilirken bir hata oluştu.');
+        }
+    }
+
+    async function adminChangeTicketStatus(ticketFirebaseId, newStatus) {
+        if (!ticketFirebaseId) return;
+        try {
+            await database.ref(`support_tickets/${ticketFirebaseId}/status`).set(newStatus);
+            await database.ref(`support_tickets/${ticketFirebaseId}/lastUpdated`).set(new Date().toISOString());
+            showToastAdminMsg('✅ Durum güncellendi');
+            adminLoadAllTickets();
+        } catch(e) {
+            console.error("Durum güncelleme hatası:", e);
+            alert('Durum güncellenirken hata oluştu.');
+        }
+    }
+
+    function closeTicketDetailModalAdmin() {
+        document.getElementById('ticketDetailModal').style.display = 'none';
+        currentTicketFirebaseId = null;
+        currentTicketData = null;
+    }
+
+    function showToastAdminMsg(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.background = 'var(--card)';
+        toast.style.borderLeft = '4px solid var(--success)';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '12px';
+        toast.style.zIndex = '10001';
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function escapeHtmlSupport(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function switchTab(tabName) {
         document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
         const activePane = document.getElementById(`${tabName}Tab`);
@@ -711,6 +927,7 @@
         const activeMenu = Array.from(document.querySelectorAll('.menu-item')).find(i => i.textContent.toLowerCase().includes(tabName.toLowerCase()));
         if(activeMenu) activeMenu.classList.add('active');
         if(tabName === 'categories') loadCategories();
+        if(tabName === 'support') adminLoadAllTickets();
     }
 
     window.onload = () => {
