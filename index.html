@@ -350,7 +350,7 @@
       font-size: 0.9rem;
     }
     
-    /* Hero and other sections (keeping existing styles) */
+    /* Hero and other sections */
     .hero {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden; padding: 120px 20px 80px;
@@ -781,22 +781,21 @@
           <h3 style="text-align:center; margin-bottom: 20px;">🛍️ Yeni Sipariş Oluştur</h3>
           <form id="orderForm">
             <div class="form-group">
-  <label>Platform Seçin</label>
-  <select id="category" required onchange="updateServices()">
-    <option value="">Platform seçin...</option>
-    <option value="instagram">📸 Instagram</option>
-    <option value="tiktok">🎵 TikTok</option>
-    <option value="youtube">🎥 YouTube</option>
-    <option value="other">🌐 Diğer</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label>Hizmet Seçin</label>
-  <select id="service" required onchange="calculate()">
-    <option value="">Önce platform seçin...</option>
-  </select>
-</div>
+              <label>Platform Seçin</label>
+              <select id="category" required onchange="updateServices()">
+                <option value="">Platform seçin...</option>
+                <option value="instagram">📸 Instagram</option>
+                <option value="tiktok">🎵 TikTok</option>
+                <option value="youtube">🎥 YouTube</option>
+                <option value="other">🌐 Diğer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Hizmet Seçin</label>
+              <select id="service" required onchange="calculate()">
+                <option value="">Önce platform seçin...</option>
+              </select>
+            </div>
             <div class="form-group"><label>Miktar (Adet)</label><input type="number" id="quantity" placeholder="Örn: 1000" min="1" required oninput="calculate()"></div>
             <div class="form-group"><label>Link</label><input type="url" id="link" placeholder="https://instagram.com/kullaniciadi" required></div>
             <div class="price-box"><div class="amount" id="totalPrice">0,00</div><div class="currency">₺ Toplam Tutar</div></div>
@@ -829,8 +828,9 @@
       </div>
     </section>
   </div>
-<!-- DESTEK TALEPLERİM Sayfası -->
-<div id="support-page" class="page-section">
+
+  <!-- DESTEK TALEPLERİM Sayfası -->
+  <div id="support-page" class="page-section">
     <section style="max-width: 1000px; margin: 100px auto 60px; padding: 0 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
             <h2><i class="fas fa-headset"></i> Destek Taleplerim</h2>
@@ -840,10 +840,10 @@
             <p style="text-align:center; color: var(--text-muted);">Yükleniyor...</p>
         </div>
     </section>
-</div>
+  </div>
 
-<!-- Yeni Talep Modalı -->
-<div id="newTicketModal" class="auth-modal">
+  <!-- Yeni Talep Modalı -->
+  <div id="newTicketModal" class="auth-modal">
     <div class="close-auth" onclick="closeNewTicketModal()">&times;</div>
     <div class="auth-card" style="max-width: 500px;">
         <h2>Yeni Destek Talebi</h2>
@@ -852,10 +852,10 @@
         <textarea id="ticketMessage" class="auth-input" rows="4" placeholder="Mesajınız..."></textarea>
         <button class="auth-btn" onclick="createSupportTicket()">Gönder</button>
     </div>
-</div>
+  </div>
 
-<!-- Talep Detay Modalı -->
-<div id="ticketDetailModal" class="auth-modal">
+  <!-- Talep Detay Modalı -->
+  <div id="ticketDetailModal" class="auth-modal">
     <div class="close-auth" onclick="closeTicketDetailModal()">&times;</div>
     <div class="auth-card" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
         <h2 id="detailTicketSubject">Talep Konusu</h2>
@@ -867,7 +867,7 @@
         <button class="auth-btn" onclick="sendReplyToTicket()">Yanıt Gönder</button>
         <button class="btn-secondary" style="margin-top: 12px; width:100%" onclick="closeTicketDetailModal()">Kapat</button>
     </div>
-</div>
+  </div>
 
   <!-- Sipariş Sorgulama -->
   <section class="query-section" id="sorgula">
@@ -901,77 +901,41 @@
   <a href="https://wa.me/905409327514" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp"></i></a>
 
   <script>
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCtSpmTP9_i-s2ZL2rC1ozVx6uPu68kVCs",
-  authDomain: "smm-panel-f2947.firebaseapp.com",
-  databaseURL: "https://smm-panel-f2947-default-rtdb.firebaseio.com",
-  projectId: "smm-panel-f2947",
-  storageBucket: "smm-panel-f2947.firebasestorage.app",
-  messagingSenderId: "758065772278",
-  appId: "1:758065772278:web:a94d37b0ff892583e81ed7",
-  measurementId: "G-HXYJR3G8S9"
-};
-    // Firebase'i başlat
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtSpmTP9_i-s2ZL2rC1ozVx6uPu68kVCs",
+      authDomain: "smm-panel-f2947.firebaseapp.com",
+      databaseURL: "https://smm-panel-f2947-default-rtdb.firebaseio.com",
+      projectId: "smm-panel-f2947",
+      storageBucket: "smm-panel-f2947.firebasestorage.app",
+      messagingSenderId: "758065772278",
+      appId: "1:758065772278:web:a94d37b0ff892583e81ed7",
+      measurementId: "G-HXYJR3G8S9"
+    };
+    
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // ========== VERİ FONKSİYONLARI (Firebase + LocalStorage Yedekli) ==========
+    // ========== VERİ FONKSİYONLARI ==========
     async function saveUsersToFirebase(users) {
-      try {
-        await database.ref('users').set(users);
-      } catch(e) { console.error("Firebase yazma hatası:", e); }
+      try { await database.ref('users').set(users); } catch(e) { console.error("Firebase yazma hatası:", e); }
     }
-
     async function saveOrdersToFirebase(orders) {
-      try {
-        await database.ref('orders').set(orders);
-      } catch(e) { console.error("Firebase yazma hatası:", e); }
+      try { await database.ref('orders').set(orders); } catch(e) { console.error("Firebase yazma hatası:", e); }
     }
-
     async function saveBalanceRequestsToFirebase(requests) {
-      try {
-        await database.ref('balance_requests').set(requests);
-      } catch(e) { console.error("Firebase yazma hatası:", e); }
+      try { await database.ref('balance_requests').set(requests); } catch(e) { console.error("Firebase yazma hatası:", e); }
     }
-
     async function loadUsersFromFirebase() {
-      try {
-        const snapshot = await database.ref('users').once('value');
-        const data = snapshot.val();
-        if(data && Array.isArray(data)) return data;
-        return [];
-      } catch(e) {
-        console.error("Firebase okuma hatası:", e);
-        return null;
-      }
+      try { const snapshot = await database.ref('users').once('value'); const data = snapshot.val(); if(data && Array.isArray(data)) return data; return []; } catch(e) { console.error("Firebase okuma hatası:", e); return null; }
     }
-
     async function loadOrdersFromFirebase() {
-      try {
-        const snapshot = await database.ref('orders').once('value');
-        const data = snapshot.val();
-        if(data && Array.isArray(data)) return data;
-        return [];
-      } catch(e) {
-        console.error("Firebase okuma hatası:", e);
-        return null;
-      }
+      try { const snapshot = await database.ref('orders').once('value'); const data = snapshot.val(); if(data && Array.isArray(data)) return data; return []; } catch(e) { console.error("Firebase okuma hatası:", e); return null; }
     }
-
     async function loadBalanceRequestsFromFirebase() {
-      try {
-        const snapshot = await database.ref('balance_requests').once('value');
-        const data = snapshot.val();
-        if(data && Array.isArray(data)) return data;
-        return [];
-      } catch(e) {
-        console.error("Firebase okuma hatası:", e);
-        return null;
-      }
+      try { const snapshot = await database.ref('balance_requests').once('value'); const data = snapshot.val(); if(data && Array.isArray(data)) return data; return []; } catch(e) { console.error("Firebase okuma hatası:", e); return null; }
     }
 
-    // localStorage yedekleme fonksiyonları
     function saveUsersLocal(users) { localStorage.setItem('lokman_users', JSON.stringify(users)); }
     function loadUsersLocal() { return JSON.parse(localStorage.getItem('lokman_users') || '[]'); }
     function saveOrdersLocal(orders) { localStorage.setItem('lokman_orders', JSON.stringify(orders)); }
@@ -979,77 +943,41 @@ const firebaseConfig = {
     function saveBalanceRequestsLocal(requests) { localStorage.setItem('lokman_balance_requests', JSON.stringify(requests)); }
     function loadBalanceRequestsLocal() { return JSON.parse(localStorage.getItem('lokman_balance_requests') || '[]'); }
 
-    // Ana veri kaydetme (hem Firebase'e hem local'e)
-    async function saveUsers(users) {
-      saveUsersLocal(users);
-      await saveUsersToFirebase(users);
-    }
+    async function saveUsers(users) { saveUsersLocal(users); await saveUsersToFirebase(users); }
+    async function saveOrders(orders) { saveOrdersLocal(orders); await saveOrdersToFirebase(orders); }
+    async function saveBalanceRequests(requests) { saveBalanceRequestsLocal(requests); await saveBalanceRequestsToFirebase(requests); }
 
-    async function saveOrders(orders) {
-      saveOrdersLocal(orders);
-      await saveOrdersToFirebase(orders);
-    }
-
-    async function saveBalanceRequests(requests) {
-      saveBalanceRequestsLocal(requests);
-      await saveBalanceRequestsToFirebase(requests);
-    }
-
-    // Ana veri yükleme (önce Firebase dene, olmazsa local)
     async function loadUsers() {
       const fbData = await loadUsersFromFirebase();
-      if(fbData && fbData.length > 0) {
-        saveUsersLocal(fbData);
-        return fbData;
-      }
+      if(fbData && fbData.length > 0) { saveUsersLocal(fbData); return fbData; }
       const localData = loadUsersLocal();
-      if(localData.length > 0) {
-        await saveUsersToFirebase(localData);
-      }
+      if(localData.length > 0) { await saveUsersToFirebase(localData); }
       return localData;
     }
-
     async function loadOrders() {
       const fbData = await loadOrdersFromFirebase();
-      if(fbData && fbData.length > 0) {
-        saveOrdersLocal(fbData);
-        return fbData;
-      }
+      if(fbData && fbData.length > 0) { saveOrdersLocal(fbData); return fbData; }
       const localData = loadOrdersLocal();
-      if(localData.length > 0) {
-        await saveOrdersToFirebase(localData);
-      }
+      if(localData.length > 0) { await saveOrdersToFirebase(localData); }
       return localData;
     }
-
     async function loadBalanceRequests() {
       const fbData = await loadBalanceRequestsFromFirebase();
-      if(fbData && fbData.length > 0) {
-        saveBalanceRequestsLocal(fbData);
-        return fbData;
-      }
+      if(fbData && fbData.length > 0) { saveBalanceRequestsLocal(fbData); return fbData; }
       const localData = loadBalanceRequestsLocal();
-      if(localData.length > 0) {
-        await saveBalanceRequestsToFirebase(localData);
-      }
+      if(localData.length > 0) { await saveBalanceRequestsToFirebase(localData); }
       return localData;
     }
 
-    // Demo verileri
     async function initDemoData() {
       let users = await loadUsers();
       if(users.length === 0) {
-        users = [
-          { email: "demo@360medya.com", password: "123456", balance: 100, name: "Demo Kullanıcı", orders: [], createdAt: new Date().toISOString() }
-        ];
+        users = [{ email: "demo@360medya.com", password: "123456", balance: 100, name: "Demo Kullanıcı", orders: [], createdAt: new Date().toISOString() }];
         await saveUsers(users);
       }
-      
       let orders = await loadOrders();
       if(orders.length === 0) {
-        orders = [
-          { code: "#DEMO001", service: "Instagram Takipçi", quantity: 100, price: "20.00 ₺", link: "https://instagram.com/demo", email: "demo@360medya.com", status: "Tamamlandı", date: new Date().toISOString(), senderName: "Demo Kullanıcı" }
-        ];
+        orders = [{ code: "#DEMO001", service: "Instagram Takipçi", quantity: 100, price: "20.00 ₺", link: "https://instagram.com/demo", email: "demo@360medya.com", status: "Tamamlandı", date: new Date().toISOString(), senderName: "Demo Kullanıcı" }];
         await saveOrders(orders);
       }
     }
@@ -1082,10 +1010,7 @@ const firebaseConfig = {
         localStorage.setItem('lokman_session', JSON.stringify({email: currentUser.email, balance: currentUser.balance, name: currentUser.name}));
         const users = await loadUsers();
         const idx = users.findIndex(u => u.email === currentUser.email);
-        if(idx !== -1) {
-          users[idx] = currentUser;
-          await saveUsers(users);
-        }
+        if(idx !== -1) { users[idx] = currentUser; await saveUsers(users); }
       }
     }
     
@@ -1095,10 +1020,7 @@ const firebaseConfig = {
         const data = JSON.parse(session);
         const users = await loadUsers();
         const user = users.find(u => u.email === data.email);
-        if(user) { 
-          currentUser = user; 
-          updateBalanceUI(); 
-        }
+        if(user) { currentUser = user; updateBalanceUI(); }
         else localStorage.removeItem('lokman_session');
       }
     }
@@ -1137,14 +1059,8 @@ const firebaseConfig = {
       let users = await loadUsers();
       if(isLoginMode) {
         const user = users.find(u => u.email === email && u.password === password);
-        if(user) {
-          currentUser = user;
-          await saveCurrentUser();
-          updateBalanceUI();
-          closeAuthModal();
-          alert('Giriş başarılı!');
-          showPage('new-order');
-        } else alert('Hatalı e-posta veya şifre');
+        if(user) { currentUser = user; await saveCurrentUser(); updateBalanceUI(); closeAuthModal(); alert('Giriş başarılı!'); showPage('new-order'); }
+        else alert('Hatalı e-posta veya şifre');
       } else {
         if(users.find(u => u.email === email)) { alert('Bu e-posta zaten kayıtlı'); return; }
         const newUser = { email, password, balance: 0, orders: [], name: email.split('@')[0], createdAt: new Date().toISOString() };
@@ -1158,19 +1074,9 @@ const firebaseConfig = {
       }
     };
     
-    async function logout() {
-      currentUser = null;
-      localStorage.removeItem('lokman_session');
-      updateBalanceUI();
-      alert('Çıkış yapıldı');
-      showPage('home');
-    }
+    async function logout() { currentUser = null; localStorage.removeItem('lokman_session'); updateBalanceUI(); alert('Çıkış yapıldı'); showPage('home'); }
     
-    function openBalanceModal() { 
-      if(!currentUser) { openAuthModal(); alert('Lütfen giriş yapın'); return; } 
-      document.getElementById('balanceModal').classList.add('active'); 
-      updateBalanceUI(); 
-    }
+    function openBalanceModal() { if(!currentUser) { openAuthModal(); alert('Lütfen giriş yapın'); return; } document.getElementById('balanceModal').classList.add('active'); updateBalanceUI(); }
     document.getElementById('balanceBtn').onclick = openBalanceModal;
     
     async function requestBalanceTopup() {
@@ -1186,111 +1092,168 @@ const firebaseConfig = {
       closeBalanceModal();
       document.getElementById('topupAmount').value = '';
     }
-    
-    // Sipariş
-    const servicesData = {
-  instagram: [
-    { name: "📸 Instagram Kalıcı Takipçi", price: 0.1, min: 100 },
-    { name: "👁️ Instagram İzlenme", price: 0.0001, min: 5000 },
-    { name: "❤️ Instagram Beğeni", price: 0.35, min: 50 }
-  ],
-  tiktok: [
-    { name: "👤 TikTok Takipçi", price: 0.15, min: 250 },
-    { name: "👁️ TikTok İzlenme", price: 0.00005, min: 1000 }
-  ],
-  youtube: [
-    { name: "🔴 YouTube Abone", price: 1.5, min: 100 },
-    { name: "▶️ YouTube İzlenme", price: 0.06, min: 150 },
-    { name: "👍 YouTube Beğenme", price: 0.36, min: 10 },
-    { name: "💬 YouTube Yorum", price: 0.025, min: 15 },
-    { name: "🕒 YouTube İzlenme Süresi", price: 1.70, min: 50 }
-  ],
-  other: [
-    { name: "𝕏 Twitter/X Takipçi", price: 1.35, min: 100 },
-    { name: "🔹 Telegram Üye", price: 0.025, min: 100 }
-  ]
-};
 
-function updateServices() {
-  const categorySelect = document.getElementById('category');
-  const serviceSelect = document.getElementById('service');
-  const selectedCategory = categorySelect.value;
-  serviceSelect.innerHTML = '<option value="">Hizmet seçin...</option>';
-  if (selectedCategory && servicesData[selectedCategory]) {
-    servicesData[selectedCategory].forEach(service => {
-      const option = document.createElement('option');
-      option.value = service.name;
-      option.text = service.name;
-      option.dataset.price = service.price;
-      option.dataset.min = service.min;
-      serviceSelect.appendChild(option);
-    });
-  }
-  calculate();
-}
+    // ========== DİNAMİK KATEGORİ SİSTEMİ ==========
+    let servicesData = {};
 
-function calculate() {
-  const serviceSelect = document.getElementById('service');
-  const qtyInput = document.getElementById('quantity');
-  const opt = serviceSelect.options[serviceSelect.selectedIndex];
-  const price = (opt && opt.dataset.price) ? parseFloat(opt.dataset.price) : 0;
-  const qty = parseInt(qtyInput.value) || 0;
-  document.getElementById('totalPrice').innerText = (price * qty).toFixed(2);
-}
+    async function loadServicesFromFirebase() {
+      try {
+        const snapshot = await database.ref('service_categories').once('value');
+        const categories = snapshot.val();
+        if (!categories || Object.keys(categories).length === 0) {
+          servicesData = {
+            instagram: [{ name: "📸 Instagram Takipçi", price: 0.1, min: 100 }, { name: "❤️ Instagram Beğeni", price: 0.35, min: 50 }]
+          };
+          updateCategorySelect();
+          return;
+        }
+        servicesData = {};
+        for (const [categoryCode, categoryData] of Object.entries(categories)) {
+          if (categoryData.services && categoryData.services.length > 0) {
+            servicesData[categoryCode] = categoryData.services;
+          }
+        }
+        updateCategorySelect();
+      } catch(e) {
+        console.error("Kategori yükleme hatası:", e);
+        servicesData = {
+          instagram: [{ name: "📸 Instagram Takipçi", price: 0.1, min: 100 }, { name: "❤️ Instagram Beğeni", price: 0.35, min: 50 }]
+        };
+        updateCategorySelect();
+      }
+    }
 
-async function placeOrderWithBalance() {
-  if(!currentUser) { alert('Sipariş için giriş yapın'); return; }
-  const service = document.getElementById('service').value;
-  const qty = parseInt(document.getElementById('quantity').value) || 0;
-  const link = document.getElementById('link').value;
-  const total = parseFloat(document.getElementById('totalPrice').innerText);
+    function updateCategorySelect() {
+      const categorySelect = document.getElementById('category');
+      if (!categorySelect) return;
+      const firstOption = categorySelect.options[0];
+      categorySelect.innerHTML = '';
+      categorySelect.appendChild(firstOption);
+      const sortedCategories = Object.keys(servicesData).sort();
+      for (const categoryCode of sortedCategories) {
+        const option = document.createElement('option');
+        option.value = categoryCode;
+        const displayNames = { 'instagram': '📸 Instagram', 'tiktok': '🎵 TikTok', 'youtube': '🎥 YouTube', 'twitter': '🐦 Twitter/X', 'facebook': '👍 Facebook', 'linkedin': '💼 LinkedIn', 'other': '🌐 Diğer' };
+        option.text = displayNames[categoryCode] || `✨ ${categoryCode}`;
+        categorySelect.appendChild(option);
+      }
+      if (categorySelect.value) updateServices();
+    }
 
-  if(!service || qty < 1 || !link) { alert('Lütfen tüm alanları doldurun!'); return; }
-  if(currentUser.balance < total) { alert('Yetersiz bakiye!'); return; }
+    function updateServices() {
+      const categorySelect = document.getElementById('category');
+      const serviceSelect = document.getElementById('service');
+      const selectedCategory = categorySelect.value;
+      serviceSelect.innerHTML = '<option value="">Hizmet seçin...</option>';
+      if (selectedCategory && servicesData[selectedCategory]) {
+        servicesData[selectedCategory].forEach(service => {
+          const option = document.createElement('option');
+          option.value = service.name;
+          option.text = service.name;
+          option.dataset.price = service.price;
+          option.dataset.min = service.min;
+          serviceSelect.appendChild(option);
+        });
+      }
+      calculate();
+    }
 
-  currentUser.balance -= total;
-  await saveCurrentUser();
-  updateBalanceUI();
+    function calculate() {
+      const serviceSelect = document.getElementById('service');
+      const qtyInput = document.getElementById('quantity');
+      const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+      if (selectedOption && selectedOption.dataset && selectedOption.dataset.price) {
+        const price = parseFloat(selectedOption.dataset.price);
+        const minQty = parseInt(selectedOption.dataset.min) || 1;
+        const qty = parseInt(qtyInput.value) || 0;
+        if (qty > 0 && qty < minQty) {
+          document.getElementById('totalPrice').innerHTML = `<span style="color: var(--warning);">⚠️ Min. ${minQty} adet</span>`;
+        } else {
+          document.getElementById('totalPrice').innerHTML = (price * qty).toFixed(2);
+        }
+      } else {
+        document.getElementById('totalPrice').innerHTML = '0,00';
+      }
+    }
 
-  const orderCode = '#' + Math.random().toString(36).substring(2,10).toUpperCase();
-  const newOrder = { 
-    code: orderCode, 
-    service, 
-    quantity: qty, 
-    price: total.toFixed(2) + ' ₺', 
-    link, 
-    email: currentUser.email, 
-    status: 'Beklemede',
-    date: new Date().toISOString()
-  };
-
-  let orders = await loadOrders();
-  orders.push(newOrder);
-  await saveOrders(orders);
-  
-  if(!currentUser.orders) currentUser.orders = [];
-  currentUser.orders.push(orderCode);
-  
-  alert('✅ Sipariş başarıyla oluşturuldu!\nKod: ' + orderCode);
-  document.getElementById('orderForm').reset();
-  document.getElementById('totalPrice').innerText = '0,00';
-  showPage('my-orders');
-  loadMyOrders();
-}
+    async function placeOrderWithBalance() {
+      if(!currentUser) { alert('Sipariş için giriş yapın'); return; }
+      const service = document.getElementById('service').value;
+      const qty = parseInt(document.getElementById('quantity').value) || 0;
+      const link = document.getElementById('link').value;
+      let total = 0;
+      const priceText = document.getElementById('totalPrice').innerText;
+      if(priceText.includes('Min.')) { alert(`Minimum sipariş miktarı: ${priceText.split('Min.')[1].split('adet')[0].trim()}`); return; }
+      total = parseFloat(priceText);
+      if(!service || qty < 1 || !link) { alert('Lütfen tüm alanları doldurun!'); return; }
+      if(currentUser.balance < total) { alert('Yetersiz bakiye!'); return; }
+      currentUser.balance -= total;
+      await saveCurrentUser();
+      updateBalanceUI();
+      const orderCode = '#' + Math.random().toString(36).substring(2,10).toUpperCase();
+      const newOrder = { code: orderCode, service, quantity: qty, price: total.toFixed(2) + ' ₺', link, email: currentUser.email, status: 'Beklemede', date: new Date().toISOString() };
+      let orders = await loadOrders();
+      orders.push(newOrder);
+      await saveOrders(orders);
+      if(!currentUser.orders) currentUser.orders = [];
+      currentUser.orders.push(orderCode);
+      alert('✅ Sipariş başarıyla oluşturuldu!\nKod: ' + orderCode);
+      document.getElementById('orderForm').reset();
+      document.getElementById('totalPrice').innerHTML = '0,00';
+      showPage('my-orders');
+      loadMyOrders();
+    }
     
     async function loadMyOrders() {
-      if(!currentUser) { document.getElementById('ordersList').innerHTML = '<p style="text-align:center">Siparişlerinizi görmek için giriş yapın.</p>'; return; }
-      const orders = await loadOrders();
-      const myOrders = orders.filter(o => o.email === currentUser.email);
-      if(myOrders.length === 0) { document.getElementById('ordersList').innerHTML = '<p style="text-align:center">Henüz siparişiniz bulunmuyor.</p>'; return; }
-      document.getElementById('ordersList').innerHTML = myOrders.reverse().map(o => `
-        <div class="order-card">
-          <div class="order-card-header"><span class="order-code">${o.code}</span><span class="order-status status-${getStatusClass(o.status)}">${o.status}</span></div>
-          <div><strong>${o.service}</strong> - ${o.quantity} adet</div>
-          <div>Tutar: ${o.price}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted)">${new Date(o.date).toLocaleString('tr-TR')}</div>
+  if(!currentUser) { 
+    document.getElementById('ordersList').innerHTML = '<p style="text-align:center">🔐 Siparişlerinizi görmek için giriş yapın.</p>'; 
+    return; 
+  }
+  
+  const orders = await loadOrders();
+  const myOrders = orders.filter(o => o.email === currentUser.email);
+  
+  if(myOrders.length === 0) { 
+    document.getElementById('ordersList').innerHTML = '<p style="text-align:center">📭 Henüz siparişiniz bulunmuyor.</p>'; 
+    return; 
+  }
+  
+  document.getElementById('ordersList').innerHTML = myOrders.reverse().map(o => {
+    let statusClass = 'status-pending';
+    if(o.status === 'İşlemde') statusClass = 'status-processing';
+    if(o.status === 'Tamamlandı') statusClass = 'status-completed';
+    if(o.status === 'İptal') statusClass = 'status-cancelled';
+    
+    const remaining = o.remaining || o.quantity || 0;
+    const total = o.quantity || 0;
+    const completed = total - remaining;
+    const progressPercent = total > 0 ? (completed / total * 100) : 0;
+    
+    return `
+      <div class="order-card" style="margin-bottom:20px;">
+        <div class="order-card-header">
+          <span class="order-code">${o.code}</span>
+          <span class="order-status ${statusClass}">${o.status || 'Beklemede'}</span>
         </div>
-      `).join('');
+        <div><strong>${o.service || '-'}</strong></div>
+        <div style="margin: 8px 0; font-size:0.85rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span>📦 Toplam: ${total} adet</span>
+            <span>✅ Tamamlanan: ${completed} adet</span>
+            <span>⏳ Kalan: ${remaining} adet</span>
+          </div>
+          <div style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; overflow: hidden;">
+            <div style="width: ${progressPercent}%; background: linear-gradient(90deg, var(--primary), var(--success)); height: 100%;"></div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin: 10px 0; font-size:0.85rem;">
+          <span>💰 Tutar: <strong style="color:var(--success)">${o.price || '0 ₺'}</strong></span>
+          <span><a href="${o.link || '#'}" target="_blank" style="color:var(--primary); text-decoration:none;"><i class="fas fa-external-link-alt"></i> Linke Git</a></span>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">📅 ${o.date ? new Date(o.date).toLocaleString('tr-TR') : '-'}</div>
+      </div>
+    `;
+  }).join('');
     }
     
     function getStatusClass(status) {
@@ -1307,105 +1270,11 @@ async function placeOrderWithBalance() {
       const order = orders.find(o => o.code === code);
       const resDiv = document.getElementById('queryResult');
       if(!order) { resDiv.innerHTML = '<p style="color:#ff4444; text-align:center;">Sipariş bulunamadı</p>'; resDiv.classList.add('active'); return; }
-      document.getElementById('qCode').textContent = order.code;
-      document.getElementById('qService').textContent = order.service;
-      document.getElementById('qQuantity').textContent = order.quantity + ' adet';
-      document.getElementById('qPrice').textContent = order.price;
-      document.getElementById('qDate').textContent = new Date(order.date).toLocaleString('tr-TR');
-      document.getElementById('qStatus').innerHTML = `<span style="color:#22c55e; font-weight:bold;">${order.status}</span>`;
-      resDiv.classList.add('active');
-    }
-    
-  // Sayfa Geçişleri
-function showPage(pageName) {
-  document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active'));
-  if(pageName === 'home') document.getElementById('home-page').classList.add('active');
-  else if(pageName === 'new-order') document.getElementById('neworder-page').classList.add('active');
-  else if(pageName === 'my-orders') { document.getElementById('myorders-page').classList.add('active'); loadMyOrders(); }
-  else if(pageName === 'account') { document.getElementById('account-page').classList.add('active'); updateBalanceUI(); }
-  else if(pageName === 'support') { document.getElementById('support-page').classList.add('active'); loadUserTickets(); }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-    
-    // Side Menu
-    function openSideMenu() { document.getElementById('sideMenu').classList.add('open'); document.getElementById('sideMenuOverlay').classList.add('open'); }
-    function closeSideMenu() { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('sideMenuOverlay').classList.remove('open'); }
-    document.getElementById('menuBtn').onclick = openSideMenu;
-    document.getElementById('sideMenuOverlay').onclick = closeSideMenu;
-    
-    // Diğer fonksiyonlar
-    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50); });
-    
-    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
-    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
-    
-    function animateCounters() {
-      document.querySelectorAll('.number[data-count]').forEach(counter => {
-        const target = parseInt(counter.dataset.count);
-        const duration = 2000;
-        const step = target / (duration / 16);
-        let current = 0;
-        const timer = setInterval(() => {
-          current += step;
-          if (current >= target) { counter.textContent = target.toLocaleString('tr-TR') + (target === 99 ? '' : '+'); clearInterval(timer); } 
-          else { counter.textContent = Math.floor(current).toLocaleString('tr-TR'); }
-        }, 16);
-      });
-    }
-    const heroObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); } }); });
-    heroObserver.observe(document.querySelector('.hero'));
-    
-    function toggleFaq(element) { const item = element.parentElement; const wasActive = item.classList.contains('active'); document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active')); if (!wasActive) item.classList.add('active'); }
-    
-    document.getElementById('queryInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchOrder(); });
-    
-    // Başlangıç
-    async function init() {
-      await initDemoData();
-      await loadSession();
-      calculate();
-    }
-    
-    init();
-  </script>
-</body>
-<script>
-function updateDateTime(){
-    const now = new Date();
-    const gun = String(now.getDate()).padStart(2,'0');
-    const ay = String(now.getMonth()+1).padStart(2,'0');
-    const yil = now.getFullYear();
-    const saat = String(now.getHours()).padStart(2,'0');
-    const dk = String(now.getMinutes()).padStart(2,'0');
-    const sn = String(now.getSeconds()).padStart(2,'0');
-    document.getElementById("liveDateTime").innerText = gun + "." + ay + "." + yil + " " + saat + ":" + dk + ":" + sn;
-}
-setInterval(updateDateTime,1000);
-updateDateTime();
-// ========== EKLENEN FONKSİYONLAR ==========
-
-// 1. Sipariş sorgulama iyileştirildi (kalan sayı, tutar, işlemde, link gösterimi)
-async function searchOrderImproved() {
-    const code = document.getElementById('queryInput').value.trim().toUpperCase();
-    if(!code) { alert('Lütfen sipariş kodu girin'); return; }
-    
-    const orders = await loadOrders();
-    const order = orders.find(o => o.code === code);
-    const resDiv = document.getElementById('queryResult');
-    
-    if(!order) { 
-        resDiv.innerHTML = '<p style="color:#ff4444; text-align:center;">❌ Sipariş bulunamadı</p>'; 
-        resDiv.classList.add('active'); 
-        return; 
-    }
-    
-    // Durum rengi
-    let statusColor = '#f59e0b';
-    if(order.status === 'Tamamlandı') statusColor = '#22c55e';
-    if(order.status === 'İptal') statusColor = '#ef4444';
-    if(order.status === 'İşlemde') statusColor = '#6366f1';
-    
-    resDiv.innerHTML = `
+      let statusColor = '#f59e0b';
+      if(order.status === 'Tamamlandı') statusColor = '#22c55e';
+      if(order.status === 'İptal') statusColor = '#ef4444';
+      if(order.status === 'İşlemde') statusColor = '#6366f1';
+      resDiv.innerHTML = `
         <div style="display:grid; gap:12px;">
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
                 <span style="color:var(--text-muted);">📦 Sipariş Kodu</span>
@@ -1440,374 +1309,149 @@ async function searchOrderImproved() {
                 <span style="color:${statusColor}; font-weight:bold;">${order.status || 'Beklemede'}</span>
             </div>
         </div>
-    `;
-    resDiv.classList.add('active');
-}
-
-// 2. Siparişlerim sayfasında kalan sayı ve link gösterimi için güncelleme
-async function loadMyOrdersImproved() {
-    if(!currentUser) { 
-        document.getElementById('ordersList').innerHTML = '<p style="text-align:center">🔐 Siparişlerinizi görmek için giriş yapın.</p>'; 
-        return; 
+      `;
+      resDiv.classList.add('active');
     }
     
-    const orders = await loadOrders();
-    const myOrders = orders.filter(o => o.email === currentUser.email);
-    
-    if(myOrders.length === 0) { 
-        document.getElementById('ordersList').innerHTML = '<p style="text-align:center">📭 Henüz siparişiniz bulunmuyor.</p>'; 
-        return; 
+    // Sayfa Geçişleri
+    function showPage(pageName) {
+      document.querySelectorAll('.page-section').forEach(section => section.classList.remove('active'));
+      if(pageName === 'home') document.getElementById('home-page').classList.add('active');
+      else if(pageName === 'new-order') document.getElementById('neworder-page').classList.add('active');
+      else if(pageName === 'my-orders') { document.getElementById('myorders-page').classList.add('active'); loadMyOrders(); }
+      else if(pageName === 'account') { document.getElementById('account-page').classList.add('active'); updateBalanceUI(); }
+      else if(pageName === 'support') { document.getElementById('support-page').classList.add('active'); loadUserTickets(); }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    document.getElementById('ordersList').innerHTML = myOrders.reverse().map(o => {
-        let statusClass = 'status-pending';
-        if(o.status === 'İşlemde') statusClass = 'status-processing';
-        if(o.status === 'Tamamlandı') statusClass = 'status-completed';
-        if(o.status === 'İptal') statusClass = 'status-cancelled';
-        
-        const remaining = o.remaining || o.quantity || 0;
-        const total = o.quantity || 0;
-        const progressPercent = total > 0 ? (remaining / total * 100) : 0;
-        
-        return `
-        <div class="order-card" style="margin-bottom:20px;">
-            <div class="order-card-header">
-                <span class="order-code">${o.code}</span>
-                <span class="order-status ${statusClass}">${o.status || 'Beklemede'}</span>
-            </div>
-            <div><strong>${o.service || '-'}</strong></div>
-            <div style="margin: 8px 0; font-size:0.85rem;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span>📦 Toplam: ${total} adet</span>
-                    <span>⏳ Kalan: ${remaining} adet</span>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; overflow: hidden;">
-                    <div style="width: ${progressPercent}%; background: linear-gradient(90deg, var(--primary), var(--secondary)); height: 100%;"></div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin: 10px 0; font-size:0.85rem;">
-                <span>💰 Tutar: <strong style="color:var(--success)">${o.price || '0 ₺'}</strong></span>
-                <span><a href="${o.link || '#'}" target="_blank" style="color:var(--primary); text-decoration:none;"><i class="fas fa-external-link-alt"></i> Link</a></span>
-            </div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">📅 ${o.date ? new Date(o.date).toLocaleString('tr-TR') : '-'}</div>
-        </div>
-    `}).join('');
-}
-
-// 3. Sorgulama butonunu güncelle (mevcut searchOrder fonksiyonunu değiştir)
-// Bu fonksiyonu mevcut searchOrder'un üzerine yaz
-window.searchOrder = searchOrderImproved;
-
-// 4. loadMyOrders fonksiyonunu güncelle
-window.loadMyOrders = loadMyOrdersImproved;
-
-// 5. Admin paneli için siparişlerde kalan sayı güncelleme (isteğe bağlı)
-async function updateOrderRemaining(orderCode) {
-    const newRemaining = prompt("Kalan miktarı girin:", "0");
-    if(newRemaining !== null && !isNaN(parseInt(newRemaining))) {
-        const snapshot = await database.ref('orders').once('value');
-        const orders = snapshot.val();
-        if(orders) {
-            const entry = Object.entries(orders).find(([k,v]) => v.code === orderCode);
-            if(entry) {
-                await database.ref(`orders/${entry[0]}/remaining`).set(parseInt(newRemaining));
-                alert('✅ Kalan miktar güncellendi!');
-                if(currentUser) loadMyOrdersImproved();
-            }
-        }
-    }
-}
-
-console.log('✅ Güncellemeler başarıyla eklendi!');
-  // ========== ADMIN'DEN GELEN DİNAMİK KATEGORİLER (SADECE BUNU EKLE) ==========
-
-// Admin'den gelen kategorileri Firebase'den yükle
-async function loadAdminCategories() {
-    try {
-        const snapshot = await database.ref('service_categories').once('value');
-        const categories = snapshot.val();
-        
-        if(categories && Object.keys(categories).length > 0) {
-            for(const [code, data] of Object.entries(categories)) {
-                if(data.services && data.services.length > 0) {
-                    // Mevcut servicesData'yı bozmadan yeni kategorileri ekle
-                    if(!window.servicesData[code]) {
-                        window.servicesData[code] = data.services;
-                    }
-                }
-            }
-            
-            // Kategori select'ini güncelle
-            updateCategorySelectWithAdmin();
-            console.log('✅ Admin kategorileri yüklendi:', Object.keys(categories));
-        }
-    } catch(e) {
-        console.error("Kategori yükleme hatası:", e);
-    }
-}
-
-// Kategori select'ini admin kategorileriyle güncelle
-function updateCategorySelectWithAdmin() {
-    const categorySelect = document.getElementById('category');
-    if(!categorySelect) return;
+    // Side Menu
+    function openSideMenu() { document.getElementById('sideMenu').classList.add('open'); document.getElementById('sideMenuOverlay').classList.add('open'); }
+    function closeSideMenu() { document.getElementById('sideMenu').classList.remove('open'); document.getElementById('sideMenuOverlay').classList.remove('open'); }
+    document.getElementById('menuBtn').onclick = openSideMenu;
+    document.getElementById('sideMenuOverlay').onclick = closeSideMenu;
     
-    // Mevcut seçenekleri koru (ilk opsiyon hariç)
-    const existingValues = [];
-    for(let i = 1; i < categorySelect.options.length; i++) {
-        existingValues.push(categorySelect.options[i].value);
+    // Diğer fonksiyonlar
+    window.addEventListener('scroll', () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50); });
+    
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
+    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+    
+    function animateCounters() {
+      document.querySelectorAll('.number[data-count]').forEach(counter => {
+        const target = parseInt(counter.dataset.count);
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) { counter.textContent = target.toLocaleString('tr-TR') + (target === 99 ? '' : '+'); clearInterval(timer); } 
+          else { counter.textContent = Math.floor(current).toLocaleString('tr-TR'); }
+        }, 16);
+      });
     }
+    const heroObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); } }); });
+    heroObserver.observe(document.querySelector('.hero'));
     
-    // Admin'den gelen yeni kategorileri ekle (varsa)
-    for(const [code, services] of Object.entries(window.servicesData)) {
-        if(!existingValues.includes(code) && !['instagram','tiktok','youtube','other'].includes(code)) {
-            const option = document.createElement('option');
-            option.value = code;
-            option.text = `✨ ${code.charAt(0).toUpperCase() + code.slice(1)}`;
-            categorySelect.appendChild(option);
-        }
+    function toggleFaq(element) { const item = element.parentElement; const wasActive = item.classList.contains('active'); document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active')); if (!wasActive) item.classList.add('active'); }
+    
+    document.getElementById('queryInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchOrder(); });
+    
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById("liveDateTime").innerText = now.toLocaleString('tr-TR');
     }
-}
+    setInterval(updateDateTime,1000);
+    updateDateTime();
 
-// Mevcut updateServices fonksiyonunu güçlendir (ezmeden)
-const originalUpdateServices = window.updateServices;
-window.updateServices = function() {
-    if(originalUpdateServices) originalUpdateServices();
-};
-
-// Sayfa açıldığında admin kategorilerini yükle (mevcut init'i bozmadan)
-const originalInit = window.init;
-window.init = async function() {
-    if(originalInit) await originalInit();
-    await loadAdminCategories();
-};
-
-// ======================= DESTEK TALEP SİSTEMİ =======================
-
-// Destek taleplerini yükleme (tümü)
-async function loadAllSupportTickets() {
-    try {
-        const snapshot = await database.ref('support_tickets').once('value');
-        const tickets = snapshot.val();
-        if (!tickets) return {};
-        return tickets;
-    } catch(e) {
-        console.error("Destek talepleri yüklenemedi:", e);
-        return {};
+    // ========== DESTEK TALEP SİSTEMİ ==========
+    async function loadAllSupportTickets() {
+      try { const snapshot = await database.ref('support_tickets').once('value'); const tickets = snapshot.val(); if (!tickets) return {}; return tickets; } catch(e) { console.error("Destek talepleri yüklenemedi:", e); return {}; }
     }
-}
 
-// Kullanıcının kendi taleplerini getir
-async function loadUserTickets() {
-    if (!currentUser) {
-        const container = document.getElementById('userTicketsList');
-        if (container) container.innerHTML = '<p style="text-align:center">Taleplerinizi görmek için giriş yapın.</p>';
-        return;
-    }
-    
-    const allTickets = await loadAllSupportTickets();
-    const userTickets = Object.entries(allTickets)
-        .filter(([id, ticket]) => ticket.userId === currentUser.email)
-        .map(([id, ticket]) => ({ ...ticket, firebaseId: id }));
-    
-    const container = document.getElementById('userTicketsList');
-    if (!container) return;
-    
-    if (userTickets.length === 0) {
-        container.innerHTML = '<p style="text-align:center">Henüz destek talebiniz bulunmuyor.</p>';
-        return;
-    }
-    
-    userTickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
-    container.innerHTML = userTickets.map(ticket => `
+    async function loadUserTickets() {
+      if (!currentUser) { const container = document.getElementById('userTicketsList'); if (container) container.innerHTML = '<p style="text-align:center">Taleplerinizi görmek için giriş yapın.</p>'; return; }
+      const allTickets = await loadAllSupportTickets();
+      const userTickets = Object.entries(allTickets).filter(([id, ticket]) => ticket.userId === currentUser.email).map(([id, ticket]) => ({ ...ticket, firebaseId: id }));
+      const container = document.getElementById('userTicketsList');
+      if (!container) return;
+      if (userTickets.length === 0) { container.innerHTML = '<p style="text-align:center">Henüz destek talebiniz bulunmuyor.</p>'; return; }
+      userTickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      container.innerHTML = userTickets.map(ticket => `
         <div class="order-card" style="cursor: pointer;" onclick="openTicketDetail('${ticket.firebaseId}')">
-            <div class="order-card-header">
-                <span class="order-code">${ticket.ticketId}</span>
-                <span class="order-status ${ticket.status === 'open' ? 'status-pending' : 'status-completed'}">${ticket.status === 'open' ? 'Aktif' : 'Çözüldü'}</span>
-            </div>
-            <div><strong>${escapeHtml(ticket.subject)}</strong></div>
-            <div style="font-size:0.85rem; margin-top: 8px;">Son Mesaj: ${ticket.lastUpdated ? new Date(ticket.lastUpdated).toLocaleString('tr-TR') : '-'}</div>
-            <div style="font-size:0.8rem; color: var(--text-muted);">Oluşturma: ${new Date(ticket.createdAt).toLocaleString('tr-TR')}</div>
+          <div class="order-card-header"><span class="order-code">${ticket.ticketId}</span><span class="order-status ${ticket.status === 'open' ? 'status-pending' : 'status-completed'}">${ticket.status === 'open' ? 'Aktif' : 'Çözüldü'}</span></div>
+          <div><strong>${escapeHtml(ticket.subject)}</strong></div>
+          <div style="font-size:0.85rem; margin-top: 8px;">Son Mesaj: ${ticket.lastUpdated ? new Date(ticket.lastUpdated).toLocaleString('tr-TR') : '-'}</div>
+          <div style="font-size:0.8rem; color: var(--text-muted);">Oluşturma: ${new Date(ticket.createdAt).toLocaleString('tr-TR')}</div>
         </div>
-    `).join('');
-}
+      `).join('');
+    }
 
-// Yeni talep modalı
-function openNewTicketModal() {
-    if (!currentUser) {
-        openAuthModal();
-        alert('Lütfen önce giriş yapın.');
-        return;
+    function openNewTicketModal() {
+      if (!currentUser) { openAuthModal(); alert('Lütfen önce giriş yapın.'); return; }
+      const modal = document.getElementById('newTicketModal');
+      if (modal) { modal.classList.add('active'); document.getElementById('ticketSubject').value = ''; document.getElementById('ticketMessage').value = ''; }
     }
-    const modal = document.getElementById('newTicketModal');
-    if (modal) {
-        modal.classList.add('active');
-        document.getElementById('ticketSubject').value = '';
-        document.getElementById('ticketMessage').value = '';
-    }
-}
+    function closeNewTicketModal() { const modal = document.getElementById('newTicketModal'); if (modal) modal.classList.remove('active'); }
 
-function closeNewTicketModal() {
-    const modal = document.getElementById('newTicketModal');
-    if (modal) modal.classList.remove('active');
-}
+    async function createSupportTicket() {
+      if (!currentUser) { alert('Lütfen giriş yapın.'); return; }
+      const subject = document.getElementById('ticketSubject').value.trim();
+      const message = document.getElementById('ticketMessage').value.trim();
+      if (!subject || !message) { alert('Lütfen konu ve mesaj girin.'); return; }
+      const ticketId = 'TCK-' + Date.now();
+      const newTicket = { ticketId: ticketId, userId: currentUser.email, userName: currentUser.name || currentUser.email.split('@')[0], subject: subject, status: 'open', createdAt: new Date().toISOString(), lastUpdated: new Date().toISOString(), messages: [{ sender: 'user', senderName: currentUser.name || currentUser.email.split('@')[0], message: message, timestamp: new Date().toISOString() }] };
+      try { const newRef = database.ref('support_tickets').push(); await newRef.set(newTicket); alert('✅ Talebiniz başarıyla oluşturuldu. En kısa sürede size dönüş yapılacaktır.'); closeNewTicketModal(); showPage('support'); loadUserTickets(); } catch(e) { console.error("Talep oluşturma hatası:", e); alert('Bir hata oluştu, lütfen tekrar deneyin.'); }
+    }
 
-// Yeni talep oluştur
-async function createSupportTicket() {
-    if (!currentUser) {
-        alert('Lütfen giriş yapın.');
-        return;
-    }
-    
-    const subject = document.getElementById('ticketSubject').value.trim();
-    const message = document.getElementById('ticketMessage').value.trim();
-    
-    if (!subject || !message) {
-        alert('Lütfen konu ve mesaj girin.');
-        return;
-    }
-    
-    const ticketId = 'TCK-' + Date.now();
-    const newTicket = {
-        ticketId: ticketId,
-        userId: currentUser.email,
-        userName: currentUser.name || currentUser.email.split('@')[0],
-        subject: subject,
-        status: 'open',
-        createdAt: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
-        messages: [
-            {
-                sender: 'user',
-                senderName: currentUser.name || currentUser.email.split('@')[0],
-                message: message,
-                timestamp: new Date().toISOString()
-            }
-        ]
-    };
-    
-    try {
-        const newRef = database.ref('support_tickets').push();
-        await newRef.set(newTicket);
-        alert('✅ Talebiniz başarıyla oluşturuldu. En kısa sürede size dönüş yapılacaktır.');
-        closeNewTicketModal();
-        showPage('support');
-        loadUserTickets();
-    } catch(e) {
-        console.error("Talep oluşturma hatası:", e);
-        alert('Bir hata oluştu, lütfen tekrar deneyin.');
-    }
-}
+    let currentTicketFirebaseId = null;
+    let currentTicketData = null;
 
-// Talep detayını aç
-let currentTicketFirebaseId = null;
-let currentTicketData = null;
+    async function openTicketDetail(ticketFirebaseId) {
+      const allTickets = await loadAllSupportTickets();
+      const ticket = allTickets[ticketFirebaseId];
+      if (!ticket) { alert('Talep bulunamadı'); return; }
+      if (currentUser && ticket.userId !== currentUser.email) { alert('Bu talebe erişim izniniz yok.'); return; }
+      currentTicketFirebaseId = ticketFirebaseId;
+      currentTicketData = ticket;
+      document.getElementById('detailTicketSubject').innerHTML = `<i class="fas fa-ticket-alt"></i> ${escapeHtml(ticket.subject)} <span style="font-size:0.8rem;">(${ticket.ticketId})</span>`;
+      document.getElementById('detailTicketStatus').innerHTML = `Durum: <span style="color: ${ticket.status === 'open' ? '#f59e0b' : '#22c55e'}">${ticket.status === 'open' ? 'Beklemede' : 'Çözüldü'}</span>`;
+      const container = document.getElementById('ticketMessagesContainer');
+      container.innerHTML = ticket.messages.map(msg => `<div style="margin-bottom: 15px; padding: 12px; background: ${msg.sender === 'admin' ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.05)'}; border-radius: 12px; border-left: 3px solid ${msg.sender === 'admin' ? 'var(--primary)' : 'var(--secondary)'}"><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><strong>${escapeHtml(msg.senderName)} ${msg.sender === 'admin' ? '(Destek Ekibi)' : ''}</strong><span style="font-size:0.7rem; color: var(--text-muted);">${new Date(msg.timestamp).toLocaleString('tr-TR')}</span></div><div style="font-size:0.9rem;">${escapeHtml(msg.message).replace(/\n/g, '<br>')}</div></div>`).join('');
+      document.getElementById('replyMessage').value = '';
+      document.getElementById('ticketDetailModal').classList.add('active');
+    }
 
-async function openTicketDetail(ticketFirebaseId) {
-    const allTickets = await loadAllSupportTickets();
-    const ticket = allTickets[ticketFirebaseId];
-    
-    if (!ticket) {
-        alert('Talep bulunamadı');
-        return;
-    }
-    
-    // Yetki kontrolü: Kullanıcı kendi talebine bakar
-    if (currentUser && ticket.userId !== currentUser.email) {
-        alert('Bu talebe erişim izniniz yok.');
-        return;
-    }
-    
-    currentTicketFirebaseId = ticketFirebaseId;
-    currentTicketData = ticket;
-    
-    document.getElementById('detailTicketSubject').innerHTML = `<i class="fas fa-ticket-alt"></i> ${escapeHtml(ticket.subject)} <span style="font-size:0.8rem;">(${ticket.ticketId})</span>`;
-    document.getElementById('detailTicketStatus').innerHTML = `Durum: <span style="color: ${ticket.status === 'open' ? '#f59e0b' : '#22c55e'}">${ticket.status === 'open' ? 'Beklemede' : 'Çözüldü'}</span>`;
-    
-    const container = document.getElementById('ticketMessagesContainer');
-    container.innerHTML = ticket.messages.map(msg => `
-        <div style="margin-bottom: 15px; padding: 12px; background: ${msg.sender === 'admin' ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.05)'}; border-radius: 12px; border-left: 3px solid ${msg.sender === 'admin' ? 'var(--primary)' : 'var(--secondary)'}">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                <strong>${escapeHtml(msg.senderName)} ${msg.sender === 'admin' ? '(Destek Ekibi)' : ''}</strong>
-                <span style="font-size:0.7rem; color: var(--text-muted);">${new Date(msg.timestamp).toLocaleString('tr-TR')}</span>
-            </div>
-            <div style="font-size:0.9rem;">${escapeHtml(msg.message).replace(/\n/g, '<br>')}</div>
-        </div>
-    `).join('');
-    
-    document.getElementById('replyMessage').value = '';
-    document.getElementById('ticketDetailModal').classList.add('active');
-}
+    function closeTicketDetailModal() { document.getElementById('ticketDetailModal').classList.remove('active'); currentTicketFirebaseId = null; currentTicketData = null; }
 
-function closeTicketDetailModal() {
-    document.getElementById('ticketDetailModal').classList.remove('active');
-    currentTicketFirebaseId = null;
-    currentTicketData = null;
-}
-
-// Talebe yanıt gönder
-async function sendReplyToTicket() {
-    if (!currentTicketFirebaseId || !currentTicketData) {
-        alert('Talep bilgisi bulunamadı');
-        return;
-    }
-    
-    const reply = document.getElementById('replyMessage').value.trim();
-    if (!reply) {
-        alert('Lütfen bir yanıt yazın.');
-        return;
-    }
-    
-    const senderName = currentUser.name || currentUser.email.split('@')[0];
-    
-    const newMessage = {
-        sender: 'user',
-        senderName: senderName,
-        message: reply,
-        timestamp: new Date().toISOString()
-    };
-    
-    try {
+    async function sendReplyToTicket() {
+      if (!currentTicketFirebaseId || !currentTicketData) { alert('Talep bilgisi bulunamadı'); return; }
+      const reply = document.getElementById('replyMessage').value.trim();
+      if (!reply) { alert('Lütfen bir yanıt yazın.'); return; }
+      const senderName = currentUser.name || currentUser.email.split('@')[0];
+      const newMessage = { sender: 'user', senderName: senderName, message: reply, timestamp: new Date().toISOString() };
+      try {
         const ticketRef = database.ref(`support_tickets/${currentTicketFirebaseId}`);
         const updatedMessages = [...currentTicketData.messages, newMessage];
-        await ticketRef.update({
-            messages: updatedMessages,
-            lastUpdated: new Date().toISOString(),
-            status: 'open'
-        });
-        
+        await ticketRef.update({ messages: updatedMessages, lastUpdated: new Date().toISOString(), status: 'open' });
         currentTicketData.messages = updatedMessages;
         currentTicketData.lastUpdated = new Date().toISOString();
-        
         const container = document.getElementById('ticketMessagesContainer');
-        container.innerHTML += `
-            <div style="margin-bottom: 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border-left: 3px solid var(--secondary)">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <strong>${escapeHtml(senderName)}</strong>
-                    <span style="font-size:0.7rem; color: var(--text-muted);">${new Date().toLocaleString('tr-TR')}</span>
-                </div>
-                <div style="font-size:0.9rem;">${escapeHtml(reply).replace(/\n/g, '<br>')}</div>
-            </div>
-        `;
+        container.innerHTML += `<div style="margin-bottom: 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border-left: 3px solid var(--secondary)"><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><strong>${escapeHtml(senderName)}</strong><span style="font-size:0.7rem; color: var(--text-muted);">${new Date().toLocaleString('tr-TR')}</span></div><div style="font-size:0.9rem;">${escapeHtml(reply).replace(/\n/g, '<br>')}</div></div>`;
         document.getElementById('replyMessage').value = '';
         loadUserTickets();
-        
-    } catch(e) {
-        console.error("Yanıt gönderme hatası:", e);
-        alert('Yanıt gönderilirken bir hata oluştu.');
+      } catch(e) { console.error("Yanıt gönderme hatası:", e); alert('Yanıt gönderilirken bir hata oluştu.'); }
     }
-}
 
-// HTML escape yardımcı fonksiyonu
-function escapeHtml(str) {
-    if (!str) return '';
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
-</script>
+    // ========== BAŞLANGIÇ ==========
+    async function init() {
+      await initDemoData();
+      await loadSession();
+      await loadServicesFromFirebase();
+      calculate();
+    }
+    init();
+  </script>
+</body>
 </html>
