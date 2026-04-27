@@ -774,43 +774,89 @@
   </div>
 
   <!-- YENİ SİPARİŞ Sayfası -->
-  <div id="neworder-page" class="page-section">
+<div id="neworder-page" class="page-section">
     <section class="order-section" style="margin: 100px auto 60px;">
-      <div class="order-container" style="grid-template-columns: 1fr;">
-        <div class="order-form">
-          <h3 style="text-align:center; margin-bottom: 20px;">🛍️ Yeni Sipariş Oluştur</h3>
-          <form id="orderForm">
-            <div class="form-group">
-              <label>Platform Seçin</label>
-              <select id="category" required onchange="updateServices()">
-                <option value="">Platform seçin...</option>
-                <option value="instagram">📸 Instagram</option>
-                <option value="tiktok">🎵 TikTok</option>
-                <option value="youtube">🎥 YouTube</option>
-                <option value="other">🌐 Diğer</option>
-              </select>
-            </div>
-            <div class="form-group">
-  <label>Hizmet Seçin</label>
-  <select id="service" required onchange="showServiceDescription(); calculate();">
-    <option value="">Önce platform seçin...</option>
-  </select>
-</div>
+        <div class="order-container" style="grid-template-columns: 1fr;">
+            <div class="order-form">
+                <h3 style="text-align: center; margin-bottom: 20px;">🛍️ Yeni Sipariş Oluştur</h3>
 
-<!-- Hizmet Açıklaması (dinamik olarak doldurulacak) -->
-<div id="serviceDescription" style="margin: 10px 0; padding: 12px; background: rgba(99,102,241,0.1); border-radius: 12px; font-size: 0.85rem; color: var(--text-muted);">
-</div>
-
-<div class="form-group"><label>Miktar (Adet)</label><input type="number" id="quantity" placeholder="Örn: 1000" min="1" required oninput="calculate()"></div>
-            <div class="form-group"><label>Link</label><input type="url" id="link" placeholder="https://instagram.com/kullaniciadi" required></div>
-            <div class="price-box"><div class="amount" id="totalPrice">0,00</div><div class="currency">₺ Toplam Tutar</div></div>
-            <button type="button" class="btn-primary" onclick="placeOrderWithBalance()" style="width:100%"><i class="fas fa-shopping-cart"></i> Bakiyeden Sipariş Ver</button>
-          </form>
+<!-- Platform Logoları (Kutu içinde, kalın kenarlı) -->
+<div style="text-align: center; margin: 15px 0 25px 0;">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+        
+        <div style="background: #fff; border: 3px solid #E4405F; border-radius: 16px; padding: 12px; transition: 0.3s; cursor: pointer;">
+            <i class="fab fa-instagram" style="color: #E4405F; font-size: 36px;"></i>
         </div>
-      </div>
-    </section>
-  </div>
+        
+        <div style="background: #fff; border: 3px solid #FF0000; border-radius: 16px; padding: 12px; transition: 0.3s; cursor: pointer;">
+            <i class="fab fa-youtube" style="color: #FF0000; font-size: 36px;"></i>
+        </div>
+        
+        <div style="background: #fff; border: 3px solid #000000; border-radius: 16px; padding: 12px; transition: 0.3s; cursor: pointer;">
+            <i class="fab fa-tiktok" style="color: #000000; font-size: 36px;"></i>
+        </div>
+        
+        <div style="background: #fff; border: 3px solid #1DA1F2; border-radius: 16px; padding: 12px; transition: 0.3s; cursor: pointer;">
+            <i class="fab fa-twitter" style="color: #1DA1F2; font-size: 36px;"></i>
+        </div>
+        
+        <div style="background: #fff; border: 3px solid #1877F2; border-radius: 16px; padding: 12px; transition: 0.3s; cursor: pointer;">
+            <i class="fab fa-facebook" style="color: #1877F2; font-size: 36px;"></i>
+        </div>
+        
+        <div style="background: #fff; border: 3px solid #0077B5; border-radius: 16px; padding: 12px; transition: 0.3s; cursor: pointer;">
+            <i class="fab fa-linkedin" style="color: #0077B5; font-size: 36px;"></i>
+        </div>
+        
+    </div>
+</div>
 
+<form id="orderForm">
+    <div class="form-group">
+        <label>Platform Seçin</label>
+                        <select id="category" required onchange="updateServices()">
+                            <option value="">Platform seçin...</option>
+                            <option value="instagram">📸 Instagram</option>
+                            <option value="tiktok">🎵 TikTok</option>
+                            <option value="youtube">🎥 YouTube</option>
+                            <option value="other">🌐 Diğer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hizmet Seçin</label>
+                        <select id="service" required onchange="showServiceDescription(); calculate();">
+                            <option value="">Önce platform seçin...</option>
+                        </select>
+                    </div>
+
+                    <!-- Hizmet Açıklaması -->
+                    <div id="serviceDescription" style="margin: 10px 0; padding: 12px; background: rgba(99,102,241,0.1); border-radius: 12px; font-size: 0.85rem; color: var(--text-muted);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Miktar (Adet)</label>
+                        <input type="number" id="quantity" placeholder="Örn: 1000" min="1" required oninput="calculate()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link</label>
+                        <input type="url" id="link" placeholder="https://instagram.com/kullaniciadi" required>
+                    </div>
+
+                    <div class="price-box">
+                        <div class="amount" id="totalPrice">0,00</div>
+                        <div class="currency">₺ Toplam Tutar</div>
+                    </div>
+
+                    <button type="button" class="btn-primary" onclick="placeOrderWithBalance()" style="width:100%">
+                        <i class="fas fa-shopping-cart"></i> Bakiyeden Sipariş Ver
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
   <!-- SİPARİŞLERİM Sayfası -->
   <div id="myorders-page" class="page-section">
     <section style="max-width: 1000px; margin: 100px auto 60px;">
@@ -1182,6 +1228,7 @@
       }
 
     }
+
 
 // Hizmet seçildiğinde açıklamayı göster
 function showServiceDescription() {
