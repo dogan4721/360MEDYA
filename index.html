@@ -791,12 +791,17 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Hizmet Seçin</label>
-              <select id="service" required onchange="calculate()">
-                <option value="">Önce platform seçin...</option>
-              </select>
-            </div>
-            <div class="form-group"><label>Miktar (Adet)</label><input type="number" id="quantity" placeholder="Örn: 1000" min="1" required oninput="calculate()"></div>
+  <label>Hizmet Seçin</label>
+  <select id="service" required onchange="showServiceDescription(); calculate();">
+    <option value="">Önce platform seçin...</option>
+  </select>
+</div>
+
+<!-- Hizmet Açıklaması (dinamik olarak doldurulacak) -->
+<div id="serviceDescription" style="margin: 10px 0; padding: 12px; background: rgba(99,102,241,0.1); border-radius: 12px; font-size: 0.85rem; color: var(--text-muted);">
+</div>
+
+<div class="form-group"><label>Miktar (Adet)</label><input type="number" id="quantity" placeholder="Örn: 1000" min="1" required oninput="calculate()"></div>
             <div class="form-group"><label>Link</label><input type="url" id="link" placeholder="https://instagram.com/kullaniciadi" required></div>
             <div class="price-box"><div class="amount" id="totalPrice">0,00</div><div class="currency">₺ Toplam Tutar</div></div>
             <button type="button" class="btn-primary" onclick="placeOrderWithBalance()" style="width:100%"><i class="fas fa-shopping-cart"></i> Bakiyeden Sipariş Ver</button>
@@ -1141,22 +1146,23 @@
     }
 
     function updateServices() {
-      const categorySelect = document.getElementById('category');
-      const serviceSelect = document.getElementById('service');
-      const selectedCategory = categorySelect.value;
-      serviceSelect.innerHTML = '<option value="">Hizmet seçin...</option>';
-      if (selectedCategory && servicesData[selectedCategory]) {
-        servicesData[selectedCategory].forEach(service => {
-          const option = document.createElement('option');
-          option.value = service.name;
-          option.text = service.name;
-          option.dataset.price = service.price;
-          option.dataset.min = service.min;
-          serviceSelect.appendChild(option);
-        });
-      }
-      calculate();
-    }
+  const categorySelect = document.getElementById('category');
+  const serviceSelect = document.getElementById('service');
+  const selectedCategory = categorySelect.value;
+  serviceSelect.innerHTML = '<option value="">Hizmet seçin...</option>';
+  if (selectedCategory && servicesData[selectedCategory]) {
+    servicesData[selectedCategory].forEach(service => {
+      const option = document.createElement('option');
+      option.value = service.name;
+      option.text = service.name;
+      option.dataset.price = service.price;
+      option.dataset.min = service.min;
+      option.dataset.desc = service.desc || "Hızlı teslimat, kaliteli hizmet";  // ✅ AÇIKLAMA EKLENDİ
+      serviceSelect.appendChild(option);
+    });
+  }
+  calculate();
+}
 
     function calculate() {
       const serviceSelect = document.getElementById('service');
@@ -1174,7 +1180,25 @@
       } else {
         document.getElementById('totalPrice').innerHTML = '0,00';
       }
+
     }
+
+// Hizmet seçildiğinde açıklamayı göster
+function showServiceDescription() {
+    const serviceSelect = document.getElementById('service');
+    const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+    const descDiv = document.getElementById('serviceDescription');
+    
+    if (!descDiv) return;
+    
+    if (selectedOption && selectedOption.dataset && selectedOption.dataset.desc) {
+        descDiv.innerHTML = `<i class="fas fa-info-circle"></i> 📝 ${selectedOption.dataset.desc}`;
+        descDiv.style.display = 'block';
+    } else {
+        descDiv.innerHTML = '';
+        descDiv.style.display = 'none';
+    }
+}
 
     async function placeOrderWithBalance() {
       if(!currentUser) { alert('Sipariş için giriş yapın'); return; }
