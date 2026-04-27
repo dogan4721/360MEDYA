@@ -1476,5 +1476,66 @@ async function updateOrderRemaining(orderCode) {
 }
 
 console.log('✅ Güncellemeler başarıyla eklendi!');
+  // ========== ADMIN'DEN GELEN DİNAMİK KATEGORİLER (SADECE BUNU EKLE) ==========
+
+// Admin'den gelen kategorileri Firebase'den yükle
+async function loadAdminCategories() {
+    try {
+        const snapshot = await database.ref('service_categories').once('value');
+        const categories = snapshot.val();
+        
+        if(categories && Object.keys(categories).length > 0) {
+            for(const [code, data] of Object.entries(categories)) {
+                if(data.services && data.services.length > 0) {
+                    // Mevcut servicesData'yı bozmadan yeni kategorileri ekle
+                    if(!window.servicesData[code]) {
+                        window.servicesData[code] = data.services;
+                    }
+                }
+            }
+            
+            // Kategori select'ini güncelle
+            updateCategorySelectWithAdmin();
+            console.log('✅ Admin kategorileri yüklendi:', Object.keys(categories));
+        }
+    } catch(e) {
+        console.error("Kategori yükleme hatası:", e);
+    }
+}
+
+// Kategori select'ini admin kategorileriyle güncelle
+function updateCategorySelectWithAdmin() {
+    const categorySelect = document.getElementById('category');
+    if(!categorySelect) return;
+    
+    // Mevcut seçenekleri koru (ilk opsiyon hariç)
+    const existingValues = [];
+    for(let i = 1; i < categorySelect.options.length; i++) {
+        existingValues.push(categorySelect.options[i].value);
+    }
+    
+    // Admin'den gelen yeni kategorileri ekle (varsa)
+    for(const [code, services] of Object.entries(window.servicesData)) {
+        if(!existingValues.includes(code) && !['instagram','tiktok','youtube','other'].includes(code)) {
+            const option = document.createElement('option');
+            option.value = code;
+            option.text = `✨ ${code.charAt(0).toUpperCase() + code.slice(1)}`;
+            categorySelect.appendChild(option);
+        }
+    }
+}
+
+// Mevcut updateServices fonksiyonunu güçlendir (ezmeden)
+const originalUpdateServices = window.updateServices;
+window.updateServices = function() {
+    if(originalUpdateServices) originalUpdateServices();
+};
+
+// Sayfa açıldığında admin kategorilerini yükle (mevcut init'i bozmadan)
+const originalInit = window.init;
+window.init = async function() {
+    if(originalInit) await originalInit();
+    await loadAdminCategories();
+};
 </script>
 </html>
