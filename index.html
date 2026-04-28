@@ -1196,8 +1196,6 @@ function toggleOdemeYontemi() {
 
 // ========== SHOPIER ÖDEME FONKSİYONU ==========
 function startShopierPayment() {
-    console.log("Shopier ödeme başlatılıyor...");
-    
     if (!currentUser) {
         openAuthModal();
         alert('Lütfen önce giriş yapın!');
@@ -1211,35 +1209,32 @@ function startShopierPayment() {
     if (!email) email = currentUser.email;
     
     if (!amount || amount < 10) {
-        alert('Lütfen geçerli bir tutar girin (min 10₺)');
+        alert('Geçerli tutar girin (min 10₺)');
         return;
     }
     if (!name) {
-        alert('Lütfen ad soyad girin');
+        alert('Ad soyad girin');
         return;
     }
     if (!phone || phone.length < 10) {
-        alert('Lütfen geçerli telefon numarası girin (5XX XXX XX XX)');
+        alert('Geçerli telefon girin');
         return;
     }
     if (!email || !email.includes('@')) {
-        alert('Lütfen geçerli e-posta girin');
+        alert('Geçerli e-posta girin');
         return;
     }
     
-    // OSB Bilgilerin
     const OSB_KULLANICI_ADI = '2d75da04dc41f4d11a54c84c8a3a744e';
     const OSB_SIFRE = '734b98f421e0faf270e668d66d7f96de';
     
     const orderId = 'SIP-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
     
-    // Form oluştur
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'https://www.shopier.com/order/start';
     form.target = '_blank';
     
-    // ⚠️ KENDİ DOMAİN ADINLA DÜZENLE ⚠️
     const alanlar = {
         'magaza_no': OSB_KULLANICI_ADI,
         'order_id': orderId,
@@ -1263,19 +1258,6 @@ function startShopierPayment() {
         form.appendChild(input);
     }
     
-    // Geçici siparişi Firebase'e kaydet
-    if (database) {
-        database.ref('temp_payments/' + orderId).set({
-            orderId: orderId,
-            amount: parseFloat(amount),
-            userEmail: currentUser.email,
-            userName: name,
-            status: 'pending',
-            date: new Date().toISOString()
-        }).catch(err => console.log("Firebase kayıt hatası:", err));
-    }
-    
-    console.log("Form gönderiliyor...");
     document.body.appendChild(form);
     form.submit();
 }
