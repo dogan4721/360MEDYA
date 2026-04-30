@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="360 Medya - Profesyonel SMM Panel Yönetim Sistemi">
+    <title>360 Medya | Kurumsal Yönetim Paneli</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-light: #8183f5;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --secondary-dark: #db2777;
+            --dark: #0a0a12;
+            --darker: #05050a;
+            --card: #11111f;
+            --card-hover: #181830;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border: rgba(99, 102, 241, 0.2);
+            --glass: rgba(17, 17, 31, 0.8);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-dark: linear-gradient(135deg, #0a0a12 0%, #11111f 100%);
+        }
+        
+        body {
+            background: var(--darker);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--darker); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 15, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        #loginOverlay.hidden { display: none; }
+        .login-card {
+            background: var(--card);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 420px;
+            border: 1px solid var(--border);
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-logo {
+            font-size: 3.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .login-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 14px 18px;
+            margin: 12px 0;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .login-card input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        .login-btn {
+            background: var(--gradient-primary);
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.2rem;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            transition: all 0.3s;
+        }
+        .logo-area {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            margin: 6px 0;
+            border-radius: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.25s;
+            font-weight: 500;
+        }
+        .menu-item i { width: 22px; font-size: 1.2rem; }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(99, 102, 241, 0.12);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+        .logout-item {
+            margin-top: 40px;
+            color: var(--danger);
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+        .logout-item:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-x: auto;
+            background: var(--gradient-dark);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+        .stat-card h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .table-wrapper {
+            background: var(--card);
+            border-radius: 1.5rem;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        th {
+            background: rgba(99,102,241,0.08);
+            color: var(--primary-light);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+        .badge-processing { background: rgba(99,102,241,0.15); color: var(--primary); }
+        .badge-completed { background: rgba(16,185,129,0.15); color: var(--success); }
+        .badge-cancelled { background: rgba(239,68,68,0.15); color: var(--danger); }
+        
+        .btn-sm {
+            padding: 5px 12px;
+            border-radius: 2rem;
+            border: none;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin: 2px;
+            transition: all 0.2s;
+        }
+        .btn-success { background: var(--gradient-success); color: white; }
+        .btn-primary { background: var(--gradient-primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: #1a1a2e; }
+        
+        .search-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .search-area input, .search-area select {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 2rem;
+            color: white;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .eye-icon { cursor: pointer; margin-left: 8px; opacity: 0.7; }
+        
+        .admin-note {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            margin-top: 24px;
+            border-left: 3px solid var(--warning);
+        }
+        .admin-note textarea {
+            width: 100%;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 0.8rem;
+            color: white;
+            padding: 12px;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; padding: 1.5rem 0.5rem; }
+            .logo-area { font-size: 0; margin-bottom: 1.5rem; }
+            .logo-area:before { content: "360"; font-size: 1.3rem; font-weight: 800; display: block; text-align: center; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; color: transparent; }
+            .menu-item span { display: none; }
+            .menu-item i { margin: 0 auto; font-size: 1.3rem; }
+            .main-content { padding: 1rem; }
+        }
+        
+        .loading { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .link-cell a { color: var(--primary); text-decoration: none; font-size: 0.8rem; }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card);
+            border-left: 4px solid var(--success);
+            padding: 12px 20px;
+            border-radius: 12px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <div class="login-card">
+        <i class="fas fa-chart-line login-logo"></i>
+        <h2>360 Medya</h2>
+        <p class="login-subtitle">Kurumsal Yönetim Paneli</p>
+        <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
+        <input type="password" id="loginPassword" placeholder="Şifre">
+        <button class="login-btn" onclick="attemptLogin()"><i class="fas fa-arrow-right-to-bracket"></i> Giriş Yap</button>
+    </div>
+</div>
+
+<aside class="sidebar">
+    <div class="logo-area">360 ADMIN</div>
+    <div class="menu-item active" onclick="switchTab('dashboard')"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></div>
+    <div class="menu-item" onclick="switchTab('orders')"><i class="fas fa-truck-fast"></i> <span>Siparişler</span></div>
+    <div class="menu-item" onclick="switchTab('payments')"><i class="fas fa-money-bill-wave"></i> <span>Bakiye Talepleri</span></div>
+    <div class="menu-item" onclick="switchTab('users')"><i class="fas fa-users"></i> <span>Kullanıcılar</span></div>
+    <div class="menu-item" onclick="switchTab('settings')"><i class="fas fa-cog"></i> <span>Ayarlar</span></div>
+    <div class="menu-item" onclick="switchTab('categories')"><i class="fas fa-layer-group"></i> <span>Kategoriler</span></div>
+    <div class="menu-item" onclick="switchTab('support')"><i class="fas fa-headset"></i> <span>Destek Talepleri</span></div>
+    <div class="menu-item logout-item" onclick="logoutSystem()"><i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span></div>
+</aside>
+
+<main class="main-content">
+    <div id="dashboardTab" class="tab-pane">
+        <div class="stats-grid">
+            <div class="stat-card"><h4>📦 Toplam Sipariş</h4><div class="value" id="statTotalOrders">0</div></div>
+            <div class="stat-card"><h4>⏳ Bekleyen / İşlemde</h4><div class="value" id="statPendingOrders">0</div></div>
+            <div class="stat-card"><h4>✅ Tamamlanan</h4><div class="value" id="statCompletedOrders">0</div></div>
+            <div class="stat-card"><h4>👥 Toplam Kullanıcı</h4><div class="value" id="statTotalUsers">0</div></div>
+            <div class="stat-card"><h4>💰 Toplam Bakiye</h4><div class="value" id="statTotalBalance">0</div></div>
+            <div class="stat-card"><h4>💵 Bekleyen Talep</h4><div class="value" id="statPendingRequests">0</div></div>
+        </div>
+        <div style="background: var(--card); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--border);">
+            <h3 style="margin-bottom: 1rem;">🕒 Son Siparişler</h3>
+            <div class="table-wrapper">
+                <table id="recentOrdersTable">
+                    <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
+                    <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="ordersTab" class="tab-pane" style="display:none;">
+        <div class="section-title"><i class="fas fa-truck-fast" style="color: var(--primary);"></i> Tüm Sipariş Yönetimi</div>
+        <div class="search-area">
+            <input type="text" id="orderSearchInput" placeholder="🔍 Sipariş kodu, kullanıcı e-posta veya isim ile ara..." onkeyup="filterOrders()">
+            <select id="orderStatusFilter" onchange="filterOrders()">
+                <option value="all">Tüm Durumlar</option>
+                <option value="Beklemede">Beklemede</option>
+                <option value="İşlemde">İşlemde</option>
+                <option value="Tamamlandı">Tamamlandı</option>
+                <option value="İptal">İptal</option>
+            </select>
+        </div>
+        <div class="table-wrapper">
+            <table id="allOrdersTable">
+                <thead><tr><th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Hizmet</th><th>Miktar</th><th>Link</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead>
+                <tbody><tr><td colspan="11" class="loading">Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="admin-note">
+            <textarea id="adminNoteText" rows="2" placeholder="📝 Yönetici notu burada görünür..."></textarea>
+            <button class="btn-sm btn-warning" onclick="saveAdminNote()"><i class="fas fa-save"></i> Notu Kaydet</button>
+        </div>
+    </div>
+
+    <div id="paymentsTab" class="tab-pane" style="display:none;">
+        <div class="section-title"><i class="fas fa-money-bill-wave" style="color: var(--success);"></i> Bakiye Yükleme Talepleri</div>
+        <div class="table-wrapper">
+            <table id="paymentRequestsTable">
+                <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
+                <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="usersTab" class="tab-pane" style="display:none;">
+        <div class="section-title"><i class="fas fa-users" style="color: var(--secondary);"></i> Kullanıcı Yönetimi</div>
+        <div class="search-area">
+            <input type="text" id="userSearchInput" placeholder="🔍 E-posta veya isim ile ara..." onkeyup="filterUsers()">
+            <button class="btn-sm btn-primary" onclick="refreshUsersTable()"><i class="fas fa-sync-alt"></i> Yenile</button>
+            <button class="btn-sm btn-success" onclick="exportUsers()"><i class="fas fa-download"></i> Dışa Aktar</button>
+            <button class="btn-sm btn-warning" onclick="testAddBalanceRequest()"><i class="fas fa-plus"></i> Test Talebi Ekle</button>
+        </div>
+        <div class="table-wrapper">
+            <table id="usersManagementTable">
+                <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
+                <tbody><tr><td colspan="7" class="loading">Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="settingsTab" class="tab-pane" style="display:none;">
+        <div class="section-title"><i class="fas fa-cog" style="color: var(--info);"></i> Sistem Ayarları</div>
+        <div class="stats-grid">
+            <div class="stat-card"><h4>📊 Sistem Durumu</h4><div class="value" id="systemStatus">🟢 Aktif</div></div>
+            <div class="stat-card"><h4>🔄 Son Güncelleme</h4><div class="value" id="lastUpdate">-</div></div>
+        </div>
+        <div class="admin-note" style="border-left-color: var(--primary);">
+            <h4 style="margin-bottom: 15px;">🛠️ Admin Hesapları</h4>
+            <div id="adminAccountsList"><p>👤 doganb / 472131</p><p>👤 360admin / 360123</p></div>
+            <button class="btn-sm btn-primary" onclick="backupData()" style="margin-top: 15px;"><i class="fas fa-database"></i> Veri Yedekle</button>
+            <button class="btn-sm btn-info" onclick="viewRefundHistory()" style="margin-top: 15px; margin-left: 10px;"><i class="fas fa-history"></i> İade Geçmişi</button>
+        </div>
+    </div>
+
+    <div id="categoriesTab" class="tab-pane" style="display:none;">
+        <div class="section-title"><i class="fas fa-layer-group" style="color: var(--success);"></i> Kategori ve Hizmet Yönetimi</div>
+        <div class="table-wrapper">
+            <table id="categoriesTable">
+                <thead><tr><th>Kategori Kodu</th><th>Kategori Adı</th><th>Hizmet Sayısı</th><th>İşlemler</th></tr></thead>
+                <tbody id="categoriesList"><tr><td colspan="4" class="loading">Yükleniyor...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="admin-note" style="border-left-color: var(--success); margin-top: 20px;">
+            <h4>➕ Yeni Kategori Ekle</h4>
+            <div style="display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap;">
+                <input type="text" id="newCatCode" placeholder="Kategori Kodu (facebook, twitter)" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="text" id="newCatName" placeholder="Kategori Adı (👍 Facebook)" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <button class="btn-sm btn-success" onclick="addCategory()" style="padding: 0 20px;">Kategori Ekle</button>
+            </div>
+        </div>
+        <<div id="servicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
+    <h4 id="servicePanelTitle">➕ Hizmet Ekle</h4>
+    <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
+        <input type="text" id="servName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <input type="text" id="servDesc" placeholder="📝 Açıklama (Örn: 1000 takipçi 1-3 günde gelir)" style="flex:3; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <input type="number" id="servPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <input type="number" id="servMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+        <button class="btn-sm btn-primary" onclick="addService()">Hizmet Ekle</button>
+        <button class="btn-sm btn-danger" onclick="closeServicePanel()">İptal</button>
+    </div>
+</div>
+        </div>
+        <div id="editServicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
+            <h4>✏️ Hizmet Düzenle</h4>
+            <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
+                <input type="text" id="editServName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="number" id="editServPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="number" id="editServMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <button class="btn-sm btn-success" onclick="updateService()">Güncelle</button>
+                <button class="btn-sm btn-danger" onclick="closeEditPanel()">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESTEK TALEPLERİ TAB'İ -->
+    <div id="supportTab" class="tab-pane" style="display:none;">
+        <div class="section-title">
+            <i class="fas fa-headset" style="color: var(--primary);"></i> 
+            Müşteri Destek Talepleri
+            <button class="btn-sm btn-primary" onclick="adminLoadAllTickets()" style="margin-left: auto;">
+                <i class="fas fa-sync-alt"></i> Yenile
+            </button>
+        </div>
+        <div id="adminTicketsContainer" style="display: flex; flex-direction: column; gap: 15px;">
+            <p class="loading">Yükleniyor...</p>
+        </div>
+    </div>
+
+    <!-- TALEP DETAY MODALI -->
+    <div id="ticketDetailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: var(--card); border-radius: 20px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 25px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 id="detailTicketSubject">Talep Detayı</h3>
+                <i class="fas fa-times" style="font-size: 24px; cursor: pointer; color: var(--text-muted);" onclick="closeTicketDetailModalAdmin()"></i>
+            </div>
+            <div id="detailTicketStatus" style="margin-bottom: 15px; padding: 10px; background: var(--darker); border-radius: 12px;"></div>
+            <div id="ticketMessagesContainer" style="margin: 15px 0; max-height: 300px; overflow-y: auto; padding: 10px; background: var(--darker); border-radius: 12px;"></div>
+            <textarea id="replyMessageAdmin" rows="3" style="width: 100%; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white; margin: 10px 0;" placeholder="Cevabınızı yazın..."></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-sm btn-primary" onclick="adminSendReplyToTicket()" style="flex: 1;"><i class="fas fa-paper-plane"></i> Cevapla</button>
+                <button class="btn-sm btn-warning" onclick="closeTicketDetailModalAdmin()" style="flex: 1;">Kapat</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtSpmTP9_i-s2ZL2rC1ozVx6uPu68kVCs",
+        authDomain: "smm-panel-f2947.firebaseapp.com",
+        databaseURL: "https://smm-panel-f2947-default-rtdb.firebaseio.com",
+        projectId: "smm-panel-f2947",
+        storageBucket: "smm-panel-f2947.firebasestorage.app",
+        messagingSenderId: "758065772278",
+        appId: "1:758065772278:web:a94d37b0ff892583e81ed7"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const ADMINS = [{ username: "doganb", password: "472131" }, { username: "360admin", password: "360123" }];
+    let allOrders = [], allUsers = [], allRequests = [];
+
+    function showToast(msg, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.borderLeftColor = type === 'success' ? 'var(--success)' : 'var(--danger)';
+        toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function attemptLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if(ADMINS.some(a => a.username === username && a.password === password)) {
+            localStorage.setItem('admin_session', 'active');
+            localStorage.setItem('admin_user', username);
+            document.getElementById('loginOverlay').classList.add('hidden');
+            loadAllData();
+            setInterval(loadAllData, 5000);
+            loadAdminNote();
+            loadCategories();
+            showToast('Giriş başarılı!');
+        } else showToast('Hatalı şifre!', 'danger');
+    }
+
+    function logoutSystem() { localStorage.removeItem('admin_session'); localStorage.removeItem('admin_user'); location.reload(); }
+
+    async function loadAllData() {
+        try {
+            const usersSnap = await database.ref('users').once('value');
+            allUsers = usersSnap.val() ? Object.values(usersSnap.val()) : [];
+            const ordersSnap = await database.ref('orders').once('value');
+            allOrders = ordersSnap.val() ? Object.values(ordersSnap.val()) : [];
+            const reqSnap = await database.ref('balance_requests').once('value');
+            const reqVal = reqSnap.val();
+            allRequests = reqVal ? Object.entries(reqVal).map(([id, d]) => ({ id, userEmail: d.userEmail || d.email, userName: d.userName || d.name, amount: d.amount || 0, date: d.date, code: d.code, status: d.status })) : [];
+            updateUI();
+            document.getElementById('lastUpdate').innerHTML = new Date().toLocaleString('tr-TR');
+        } catch(e) { console.error(e); showToast('Yükleme hatası!', 'danger'); }
+    }
+
+    function updateUI() {
+        document.getElementById('statTotalOrders').innerText = allOrders.length;
+        document.getElementById('statPendingOrders').innerText = allOrders.filter(o => o.status === 'Beklemede' || o.status === 'İşlemde').length;
+        document.getElementById('statCompletedOrders').innerText = allOrders.filter(o => o.status === 'Tamamlandı').length;
+        document.getElementById('statTotalUsers').innerText = allUsers.length;
+        document.getElementById('statTotalBalance').innerText = allUsers.reduce((s, u) => s + (u.balance || 0), 0).toFixed(2) + ' ₺';
+        document.getElementById('statPendingRequests').innerText = allRequests.filter(r => r.status !== 'approved').length;
+        
+        const recent = [...allOrders].reverse().slice(0,5);
+        document.querySelector('#recentOrdersTable tbody').innerHTML = recent.map(o => `<tr><td><strong>${o.code}</strong></td><td>${o.email}</td><td>${o.name || '-'}</td><td>${o.price}</td><td><span class="badge badge-pending">${o.status}</span></td><td><small>${o.date ? new Date(o.date).toLocaleDateString('tr-TR') : '-'}</small></td></tr>`).join('');
+        renderOrdersTable(allOrders);
+        renderPaymentsTable();
+        renderUsersTable(allUsers);
+    }
+
+    function renderOrdersTable(orders) {
+        const tbody = document.querySelector('#allOrdersTable tbody');
+        if(!orders.length) { tbody.innerHTML = '<tr><td colspan="11" class="loading">📭 Sipariş yok</td></tr>'; return; }
+        tbody.innerHTML = orders.map(o => `<tr>
+            <td><strong>${o.code}</strong></td>
+            <td>${o.email}</td>
+            <td>${o.name || '-'}</td>
+            <td>${o.service || '-'}</td>
+            <td>${o.quantity}</td>
+            <td class="link-cell"><a href="${o.link}" target="_blank">Link</a></td>
+            <td>${o.price}</td>
+            <td>${o.remaining || o.quantity} <button class="btn-sm btn-warning" onclick="updateRemaining('${o.code}')"><i class="fas fa-edit"></i></button></td>
+            <td><small>${o.date ? new Date(o.date).toLocaleString('tr-TR') : '-'}</small></td>
+            <td><span class="badge badge-pending">${o.status}</span></td>
+            <td><button class="btn-sm btn-primary" onclick="updateStatus('${o.code}','İşlemde')">İşlemde</button>
+                <button class="btn-sm btn-success" onclick="updateStatus('${o.code}','Tamamlandı')">Tamamla</button>
+                <div style="display:flex; gap:3px; margin-top:5px;"><button class="btn-sm btn-warning" onclick="fullRefundOrder('${o.code}')">💰 Tam İade</button>
+                <button class="btn-sm btn-warning" onclick="halfRefundOrder('${o.code}')">⚡ %50 İade</button>
+                <button class="btn-sm btn-danger" onclick="cancelOrderWithAmount('${o.code}')">❌ İade</button></div></td>
+        </tr>`).join('');
+    }
+
+    function renderPaymentsTable() {
+        const tbody = document.querySelector('#paymentRequestsTable tbody');
+        if(!allRequests.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">✅ Talep yok</td></tr>'; return; }
+        tbody.innerHTML = allRequests.map(r => `<tr>
+            <td><strong>${r.userEmail}</strong></td>
+            <td>${r.userName || '-'}</td>
+            <td><small>${new Date(r.date).toLocaleString('tr-TR')}</small></td>
+            <td style="color:var(--success);">${r.amount} ₺</td>
+            <td><code>${r.code}</code></td>
+            <td><button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
+                <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button></td>
+         </tr>`).join('');
+    }
+
+    function renderUsersTable(users) {
+        const tbody = document.querySelector('#usersManagementTable tbody');
+        if(!users.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading">👤 Kullanıcı yok</td></tr>'; return; }
+        tbody.innerHTML = users.map(u => `<tr>
+            <td>${u.email}</td>
+            <td>${u.name || '-'}</td>
+            <td>•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${u.email}', this)"></i></td>
+            <td style="color:var(--success);">${(u.balance || 0).toFixed(2)} ₺</td>
+            <td>${(u.orders || []).length}</td>
+            <td><small>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : '-'}</small></td>
+            <td><button class="btn-sm btn-success" onclick="addBalance('${u.email}')">Bakiye</button>
+                <button class="btn-sm btn-primary" onclick="editUser('${u.email}')">Düzenle</button>
+                <button class="btn-sm btn-danger" onclick="delUser('${u.email}')">Sil</button></td>
+         </tr>`).join('');
+    }
+
+    async function updateStatus(code, status) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/status`).set(status); showToast(`Sipariş ${status}`); loadAllData(); } }
+    async function updateRemaining(code) { const newVal = prompt("Kalan miktar:"); if(newVal) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/remaining`).set(parseInt(newVal)); loadAllData(); } } }
+    async function approveReq(id, email, amount) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/balance`).set((snap.val()[entry[0]].balance || 0) + amount); await database.ref(`balance_requests/${id}`).remove(); loadAllData(); } }
+    async function rejectReq(id) { await database.ref(`balance_requests/${id}`).remove(); loadAllData(); }
+    async function addBalance(email) { let m = prompt("Bakiye (₺):"); if(m) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/balance`).set((snap.val()[entry[0]].balance || 0) + parseFloat(m)); loadAllData(); } } }
+    async function editUser(email) { const newName = prompt("Yeni ad:"); if(newName) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/name`).set(newName); loadAllData(); } } }
+    async function delUser(email) { if(confirm("Sil?")) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}`).remove(); loadAllData(); } } }
+    function showPass(email, el) { const u = allUsers.find(u => u.email === email); if(u) el.closest('td').innerHTML = `${u.password} <i class="fas fa-eye-slash" onclick="hidePass('${email}', this)"></i>`; }
+    function hidePass(email, el) { el.closest('td').innerHTML = `•••••• <i class="fas fa-eye" onclick="showPass('${email}', this)"></i>`; }
+    function filterOrders() { const kw = document.getElementById('orderSearchInput').value.toLowerCase(); const f = document.getElementById('orderStatusFilter').value; let filtered = allOrders.filter(o => (o.code && o.code.toLowerCase().includes(kw)) || (o.email && o.email.toLowerCase().includes(kw))); if(f !== 'all') filtered = filtered.filter(o => o.status === f); renderOrdersTable(filtered); }
+    function filterUsers() { const kw = document.getElementById('userSearchInput').value.toLowerCase(); renderUsersTable(allUsers.filter(u => u.email.toLowerCase().includes(kw) || (u.name && u.name.toLowerCase().includes(kw)))); }
+    function refreshUsersTable() { loadAllData(); }
+    function exportUsers() { const data = allUsers.map(u => ({ email: u.email, name: u.name, balance: u.balance, orderCount: (u.orders || []).length })); const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `users_${Date.now()}.json`; a.click(); }
+    async function backupData() { const backup = { users: allUsers, orders: allOrders, requests: allRequests, date: new Date().toISOString() }; const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${Date.now()}.json`; a.click(); }
+    async function testAddBalanceRequest() { const email = prompt("E-posta:", "demo@360medya.com"); if(email) { const amt = prompt("Tutar:", "100"); if(amt) { await database.ref(`balance_requests/${Date.now()}`).set({ userEmail: email, userName: "Test", amount: parseFloat(amt), date: new Date().toISOString(), code: 'BL-' + Math.random().toString(36).substring(2,8).toUpperCase(), status: 'pending' }); loadAllData(); } } }
+    async function saveAdminNote() { await database.ref('admin_notes').set({ note: document.getElementById('adminNoteText').value, date: new Date().toISOString() }); showToast('Not kaydedildi'); }
+    async function loadAdminNote() { const snap = await database.ref('admin_notes').once('value'); if(snap.val()) document.getElementById('adminNoteText').value = snap.val().note; }
+
+    // İADE FONKSİYONLARI
+    async function cancelOrderWithRefund(orderCode, customAmount = null) {
+        if(!confirm("İptal ve iade yapılsın mı?")) return;
+        const ordersSnap = await database.ref('orders').once('value');
+        let orderKey = null, orderData = null;
+        for(const [k, v] of Object.entries(ordersSnap.val() || {})) { if(v.code === orderCode) { orderKey = k; orderData = v; break; } }
+        if(!orderData) { alert("Sipariş bulunamadı!"); return; }
+        let refund = customAmount;
+        if(!refund) { const match = (orderData.price || "0").match(/([\d,]+)/); const amt = match ? parseFloat(match[0].replace(',', '.')) : 0; refund = prompt(`İade tutarı (Sipariş: ${amt} ₺):`, amt); if(!refund) return; refund = parseFloat(refund); }
+        const usersSnap = await database.ref('users').once('value');
+        let userKey = null;
+        for(const [k, v] of Object.entries(usersSnap.val() || {})) { if(v.email === orderData.email) { userKey = k; break; } }
+        if(userKey) {
+            const oldBal = usersSnap.val()[userKey].balance || 0;
+            await database.ref(`users/${userKey}/balance`).set(oldBal + refund);
+            await database.ref(`orders/${orderKey}/status`).set('İptal');
+            await database.ref('refund_logs').push({ orderCode, userEmail: orderData.email, refundAmount: refund, date: new Date().toISOString() });
+            alert(`✅ ${refund} ₺ iade edildi!`);
+            loadAllData();
+        }
+    }
+    function cancelOrderWithAmount(code) { cancelOrderWithRefund(code, null); }
+    async function fullRefundOrder(code) { const snap = await database.ref('orders').once('value'); let data = null; for(const v of Object.values(snap.val() || {})) { if(v.code === code) { data = v; break; } } if(data) { const match = (data.price || "0").match(/([\d,]+)/); const amt = match ? parseFloat(match[0].replace(',', '.')) : 0; cancelOrderWithRefund(code, amt); } }
+    async function halfRefundOrder(code) { const snap = await database.ref('orders').once('value'); let data = null; for(const v of Object.values(snap.val() || {})) { if(v.code === code) { data = v; break; } } if(data) { const match = (data.price || "0").match(/([\d,]+)/); const amt = match ? parseFloat(match[0].replace(',', '.')) / 2 : 0; cancelOrderWithRefund(code, amt); } }
+    async function viewRefundHistory() { const snap = await database.ref('refund_logs').once('value'); const logs = snap.val(); if(!logs) { alert("İade kaydı yok"); return; } let msg = "📋 İADE GEÇMİŞİ\n\n"; for(const [k, v] of Object.entries(logs)) { msg += `${v.orderCode} - ${v.userEmail} - ${v.refundAmount}₺\n`; } alert(msg); }
+
+    // KATEGORİ YÖNETİMİ
+    let allCategories = {};
+    let currentCategoryCode = '';
+
+    async function loadCategories() { try { const snap = await database.ref('service_categories').once('value'); allCategories = snap.val() || {}; renderCategoriesTable(); } catch(e) { console.error(e); } }
+    function renderCategoriesTable() {
+        const tbody = document.getElementById('categoriesList');
+        if(!tbody) return;
+        if(Object.keys(allCategories).length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="loading">📭 Henüz kategori yok</td></tr>'; return; }
+        tbody.innerHTML = '';
+        for(const [code, data] of Object.entries(allCategories)) {
+            tbody.innerHTML += `<tr><td><strong>${code}</strong></td>
+                <td><input type="text" value="${data.displayName}" data-code="${code}" class="catNameInput" style="background:var(--darker); border:1px solid var(--border); border-radius:8px; padding:5px 10px; color:white;"></td>
+                <td>${data.services ? data.services.length : 0}</td>
+                <td><button class="btn-sm btn-primary" onclick="showServices('${code}')">Hizmetler</button>
+                <button class="btn-sm btn-warning" onclick="openServicePanel('${code}', '${data.displayName}')">+ Hizmet</button>
+                <button class="btn-sm btn-danger" onclick="deleteCategory('${code}')">Sil</button></td></tr>`;
+        }
+        document.querySelectorAll('.catNameInput').forEach(i => { i.onchange = function() { updateCategoryName(this.dataset.code, this.value); }; });
+    }
+    async function updateCategoryName(code, newName) { if(allCategories[code]) { allCategories[code].displayName = newName; await database.ref('service_categories').set(allCategories); showToast('Kategori adı güncellendi'); } }
+    async function addCategory() { const code = document.getElementById('newCatCode').value.trim().toLowerCase(); const name = document.getElementById('newCatName').value.trim(); if(!code || !name) { alert("Kategori kodu ve adı girin!"); return; } if(allCategories[code]) { alert("Zaten var!"); return; } allCategories[code] = { displayName: name, services: [] }; await database.ref('service_categories').set(allCategories); renderCategoriesTable(); document.getElementById('newCatCode').value = ''; document.getElementById('newCatName').value = ''; showToast(`✅ "${name}" eklendi!`); }
+    async function deleteCategory(code) { if(confirm(`"${code}" silinsin mi?`)) { delete allCategories[code]; await database.ref('service_categories').set(allCategories); renderCategoriesTable(); showToast("Kategori silindi"); } }
+    function showServices(catCode) { 
+    const cat = allCategories[catCode]; 
+    if(!cat?.services?.length) { 
+        alert("Hizmet yok"); 
+        return; 
+    } 
+    let msg = `📋 ${cat.displayName}\n\n`; 
+    cat.services.forEach((s, i) => { 
+        msg += `${i+1}. ${s.name}\n`;
+        msg += `   📝 ${s.desc || "Açıklama yok"}\n`;   // Açıklama satırı
+        msg += `   💰 ${s.price}₺ | Min: ${s.min}\n\n`; 
+    }); 
+    alert(msg); 
+}
+    function openServicePanel(catCode, catName) { 
+    currentCategoryCode = catCode; 
+    document.getElementById('servicePanelTitle').innerHTML = `➕ Hizmet Ekle: ${catName}`; 
+    document.getElementById('servicePanel').style.display = 'block'; 
+    document.getElementById('servName').value = ''; 
+    document.getElementById('servDesc').value = '';   // YENİ
+    document.getElementById('servPrice').value = ''; 
+    document.getElementById('servMin').value = ''; 
+}
+    async function addService() { 
+    const name = document.getElementById('servName').value.trim(); 
+    const desc = document.getElementById('servDesc').value.trim();   // YENİ
+    const price = parseFloat(document.getElementById('servPrice').value); 
+    const min = parseInt(document.getElementById('servMin').value); 
+    if(!name || isNaN(price) || isNaN(min)) { 
+        alert("Tüm alanları doldurun!"); 
+        return; 
+    } 
+    if(!allCategories[currentCategoryCode]) { 
+        alert("Kategori bulunamadı!"); 
+        return; 
+    } 
+    if(!allCategories[currentCategoryCode].services) 
+        allCategories[currentCategoryCode].services = []; 
+    
+    // Açıklama ile birlikte kaydet
+    allCategories[currentCategoryCode].services.push({ 
+        name: name, 
+        desc: desc || "Hızlı teslimat, kaliteli hizmet",  // Varsayılan açıklama
+        price: price, 
+        min: min 
+    }); 
+    
+    await database.ref('service_categories').set(allCategories); 
+    document.getElementById('servicePanel').style.display = 'none'; 
+    renderCategoriesTable(); 
+    alert(`✅ "${name}" eklendi!`); 
+}
+    function closeServicePanel() { document.getElementById('servicePanel').style.display = 'none'; }
+    function closeEditPanel() { document.getElementById('editServicePanel').style.display = 'none'; }
+    async function updateService() { const name = document.getElementById('editServName').value.trim(); const price = parseFloat(document.getElementById('editServPrice').value); const min = parseInt(document.getElementById('editServMin').value); if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } alert("Güncelleme özelliği aktif değil"); closeEditPanel(); }
+
+    // ======================= DESTEK TALEP SİSTEMİ =======================
+    
+    async function loadAllSupportTickets() {
+        try {
+            const snapshot = await database.ref('support_tickets').once('value');
+            const tickets = snapshot.val();
+            if (!tickets) return {};
+            return tickets;
+        } catch(e) {
+            console.error("Destek talepleri yüklenemedi:", e);
+            return {};
+        }
+    }
+
+    async function adminLoadAllTickets() {
+        const allTickets = await loadAllSupportTickets();
+        const ticketsArray = Object.entries(allTickets).map(([id, t]) => ({ ...t, firebaseId: id }));
+        ticketsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        const container = document.getElementById('adminTicketsContainer');
+        if (!container) return;
+        
+        if (ticketsArray.length === 0) {
+            container.innerHTML = '<p class="loading">📭 Henüz destek talebi yok.</p>';
+            return;
+        }
+        
+        container.innerHTML = ticketsArray.map(ticket => `
+            <div style="background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-family: monospace; color: var(--primary); font-weight: bold;">${escapeHtmlSupport(ticket.ticketId)}</span>
+                    <select onchange="adminChangeTicketStatus('${ticket.firebaseId}', this.value)" style="background: var(--darker); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; color: white;">
+                        <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>🟡 Açık (Beklemede)</option>
+                        <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>✅ Çözüldü (Kapalı)</option>
+                    </select>
+                </div>
+                <div><strong>📌 ${escapeHtmlSupport(ticket.subject)}</strong></div>
+                <div style="font-size:0.85rem; margin: 5px 0;">👤 ${escapeHtmlSupport(ticket.userName)} (${ticket.userId})</div>
+                <div style="font-size:0.75rem; color: var(--text-muted);">📅 ${new Date(ticket.createdAt).toLocaleString('tr-TR')} | 💬 ${ticket.messages.length} mesaj</div>
+                <button style="margin-top: 10px; background: var(--primary); border: none; padding: 6px 12px; border-radius: 20px; color: white; cursor: pointer;" onclick="adminOpenTicketDetail('${ticket.firebaseId}')">
+                    <i class="fas fa-reply"></i> Cevapla
+                </button>
+            </div>
+        `).join('');
+    }
+
+    let currentTicketFirebaseId = null;
+    let currentTicketData = null;
+
+    async function adminOpenTicketDetail(ticketFirebaseId) {
+        const allTickets = await loadAllSupportTickets();
+        const ticket = allTickets[ticketFirebaseId];
+        
+        if (!ticket) {
+            alert('Talep bulunamadı');
+            return;
+        }
+        
+        currentTicketFirebaseId = ticketFirebaseId;
+        currentTicketData = ticket;
+        
+        document.getElementById('detailTicketSubject').innerHTML = `<i class="fas fa-ticket-alt"></i> ${escapeHtmlSupport(ticket.subject)} <span style="font-size:0.8rem;">(${ticket.ticketId})</span>`;
+        document.getElementById('detailTicketStatus').innerHTML = `Durum: <span style="color: ${ticket.status === 'open' ? '#f59e0b' : '#22c55e'}">${ticket.status === 'open' ? '🟡 Beklemede' : '✅ Çözüldü'}</span> | 👤 ${escapeHtmlSupport(ticket.userName)} | 📧 ${ticket.userId}`;
+        
+        const container = document.getElementById('ticketMessagesContainer');
+        container.innerHTML = ticket.messages.map(msg => `
+            <div style="margin-bottom: 15px; padding: 12px; background: ${msg.sender === 'admin' ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius: 12px; border-left: 3px solid ${msg.sender === 'admin' ? 'var(--primary)' : 'var(--secondary)'}">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong>${escapeHtmlSupport(msg.senderName)} ${msg.sender === 'admin' ? '<span style="font-size:0.7rem;">(Destek Ekibi)</span>' : '(Müşteri)'}</strong>
+                    <span style="font-size:0.7rem; color: var(--text-muted);">${new Date(msg.timestamp).toLocaleString('tr-TR')}</span>
+                </div>
+                <div style="font-size:0.9rem; line-height: 1.5;">${escapeHtmlSupport(msg.message).replace(/\n/g, '<br>')}</div>
+            </div>
+        `).join('');
+        
+        document.getElementById('replyMessageAdmin').value = '';
+        document.getElementById('ticketDetailModal').style.display = 'flex';
+    }
+
+    async function adminSendReplyToTicket() {
+        if (!currentTicketFirebaseId || !currentTicketData) {
+            alert('Talep bilgisi bulunamadı');
+            return;
+        }
+        
+        const reply = document.getElementById('replyMessageAdmin').value.trim();
+        if (!reply) {
+            alert('Lütfen bir yanıt yazın.');
+            return;
+        }
+        
+        const newMessage = {
+            sender: 'admin',
+            senderName: '360 Medya Destek',
+            message: reply,
+            timestamp: new Date().toISOString()
+        };
+        
+        try {
+            const ticketRef = database.ref(`support_tickets/${currentTicketFirebaseId}`);
+            const updatedMessages = [...currentTicketData.messages, newMessage];
+            await ticketRef.update({
+                messages: updatedMessages,
+                lastUpdated: new Date().toISOString(),
+                status: 'open'
+            });
+            
+            currentTicketData.messages = updatedMessages;
+            
+            const container = document.getElementById('ticketMessagesContainer');
+            container.innerHTML += `
+                <div style="margin-bottom: 15px; padding: 12px; background: rgba(99,102,241,0.15); border-radius: 12px; border-left: 3px solid var(--primary)">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong>360 Medya Destek (Destek Ekibi)</strong>
+                        <span style="font-size:0.7rem; color: var(--text-muted);">${new Date().toLocaleString('tr-TR')}</span>
+                    </div>
+                    <div style="font-size:0.9rem;">${escapeHtmlSupport(reply).replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+            document.getElementById('replyMessageAdmin').value = '';
+            adminLoadAllTickets();
+            showToastAdminMsg('✅ Cevap gönderildi!');
+            
+        } catch(e) {
+            console.error("Yanıt gönderme hatası:", e);
+            alert('Yanıt gönderilirken bir hata oluştu.');
+        }
+    }
+
+    async function adminChangeTicketStatus(ticketFirebaseId, newStatus) {
+        if (!ticketFirebaseId) return;
+        try {
+            await database.ref(`support_tickets/${ticketFirebaseId}/status`).set(newStatus);
+            await database.ref(`support_tickets/${ticketFirebaseId}/lastUpdated`).set(new Date().toISOString());
+            showToastAdminMsg('✅ Durum güncellendi');
+            adminLoadAllTickets();
+        } catch(e) {
+            console.error("Durum güncelleme hatası:", e);
+            alert('Durum güncellenirken hata oluştu.');
+        }
+    }
+
+    function closeTicketDetailModalAdmin() {
+        document.getElementById('ticketDetailModal').style.display = 'none';
+        currentTicketFirebaseId = null;
+        currentTicketData = null;
+    }
+
+    function showToastAdminMsg(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.background = 'var(--card)';
+        toast.style.borderLeft = '4px solid var(--success)';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '12px';
+        toast.style.zIndex = '10001';
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function escapeHtmlSupport(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
+        const activePane = document.getElementById(`${tabName}Tab`);
+        if(activePane) activePane.style.display = 'block';
+        document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+        const activeMenu = Array.from(document.querySelectorAll('.menu-item')).find(i => i.textContent.toLowerCase().includes(tabName.toLowerCase()));
+        if(activeMenu) activeMenu.classList.add('active');
+        if(tabName === 'categories') loadCategories();
+        if(tabName === 'support') adminLoadAllTickets();
+    }
+
+    window.onload = () => {
+        if(localStorage.getItem('admin_session') === 'active') {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            loadAllData();
+            loadAdminNote();
+            loadCategories();
+            setInterval(loadAllData, 5000);
+        }
+    };
+</script>
+</body>
+</html>

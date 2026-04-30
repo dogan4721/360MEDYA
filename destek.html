@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Destek</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .support-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .support-card { background: #1a1a2e; border-radius: 20px; padding: 25px; }
+        .ticket-table { width: 100%; border-collapse: collapse; }
+        .ticket-table th, .ticket-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .ticket-row { cursor: pointer; }
+        .ticket-row:hover { background: rgba(255,255,255,0.03); }
+        @media (max-width: 900px) { .support-layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links"><a href="index.html">Ana Sayfa</a><a href="siparis.html">Yeni Sipariş</a><a href="siparislerim.html">Siparişler</a><a href="bakiye.html">Bakiye Yükle</a><a href="destek.html" class="active">Destek</a><a href="servisler.html">Servisler</a><a href="ayarlar.html">Ayarlar</a><a href="api.html">API</a><a href="topluluk.html">Topluluk</a><a href="referans.html">Referans</a></div>
+        <div class="right-area"><div class="balance-box" onclick="window.location.href='bakiye.html'"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div><div id="loginButton" class="auth-btn" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div><div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div></div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-headset"></i> Destek Talepleri</h1>
+    <div class="support-layout">
+        <div class="support-card">
+            <h3>Yeni Destek Talebi</h3>
+            <div class="form-group"><label>Konu</label><select id="ticketCat"><option value="">Seçin...</option><option value="siparis">Sipariş İşlemleri</option><option value="odeme">Ödeme Bildirimi</option><option value="diger">Diğer</option></select></div>
+            <div class="form-group"><label>Başlık</label><input type="text" id="ticketSubject" placeholder="Konu başlığı"></div>
+            <div class="form-group"><label>Mesaj</label><textarea id="ticketMessage" rows="4" placeholder="Detaylı açıklama..."></textarea></div>
+            <button class="btn-primary" onclick="createTicket()">Talebi Gönder</button>
+        </div>
+        <div class="support-card">
+            <h3>Destek Geçmişim</h3>
+            <div style="overflow-x:auto;"><table class="ticket-table"><thead><tr><th>BAŞLIK</th><th>DURUM</th><th>TARİH</th></tr></thead><tbody id="ticketsList"><tr><td colspan="3">Yükleniyor...</td></tr></tbody></table></div>
+        </div>
+    </div>
+</main>
+
+<div id="authModal" class="auth-modal"><div class="auth-card"><div class="close-auth" onclick="closeAuthModal()">&times;</div><h2 id="authTitle">Giriş Yap</h2><button class="btn-google" onclick="googleLogin()"><img src="https://www.google.com/favicon.ico" style="width:18px;"> Google ile Devam Et</button><div style="display:flex; align-items:center; margin:15px 0;"><hr style="flex:1;"><span>veya</span><hr style="flex:1;"></div><input type="text" id="authEmail" class="auth-input" placeholder="E-posta"><input type="password" id="authPassword" class="auth-input" placeholder="Şifre"><button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button><p><a onclick="switchMode()" style="color:#6366f1;">Kayıt Ol</a></p></div></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    async function loadTickets() {
+        if(!currentUser) { document.getElementById('ticketsList').innerHTML='<tr><td colspan="3">Giriş yapın</td></tr>'; return; }
+        const s=await database.ref('support_tickets').once('value'); let tickets=s.val()?Object.values(s.val()):[];
+        const userTickets=tickets.filter(t=>t.userId===currentUser.email);
+        if(userTickets.length===0) { document.getElementById('ticketsList').innerHTML='<tr><td colspan="3">Henüz talep yok</td></tr>'; return; }
+        document.getElementById('ticketsList').innerHTML=userTickets.map(t=>`<tr class="ticket-row" onclick="openTicket('${t.id}')"><td><strong>${escapeHtml(t.subject)}</strong></td><td><span class="order-status status-${t.status==='open'?'pending':'completed'}">${t.status==='open'?'Açık':'Çözüldü'}</span></td><td>${new Date(t.createdAt).toLocaleDateString('tr-TR')}</td></tr>`).join('');
+    }
+    async function createTicket() {
+        if(!currentUser){ alert('Giriş yapın'); openAuthModal(); return; }
+        const cat=document.getElementById('ticketCat').value, subject=document.getElementById('ticketSubject').value.trim(), msg=document.getElementById('ticketMessage').value.trim();
+        if(!cat||!subject||!msg){ alert('Tüm alanları doldurun'); return; }
+        const id='TCK-'+Date.now()+'-'+Math.random().toString(36).substring(2,6);
+        const newTicket={id:id, userId:currentUser.email, userName:currentUser.name, category:cat, subject:subject, status:'open', createdAt:new Date().toISOString(), lastUpdated:new Date().toISOString(), messages:[{sender:'user',senderName:currentUser.name,message:msg,timestamp:new Date().toISOString()}]};
+        const s=await database.ref('support_tickets').once('value'); let tickets=s.val()||[]; tickets.push(newTicket); await database.ref('support_tickets').set(tickets);
+        alert('✅ Talep oluşturuldu!'); document.getElementById('ticketCat').value=''; document.getElementById('ticketSubject').value=''; document.getElementById('ticketMessage').value=''; loadTickets();
+    }
+    async function openTicket(id){ alert('Detay sayfası yakında eklenecek'); }
+    document.addEventListener('DOMContentLoaded',()=>{setTimeout(loadTickets,500);});
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

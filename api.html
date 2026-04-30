@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - API Dokümanı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .api-section { background: #1a1a2e; border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .endpoint { background: #0f0f1a; padding: 15px; border-radius: 12px; font-family: monospace; margin: 15px 0; border-left: 3px solid #22c55e; }
+        .param-table { width: 100%; border-collapse: collapse; }
+        .param-table th, .param-table td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .code-block { background: #0f0f1a; padding: 15px; border-radius: 12px; overflow-x: auto; }
+        .method { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-right: 10px; }
+        .method-get { background: #6366f1; }
+        .method-post { background: #22c55e; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links"><a href="index.html">Ana Sayfa</a><a href="siparis.html">Yeni Sipariş</a><a href="siparislerim.html">Siparişler</a><a href="bakiye.html">Bakiye Yükle</a><a href="destek.html">Destek</a><a href="servisler.html">Servisler</a><a href="ayarlar.html">Ayarlar</a><a href="api.html" class="active">API</a><a href="topluluk.html">Topluluk</a><a href="referans.html">Referans</a></div>
+        <div class="right-area"><div class="balance-box" onclick="window.location.href='bakiye.html'"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div><div id="loginButton" class="auth-btn" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div><div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div></div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-code"></i> API Dokümanı</h1>
+    <p style="color:#94a3b8; margin-bottom:30px;">360 Medya API ile otomatik sipariş yönetimi</p>
+    
+    <div class="api-section"><h3>🔑 API Anahtarınız</h3><div class="code-block" id="apiKeyDisplay">Lütfen giriş yapın</div><button class="btn-secondary" onclick="window.location.href='ayarlar.html'">API Ayarlarına Git</button></div>
+    
+    <div class="api-section"><h3>📡 Temel Bilgiler</h3><p><strong>Base URL:</strong> <code>https://360medyasmm.com.tr/api/v1/</code></p><p><strong>Authentication:</strong> API anahtarınızı header ile gönderin: <code>X-API-Key: YOUR_API_KEY</code></p></div>
+    
+    <div class="api-section"><h3>📦 Sipariş Oluşturma</h3><div class="endpoint"><span class="method method-post">POST</span> <code>/order/create</code></div><table class="param-table"><thead><tr><th>Parametre</th><th>Tür</th><th>Zorunlu</th><th>Açıklama</th></tr></thead><tbody><tr><td>service_id</td><td>int</td><td>Evet</td><td>Servis ID'si</td></tr><tr><td>link</td><td>string</td><td>Evet</td><td>Sosyal medya linki</td></tr><tr><td>quantity</td><td>int</td><td>Evet</td><td>Miktar</td></tr></tbody></table><div class="code-block"><pre>curl -X POST https://360medyasmm.com.tr/api/v1/order/create -H "X-API-Key: API_KEY" -d '{"service_id":10010,"link":"https://instagram.com/example","quantity":1000}'</pre></div></div>
+    
+    <div class="api-section"><h3>🔍 Sipariş Sorgulama</h3><div class="endpoint"><span class="method method-get">GET</span> <code>/order/status/{order_id}</code></div><div class="code-block"><pre>curl -X GET "https://360medyasmm.com.tr/api/v1/order/status/%23ABC123?api_key=API_KEY"</pre></div></div>
+    
+    <div class="api-section"><h3>💰 Bakiye Sorgulama</h3><div class="endpoint"><span class="method method-get">GET</span> <code>/balance</code></div><div class="code-block"><pre>curl -X GET "https://360medyasmm.com.tr/api/v1/balance?api_key=API_KEY"</pre><pre>{"status":"success","balance":"1250.50 TL"}</pre></div></div>
+    
+    <div class="api-section"><h3>⚠️ Hata Kodları</h3><table class="param-table"><thead><tr><th>Kod</th><th>Açıklama</th></tr></thead><tbody><tr><td>400</td><td>Geçersiz istek</td></tr><tr><td>401</td><td>Yetkisiz erişim</td></tr><tr><td>402</td><td>Yetersiz bakiye</td></tr><tr><td>404</td><td>Servis bulunamadı</td></tr><tr><td>429</td><td>Çok fazla istek</td></tr></tbody></table></div>
+</main>
+
+<div id="authModal" class="auth-modal"><div class="auth-card"><div class="close-auth" onclick="closeAuthModal()">&times;</div><h2 id="authTitle">Giriş Yap</h2><button class="btn-google" onclick="googleLogin()">Google ile Devam Et</button><div><hr><span>veya</span><hr></div><input type="text" id="authEmail" class="auth-input" placeholder="E-posta"><input type="password" id="authPassword" class="auth-input" placeholder="Şifre"><button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button><p><a onclick="switchMode()">Kayıt Ol</a></p></div></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    function updateApiKeyDisplay() { const el=document.getElementById('apiKeyDisplay'); if(currentUser && currentUser.apiKey) el.innerHTML=currentUser.apiKey; else if(currentUser) el.innerHTML='API anahtarınız yok. Ayarlardan talep edin.'; else el.innerHTML='Lütfen giriş yapın'; }
+    document.addEventListener('DOMContentLoaded',()=>{setTimeout(updateApiKeyDisplay,500);});
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

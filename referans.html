@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Referans Programı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .steps-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 40px; flex-wrap: wrap; }
+        .step-card { background: #1a1a2e; border-radius: 20px; padding: 20px; text-align: center; min-width: 150px; }
+        .referral-link-card { background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 24px; padding: 30px; text-align: center; margin-bottom: 30px; }
+        .link-box { background: #0f0f1a; border-radius: 16px; padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; margin-bottom: 30px; }
+        .referral-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links"><a href="index.html">Ana Sayfa</a><a href="siparis.html">Yeni Sipariş</a><a href="siparislerim.html">Siparişler</a><a href="bakiye.html">Bakiye Yükle</a><a href="destek.html">Destek</a><a href="servisler.html">Servisler</a><a href="ayarlar.html">Ayarlar</a><a href="api.html">API</a><a href="topluluk.html">Topluluk</a><a href="referans.html" class="active">Referans</a></div>
+        <div class="right-area"><div class="balance-box" onclick="window.location.href='bakiye.html'"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div><div id="loginButton" class="auth-btn" onclick="openAuthModal()">Giriş Yap</div><div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()">Çıkış</div></div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-star"></i> Referans Programı</h1>
+    <div class="steps-row"><div class="step-card"><i class="fas fa-link" style="font-size:2rem;"></i><div>Linkini Paylaş</div></div><div class="step-card"><i class="fas fa-user-plus"></i><div>Kayıt Olsunlar</div></div><div class="step-card"><i class="fas fa-coins"></i><div>Bakiye Yükləsinler</div></div><div class="step-card"><i class="fas fa-gift"></i><div>Bonus Kazan</div></div></div>
+    
+    <div class="referral-link-card"><h3>DAVET LİNKİNİZ</h3><div class="link-box"><span id="referralLink">-</span><button class="copy-btn" onclick="copyLink()">KOPYALA</button></div><div class="social-share" style="display:flex; gap:15px; justify-content:center;"><a href="#" id="waLink" target="_blank"><i class="fab fa-whatsapp"></i></a><a href="#" id="tgLink" target="_blank"><i class="fab fa-telegram"></i></a><a href="#" id="twLink" target="_blank"><i class="fab fa-twitter"></i></a></div></div>
+    
+    <div class="stats-grid"><div class="stat-card" style="background:#1a1a2e; border-radius:20px; padding:20px; text-align:center;"><div class="stat-value" id="totalReferrals" style="font-size:2rem; color:#6366f1;">0</div><div>Davetler</div></div><div class="stat-card" style="background:#1a1a2e; border-radius:20px; padding:20px; text-align:center;"><div class="stat-value" id="totalEarnings" style="font-size:2rem; color:#22c55e;">0.00 ₺</div><div>Kazanç</div></div></div>
+    
+    <div class="referrals-list" style="background:#1a1a2e; border-radius:20px; padding:20px;"><h3>Davet Ettikleriniz</h3><div id="referralsList"><div class="empty-referrals">Henüz davet ettiğiniz kullanıcı yok.<br>Linkinizi paylaşmaya başlayın!</div></div></div>
+</main>
+
+<div id="authModal" class="auth-modal"><div class="auth-card"><div class="close-auth" onclick="closeAuthModal()">&times;</div><h2 id="authTitle">Giriş Yap</h2><button class="btn-google" onclick="googleLogin()">Google ile Devam Et</button><div><hr><span>veya</span><hr></div><input type="text" id="authEmail" class="auth-input" placeholder="E-posta"><input type="password" id="authPassword" class="auth-input" placeholder="Şifre"><button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button><p><a onclick="switchMode()">Kayıt Ol</a></p></div></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    function getReferralLink() { if(!currentUser) return '-'; return `${window.location.origin}/index.html?ref=${btoa(currentUser.email).substring(0,16)}`; }
+    function copyLink() { navigator.clipboard.writeText(document.getElementById('referralLink').innerText); alert('Link kopyalandı!'); }
+    async function loadReferrals() {
+        if(!currentUser){ document.getElementById('referralLink').innerText='Lütfen giriş yapın'; return; }
+        const link=getReferralLink(); document.getElementById('referralLink').innerText=link;
+        document.getElementById('waLink').href=`https://wa.me/?text=${encodeURIComponent(link)}`;
+        document.getElementById('tgLink').href=`https://t.me/share/url?url=${encodeURIComponent(link)}`;
+        document.getElementById('twLink').href=`https://twitter.com/intent/tweet?text=360%20Medya%20ile%20sosyal%20medyada%20büyüyün!&url=${encodeURIComponent(link)}`;
+        const s=await database.ref('referrals').once('value'); let refs=s.val()?Object.values(s.val()):[];
+        const userRefs=refs.filter(r=>r.referrerEmail===currentUser.email);
+        document.getElementById('totalReferrals').innerHTML=userRefs.length;
+        const total=userRefs.reduce((s,r)=>s+(r.commission||0),0);
+        document.getElementById('totalEarnings').innerHTML=total.toFixed(2)+' ₺';
+        if(userRefs.length===0) document.getElementById('referralsList').innerHTML='<div class="empty-referrals">Henüz davet ettiğiniz kullanıcı yok.<br>Linkinizi paylaşmaya başlayın!</div>';
+        else document.getElementById('referralsList').innerHTML=userRefs.map(r=>`<div class="referral-item"><div><div>${r.referredName||'Kullanıcı'}</div><div class="date" style="font-size:0.7rem;">${new Date(r.date).toLocaleDateString('tr-TR')}</div></div><div class="earnings" style="color:#22c55e;">+${r.commission||0} ₺</div></div>`).join('');
+    }
+    document.addEventListener('DOMContentLoaded',()=>{setTimeout(loadReferrals,500);});
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

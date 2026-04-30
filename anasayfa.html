@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Sosyal Medya Büyüme Hizmetleri</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <style>
+        /* Animasyonlar */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animate { opacity: 0; }
+        .animate.visible { animation: fadeInUp 0.8s ease forwards; }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 120px 20px 80px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            opacity: 0.2;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #6366f1;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #6366f1, #ec4899, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-item .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #6366f1;
+        }
+        .stat-item .label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .about-img {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            border-radius: 20px;
+            padding: 3px;
+        }
+        .about-img-inner {
+            background: #1a1a2e;
+            border-radius: 17px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .about-feature {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .about-feature i {
+            width: 50px;
+            height: 50px;
+            background: rgba(99,102,241,0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            font-size: 1.2rem;
+        }
+        .about-feature h4 { font-size: 1rem; margin-bottom: 3px; }
+        .about-feature p { font-size: 0.85rem; color: #94a3b8; }
+        .about-text h3 { font-size: 2rem; margin-bottom: 20px; }
+        .about-text p { color: #94a3b8; line-height: 1.8; margin-bottom: 20px; }
+        .about-checks { display: flex; flex-direction: column; gap: 12px; }
+        .about-checks div { display: flex; align-items: center; gap: 10px; color: #94a3b8; }
+        .about-checks i { color: #22c55e; }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .service-card {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99,102,241,0.2);
+        }
+        .service-card:hover::before { opacity: 1; }
+        .service-card i { font-size: 2.5rem; margin-bottom: 20px; }
+        .service-card.instagram i { color: #e4405f; }
+        .service-card.youtube i { color: #ff0000; }
+        .service-card.tiktok i { color: #00f2ea; }
+        .service-card.twitter i { color: #1da1f2; }
+        .service-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .service-card p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; }
+        .service-card .price-from { color: #6366f1; font-weight: 700; font-size: 1.1rem; }
+        
+        /* Why Grid */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        .why-card {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .why-card:hover { transform: translateY(-5px); border-color: #6366f1; }
+        .why-card .icon-box {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+        
+        /* Steps */
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            opacity: 0.3;
+        }
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: #1a1a2e;
+            border: 2px solid #6366f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #6366f1;
+        }
+        
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        .testimonial-card {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .testimonial-stars { color: #f59e0b; margin-bottom: 15px; }
+        .testimonial-text { color: #94a3b8; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+        .testimonial-author { display: flex; align-items: center; gap: 15px; }
+        .testimonial-author img { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #ec4899); }
+        
+        /* FAQ */
+        .faq-item {
+            background: #1a1a2e;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .faq-question:hover { background: rgba(99,102,241,0.05); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.4s ease;
+            padding: 0 25px;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding: 0 25px 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .about-grid, .steps, .testimonials-grid { grid-template-columns: 1fr; flex-direction: column; }
+            .why-grid { grid-template-columns: repeat(2, 1fr); }
+            .steps::before { display: none; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links">
+            <a href="index.html">Ana Sayfa</a>
+            <a href="siparis.html">Yeni Sipariş</a>
+            <a href="siparislerim.html">Siparişler</a>
+            <a href="bakiye.html">Bakiye Yükle</a>
+            <a href="destek.html">Destek</a>
+            <a href="servisler.html">Servisler</a>
+            <a href="ayarlar.html">Ayarlar</a>
+            <a href="api.html">API</a>
+            <a href="topluluk.html">Topluluk</a>
+            <a href="referans.html">Referans</a>
+        </div>
+        <div class="right-area">
+            <div class="balance-box" onclick="window.location.href='bakiye.html'">
+                <i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺
+            </div>
+            <div id="loginButton" class="auth-btn" onclick="openAuthModal()">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </div>
+            <div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i> Türkiye'nin #1 SMM Paneli
+            </div>
+            <h1>Sosyal Medyanı <span>Roket Gibi</span> Büyüt</h1>
+            <p>Instagram, YouTube, TikTok ve daha fazlası için güvenilir, hızlı ve uygun fiyatlı takipçi, beğeni ve izlenme hizmetleri. 50.000+ müşterinin güvendiği adres.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.location.href='siparis.html'">
+                    <i class="fas fa-rocket"></i> Hemen Sipariş Ver
+                </button>
+                <a href="https://wa.me/905409327514" target="_blank" class="btn-secondary">
+                    <i class="fab fa-whatsapp"></i> WhatsApp'tan Yaz
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="number" data-count="50000">0</div>
+                    <div class="label">Mutlu Müşteri</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" data-count="2500000">0</div>
+                    <div class="label">Tamamlanan Sipariş</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" data-count="99">0</div>
+                    <div class="label">Memnuniyet %</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+        <div class="about-grid">
+            <div class="about-img animate">
+                <div class="about-img-inner">
+                    <div class="about-feature"><i class="fas fa-shield-alt"></i><div><h4>%100 Güvenli</h4><p>Hesap güvenliğiniz bizim için öncelik</p></div></div>
+                    <div class="about-feature"><i class="fas fa-bolt"></i><div><h4>Anında Teslimat</h4><p>Siparişleriniz dakikalar içinde başlar</p></div></div>
+                    <div class="about-feature"><i class="fas fa-headset"></i><div><h4>7/24 Destek</h4><p>Her an yanınızdayız</p></div></div>
+                    <div class="about-feature"><i class="fas fa-tags"></i><div><h4>Uygun Fiyat</h4><p>Piyasadaki en iyi fiyat garantisi</p></div></div>
+                </div>
+            </div>
+            <div class="about-text animate">
+                <h3>Türkiye'nin En Kaliteli <span style="color:#6366f1">SMM Hizmeti</span></h3>
+                <p>360 Medya olarak 2020'den beri sosyal medya büyüme hizmetleri sunuyoruz. Amacımız, herkesin kaliteli ve güvenilir sosyal medya hizmetlerine uygun fiyatlarla ulaşmasını sağlamak.</p>
+                <div class="about-checks">
+                    <div><i class="fas fa-check-circle"></i> Düşmeyen takipçi garantisi</div>
+                    <div><i class="fas fa-check-circle"></i> Şifre istemiyoruz, sadece link</div>
+                    <div><i class="fas fa-check-circle"></i> 7/24 otomatik sipariş sistemi</div>
+                    <div><i class="fas fa-check-circle"></i> Havale/EFT ile güvenli ödeme</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section id="services" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+        <div class="section-header" style="text-align:center; margin-bottom:60px;">
+            <h2>Popüler <span style="color:#6366f1">Hizmetlerimiz</span></h2>
+            <p style="color:#94a3b8;">Tüm sosyal medya platformları için ihtiyacınız olan her şey tek çatı altında</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card instagram animate"><i class="fab fa-instagram"></i><h3>Instagram Takipçi</h3><p>Gerçek ve kalıcı Instagram takipçileri ile hesabınızı büyütün.</p><div class="price-from">1000 Takipçi 200₺'den başlayan</div></div>
+            <div class="service-card instagram animate"><i class="fab fa-instagram"></i><h3>Instagram Beğeni</h3><p>Gönderilerinize anında beğeni gönderin. Keşfete çıkma şansınızı artırın.</p><div class="price-from">1000 Beğeni 25₺'den başlayan</div></div>
+            <div class="service-card youtube animate"><i class="fab fa-youtube"></i><h3>YouTube Abone</h3><p>Kanalınıza gerçek aboneler kazanın. Monetizasyon için gerekli şartları kolayca tamamlayın.</p><div class="price-from">1000 Abone 2500₺'den başlayan</div></div>
+            <div class="service-card youtube animate"><i class="fab fa-youtube"></i><h3>YouTube İzlenme</h3><p>Videolarınıza izlenme gönderin. Daha fazla organik erişim elde edin.</p><div class="price-from">1000 İzlenme 80₺'den başlayan</div></div>
+            <div class="service-card tiktok animate"><i class="fab fa-tiktok"></i><h3>TikTok Takipçi</h3><p>TikTok hesabınızı hızla büyütün. Viral olma şansınızı artırın.</p><div class="price-from">1000 Takipçi 250₺'den başlayan</div></div>
+            <div class="service-card twitter animate"><i class="fab fa-twitter"></i><h3>Twitter/X Takipçi</h3><p>X platformunda etkinliğinizi artırın. Daha fazla etkileşim ve görünürlük.</p><div class="price-from">1000 Takipçi 300₺'den başlayan</div></div>
+        </div>
+    </section>
+
+    <!-- WHY US SECTION -->
+    <section id="why" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+        <div class="section-header" style="text-align:center; margin-bottom:60px;">
+            <h2>Neden <span style="color:#6366f1">360 Medya?</span></h2>
+            <p style="color:#94a3b8;">Rakiplerimizden farkımızı keşfedin</p>
+        </div>
+        <div class="why-grid">
+            <div class="why-card animate"><div class="icon-box"><i class="fas fa-rocket"></i></div><h3>Hızlı Teslimat</h3><p>Siparişleriniz ortalama 5 dakika içinde işleme alınır</p></div>
+            <div class="why-card animate"><div class="icon-box"><i class="fas fa-user-shield"></i></div><h3>Gizlilik</h3><p>Hiçbir şifre istemiyoruz. Sadece profil linkiniz yeterli</p></div>
+            <div class="why-card animate"><div class="icon-box"><i class="fas fa-sync-alt"></i></div><h3>Telafi Garantisi</h3><p>30 gün içinde düşen takipçiler için ücretsiz telafi</p></div>
+            <div class="why-card animate"><div class="icon-box"><i class="fas fa-percentage"></i></div><h3>Uygun Fiyat</h3><p>Piyasadaki en rekabetçi fiyatlarla hizmet sunuyoruz</p></div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section id="how" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+        <div class="section-header" style="text-align:center; margin-bottom:60px;">
+            <h2>Nasıl <span style="color:#6366f1">Çalışır?</span></h2>
+            <p style="color:#94a3b8;">3 basit adımda siparişinizi verin</p>
+        </div>
+        <div class="steps">
+            <div class="step animate"><div class="step-number">1</div><h3>Hizmet Seç</h3><p>İhtiyacınız olan platform ve hizmeti seçin, miktarı belirleyin</p></div>
+            <div class="step animate"><div class="step-number">2</div><h3>Ödeme Yap</h3><p>Güvenli havale/EFT ile ödemenizi gerçekleştirin</p></div>
+            <div class="step animate"><div class="step-number">3</div><h3>Büyümeye Başla</h3><p>Siparişiniz onaylanır onaylanmaz teslimat başlar</p></div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section id="testimonials" style="padding: 80px 20px; max-width: 1200px; margin: 0 auto;">
+        <div class="section-header" style="text-align:center; margin-bottom:60px;">
+            <h2>Müşterilerimiz <span style="color:#6366f1">Ne Diyor?</span></h2>
+            <p style="color:#94a3b8;">Gerçek müşteri deneyimleri</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card animate">
+                <div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p class="testimonial-text">"Instagram hesabım 3 ayda 10K'dan 50K'ya çıktı. 360 Medya sayesinde artık markalarla işbirliği yapabiliyorum."</p>
+                <div class="testimonial-author"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%236366f1' width='50' height='50'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3EA%3C/text%3E%3C/svg%3E" alt=""><div><h4>Ayşe K.</h4><p>Influencer</p></div></div>
+            </div>
+            <div class="testimonial-card animate">
+                <div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p class="testimonial-text">"YouTube kanalımın monetizasyon şartlarını 2 haftada tamamladım. Aboneler gerçek ve aktif. Çok memnun kaldım!"</p>
+                <div class="testimonial-author"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%23ec4899' width='50' height='50'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E" alt=""><div><h4>Mehmet Y.</h4><p>YouTuber</p></div></div>
+            </div>
+            <div class="testimonial-card animate">
+                <div class="testimonial-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                <p class="testimonial-text">"E-ticaret markam için Instagram takipçi ve beğeni alıyorum. Satışlarım %40 arttı. Fiyatlar çok uygun."</p>
+                <div class="testimonial-author"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect fill='%2306b6d4' width='50' height='50'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3ES%3C/text%3E%3C/svg%3E" alt=""><div><h4>Selin T.</h4><p>E-ticaret Sahibi</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" style="padding: 80px 20px; max-width: 800px; margin: 0 auto;">
+        <div class="section-header" style="text-align:center; margin-bottom:60px;">
+            <h2>Sıkça Sorulan <span style="color:#6366f1">Sorular</span></h2>
+            <p style="color:#94a3b8;">Aklınıza takılanları yanıtladık</p>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item animate"><div class="faq-question" onclick="toggleFaq(this)"><h3>Hesabım banlanır mı?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-answer"><p>Hayır, hesabınızın banlanması söz konusu değildir. Hizmetlerimiz tamamen güvenli ve organik büyüme prensiplerine uygun şekilde teslim edilmektedir.</p></div></div>
+            <div class="faq-item animate"><div class="faq-question" onclick="toggleFaq(this)"><h3>Şifremi vermem gerekiyor mu?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-answer"><p>Kesinlikle hayır! Hiçbir şekilde şifre istemiyoruz. Sadece profilinizin veya videonuzun linkini almamız yeterli.</p></div></div>
+            <div class="faq-item animate"><div class="faq-question" onclick="toggleFaq(this)"><h3>Takipçiler düşerse ne olur?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-answer"><p>30 gün içinde düşen takipçiler için ücretsiz telafi garantisi sunuyoruz. Bize sipariş kodunuzla ulaşmanız yeterli.</p></div></div>
+            <div class="faq-item animate"><div class="faq-question" onclick="toggleFaq(this)"><h3>Ödeme ne zaman başlar?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-answer"><p>Havale/EFT ödemeniz onaylandıktan sonra ortalama 5 dakika içinde siparişiniz işleme alınır.</p></div></div>
+            <div class="faq-item animate"><div class="faq-question" onclick="toggleFaq(this)"><h3>Destek alabilir miyim?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-answer"><p>Evet! 7/24 WhatsApp üzerinden bizimle iletişime geçebilirsiniz. Sorularınızı en kısa sürede yanıtlıyoruz.</p></div></div>
+        </div>
+    </section>
+</main>
+
+<footer style="background:#05050a; padding:40px 20px; text-align:center; border-top:1px solid rgba(255,255,255,0.05); margin-top:40px;">
+    <p>© 2026 360 Medya. Tüm hakları saklıdır.</p>
+</footer>
+
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        <button class="btn-google" onclick="googleLogin()"><img src="https://www.google.com/favicon.ico" style="width:18px;"> Google ile Devam Et</button>
+        <div style="display:flex; align-items:center; margin:15px 0;"><hr style="flex:1;"><span>veya</span><hr style="flex:1;"></div>
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button>
+        <p><a onclick="switchMode()" style="color:#6366f1; cursor:pointer;">Kayıt Ol</a></p>
+    </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    // Animasyonlu sayaçlar
+    function animateCounters() {
+        document.querySelectorAll('.number[data-count]').forEach(counter => {
+            const target = parseInt(counter.dataset.count);
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    counter.textContent = target.toLocaleString('tr-TR') + (target === 99 ? '' : '+');
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current).toLocaleString('tr-TR');
+                }
+            }, 16);
+        });
+    }
+    
+    // Intersection Observer ile animasyonları tetikle
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+    
+    // Hero sayaçlarını tetikle
+    const heroObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                heroObserver.disconnect();
+            }
+        });
+    });
+    heroObserver.observe(document.querySelector('.hero'));
+    
+    // FAQ toggle
+    function toggleFaq(element) {
+        const item = element.parentElement;
+        const wasActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        if (!wasActive) item.classList.add('active');
+    }
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

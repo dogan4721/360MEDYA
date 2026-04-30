@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Yeni Sipariş</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links">
+            <a href="index.html">Ana Sayfa</a>
+            <a href="siparis.html" class="active">Yeni Sipariş</a>
+            <a href="siparislerim.html">Siparişler</a>
+            <a href="bakiye.html">Bakiye Yükle</a>
+            <a href="destek.html">Destek</a>
+            <a href="servisler.html">Servisler</a>
+            <a href="ayarlar.html">Ayarlar</a>
+            <a href="api.html">API</a>
+            <a href="topluluk.html">Topluluk</a>
+            <a href="referans.html">Referans</a>
+        </div>
+        <div class="right-area">
+            <div class="balance-box" onclick="window.location.href='bakiye.html'">
+                <i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺
+            </div>
+            <div id="loginButton" class="auth-btn" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div>
+            <div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-plus-circle"></i> Yeni Sipariş</h1>
+    
+    <div style="max-width: 600px; margin: 0 auto;">
+        <form id="orderForm">
+            <div class="form-group">
+                <label>Platform Seçin</label>
+                <select id="category" required>
+                    <option value="">Platform seçin...</option>
+                    <option value="instagram">📸 Instagram</option>
+                    <option value="tiktok">🎵 TikTok</option>
+                    <option value="youtube">🎥 YouTube</option>
+                    <option value="twitter">🐦 Twitter/X</option>
+                    <option value="facebook">👍 Facebook</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Hizmet Seçin</label>
+                <select id="service" required>
+                    <option value="">Önce platform seçin...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Miktar (Adet)</label>
+                <input type="number" id="quantity" placeholder="Örn: 1000" min="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Link / Kullanıcı Adı</label>
+                <input type="url" id="link" placeholder="https://instagram.com/kullaniciadi" required>
+            </div>
+            
+            <div class="price-box">
+                <div class="amount" id="totalPrice">0,00</div>
+                <div>₺ Toplam Tutar</div>
+            </div>
+            
+            <button type="button" class="btn-primary" onclick="siparisVer()">Bakiyeden Sipariş Ver</button>
+        </form>
+    </div>
+</main>
+
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        <button class="btn-google" onclick="googleLogin()"><img src="https://www.google.com/favicon.ico" style="width:18px;"> Google ile Devam Et</button>
+        <div style="display:flex; align-items:center; margin:15px 0;"><hr style="flex:1;"><span>veya</span><hr style="flex:1;"></div>
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button>
+        <p><a onclick="switchMode()" style="color:#6366f1; cursor:pointer;" id="switchModeBtn">Kayıt Ol</a></p>
+    </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    // Demo servis verileri
+    const servicesData = {
+        instagram: [
+            { name: "📸 Instagram Takipçi", price: 0.25, min: 100 },
+            { name: "❤️ Instagram Beğeni", price: 0.08, min: 50 },
+            { name: "👁️ Instagram İzlenme", price: 0.002, min: 1000 }
+        ],
+        tiktok: [
+            { name: "🎵 TikTok Takipçi", price: 0.35, min: 250 },
+            { name: "❤️ TikTok Beğeni", price: 0.05, min: 100 }
+        ],
+        youtube: [
+            { name: "🔴 YouTube Abone", price: 2.5, min: 100 },
+            { name: "▶️ YouTube İzlenme", price: 0.12, min: 150 }
+        ],
+        twitter: [
+            { name: "🐦 Twitter Takipçi", price: 0.45, min: 100 }
+        ],
+        facebook: [
+            { name: "👍 Facebook Takipçi", price: 0.15, min: 500 }
+        ]
+    };
+    
+    document.getElementById('category').addEventListener('change', function() {
+        const cat = this.value;
+        const serviceSelect = document.getElementById('service');
+        serviceSelect.innerHTML = '<option value="">Hizmet seçin...</option>';
+        if (servicesData[cat]) {
+            servicesData[cat].forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.name;
+                opt.text = s.name;
+                opt.dataset.price = s.price;
+                opt.dataset.min = s.min;
+                serviceSelect.appendChild(opt);
+            });
+        }
+    });
+    
+    document.getElementById('service').addEventListener('change', calculate);
+    document.getElementById('quantity').addEventListener('input', calculate);
+    
+    function calculate() {
+        const service = document.getElementById('service').selectedOptions[0];
+        const qty = parseInt(document.getElementById('quantity').value) || 0;
+        if (service && service.dataset.price) {
+            const total = parseFloat(service.dataset.price) * qty;
+            document.getElementById('totalPrice').innerHTML = total.toFixed(2);
+        } else {
+            document.getElementById('totalPrice').innerHTML = '0,00';
+        }
+    }
+    
+    async function siparisVer() {
+        if (!currentUser) { alert('Giriş yapın'); openAuthModal(); return; }
+        const service = document.getElementById('service').value;
+        const qty = document.getElementById('quantity').value;
+        const link = document.getElementById('link').value;
+        const total = parseFloat(document.getElementById('totalPrice').innerHTML);
+        
+        if (!service || !qty || !link) { alert('Tüm alanları doldurun'); return; }
+        if (currentUser.balance < total) { alert('Yetersiz bakiye'); return; }
+        
+        currentUser.balance -= total;
+        const users = await loadUsers();
+        const userIndex = users.findIndex(u => u.email === currentUser.email);
+        if (userIndex !== -1) {
+            users[userIndex].balance = currentUser.balance;
+            await database.ref('users').set(users);
+        }
+        
+        const orderCode = '#' + Date.now() + Math.random().toString(36).substring(2,6).toUpperCase();
+        const newOrder = {
+            code: orderCode, service: service, quantity: parseInt(qty),
+            price: total.toFixed(2) + ' ₺', link: link, email: currentUser.email,
+            status: 'Beklemede', date: new Date().toISOString()
+        };
+        
+        const ordersSnap = await database.ref('orders').once('value');
+        let orders = ordersSnap.val() || [];
+        orders.push(newOrder);
+        await database.ref('orders').set(orders);
+        
+        localStorage.setItem('360_session', JSON.stringify({ email: currentUser.email, balance: currentUser.balance }));
+        updateBalanceUI();
+        alert('✅ Sipariş oluşturuldu! Kod: ' + orderCode);
+        window.location.href = 'siparislerim.html';
+    }
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

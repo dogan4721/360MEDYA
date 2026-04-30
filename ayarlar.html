@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Ayarlar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .settings-card { background: #1a1a2e; border-radius: 20px; padding: 25px; }
+        .info-row { margin-bottom: 20px; }
+        .info-row label { color: #94a3b8; font-size: 0.8rem; }
+        .info-value { background: #0f0f1a; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; }
+        .api-key-display { background: #0f0f1a; padding: 12px; border-radius: 12px; font-family: monospace; margin: 10px 0; }
+        @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links"><a href="index.html">Ana Sayfa</a><a href="siparis.html">Yeni Sipariş</a><a href="siparislerim.html">Siparişler</a><a href="bakiye.html">Bakiye Yükle</a><a href="destek.html">Destek</a><a href="servisler.html">Servisler</a><a href="ayarlar.html" class="active">Ayarlar</a><a href="api.html">API</a><a href="topluluk.html">Topluluk</a><a href="referans.html">Referans</a></div>
+        <div class="right-area"><div class="balance-box" onclick="window.location.href='bakiye.html'"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div><div id="loginButton" class="auth-btn" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div><div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div></div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-cog"></i> Ayarlar</h1>
+    <div class="settings-grid">
+        <div class="settings-card"><h3>Hesap Bilgileri</h3><div class="info-row"><label>Kullanıcı Adı</label><div class="info-value"><span id="userName">-</span><button onclick="editName()">Düzenle</button></div></div><div class="info-row"><label>E-posta</label><div class="info-value"><span id="userEmail">-</span></div></div><div class="info-row"><label>Telefon</label><div class="info-value"><span id="userPhone">-</span><button onclick="editPhone()">Düzenle</button></div></div></div>
+        <div class="settings-card"><h3>API Bağlantısı</h3><div class="api-key-display" id="apiKeyDisplay">API anahtarı yok</div><button class="btn-primary" onclick="requestApiKey()">Talep Et</button><button class="btn-secondary" onclick="regenerateApiKey()" style="margin-top:10px;">Yenile</button><h3 style="margin-top:20px;">Şifre Değiştir</h3><input type="password" id="oldPass" placeholder="Mevcut Şifre" class="auth-input"><input type="password" id="newPass" placeholder="Yeni Şifre" class="auth-input"><input type="password" id="confirmPass" placeholder="Yeni Şifre Tekrar" class="auth-input"><button class="btn-primary" onclick="changePassword()">Güncelle</button></div>
+    </div>
+</main>
+
+<div id="authModal" class="auth-modal"><div class="auth-card"><div class="close-auth" onclick="closeAuthModal()">&times;</div><h2 id="authTitle">Giriş Yap</h2><button class="btn-google" onclick="googleLogin()"><img src="https://www.google.com/favicon.ico"> Google ile Devam Et</button><div><hr><span>veya</span><hr></div><input type="text" id="authEmail" class="auth-input" placeholder="E-posta"><input type="password" id="authPassword" class="auth-input" placeholder="Şifre"><button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button><p><a onclick="switchMode()">Kayıt Ol</a></p></div></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    function loadUserInfo() { if(currentUser){ document.getElementById('userName').innerText=currentUser.name; document.getElementById('userEmail').innerText=currentUser.email; document.getElementById('userPhone').innerText=currentUser.phone||'-'; if(currentUser.apiKey) document.getElementById('apiKeyDisplay').innerHTML=currentUser.apiKey; } }
+    async function updateUserField(field,val){ const users=await loadUsers(); const idx=users.findIndex(u=>u.email===currentUser.email); if(idx!==-1){ users[idx][field]=val; await database.ref('users').set(users); currentUser[field]=val; localStorage.setItem('360_session',JSON.stringify({email:currentUser.email,balance:currentUser.balance,name:currentUser.name})); loadUserInfo(); alert('Güncellendi'); } }
+    function editName(){ let newName=prompt('Yeni kullanıcı adı:',currentUser.name); if(newName) updateUserField('name',newName); }
+    function editPhone(){ let newPhone=prompt('Telefon numarası:',currentUser.phone||''); if(newPhone) updateUserField('phone',newPhone); }
+    async function requestApiKey(){ const newKey='API-'+Date.now()+'-'+Math.random().toString(36).substring(2,15); await updateUserField('apiKey',newKey); }
+    async function regenerateApiKey(){ if(confirm('Eski API anahtarı geçersiz olacak. Devam?')) await requestApiKey(); }
+    async function changePassword(){ let old=document.getElementById('oldPass').value, newp=document.getElementById('newPass').value, confirm=document.getElementById('confirmPass').value; if(!old||!newp||!confirm){ alert('Tüm alanları doldurun'); return; } if(newp!==confirm){ alert('Şifreler eşleşmiyor'); return; } if(old!==currentUser.password){ alert('Mevcut şifre yanlış'); return; } await updateUserField('password',newp); document.getElementById('oldPass').value=''; document.getElementById('newPass').value=''; document.getElementById('confirmPass').value=''; alert('Şifre değiştirildi'); }
+    document.addEventListener('DOMContentLoaded',()=>{setTimeout(loadUserInfo,500);});
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Topluluk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .forum-posts { display: flex; flex-direction: column; gap: 20px; }
+        .post-card { background: #1a1a2e; border-radius: 20px; padding: 20px; }
+        .post-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .post-author { display: flex; align-items: center; gap: 10px; }
+        .post-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .suggestion-card { background: #1a1a2e; border-radius: 20px; padding: 25px; margin-bottom: 25px; }
+        .new-services { background: #1a1a2e; border-radius: 20px; padding: 25px; }
+        .layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links"><a href="index.html">Ana Sayfa</a><a href="siparis.html">Yeni Sipariş</a><a href="siparislerim.html">Siparişler</a><a href="bakiye.html">Bakiye Yükle</a><a href="destek.html">Destek</a><a href="servisler.html">Servisler</a><a href="ayarlar.html">Ayarlar</a><a href="api.html">API</a><a href="topluluk.html" class="active">Topluluk</a><a href="referans.html">Referans</a></div>
+        <div class="right-area"><div class="balance-box"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div><div id="loginButton" class="auth-btn" onclick="openAuthModal()">Giriş Yap</div><div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()">Çıkış</div></div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-users"></i> Topluluk</h1>
+    <div class="layout">
+        <div class="forum-posts" id="forumPosts"><div class="post-card"><div class="post-header"><div class="post-author"><div class="post-avatar"><i class="fas fa-user"></i></div><div><strong>admin</strong><div style="font-size:0.7rem;">Yönetici</div></div></div><div style="color:#94a3b8;">13 Nis 2026</div></div><h3>360 Medya panelimizle ilgili öneri ve taleplerinizi bekliyoruz!</h3><p>Değerli kullanıcılar, platformumuzu daha iyi hale getirmek için görüşlerinizi sağdaki "TALEPLERİNİZ" bölümünden paylaşabilirsiniz.</p><div style="margin-top:15px;"><span><i class="fas fa-comment"></i> 2 yanıt</span> <span style="margin-left:15px;"><i class="fas fa-heart"></i> 17</span></div></div></div>
+        <div class="sidebar-right"><div class="suggestion-card"><h3>TALEPLERİNİZ</h3><p>Herhangi bir isteğiniz, öneriniz varsa buraya yazın!</p><textarea id="suggestionText" rows="4" style="width:100%; background:#0f0f1a; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px; color:white; margin:15px 0;"></textarea><button class="btn-primary" onclick="submitSuggestion()">Gönder</button></div><div class="new-services"><h3>Yeni Servisler Eklendi</h3><p style="color:#94a3b8; font-size:0.8rem;">admin • 7 Nis 2026</p><table class="service-table" style="width:100%"><tr><td>10145</td><td>Instagram Ucuz Takipçi [Max 25K]</td><td class="service-price">₺13,58</td></tr><tr><td>10146</td><td>Instagram Ucuz Takipçi [Max 75K]</td><td>₺14,57</td></tr><tr><td>10147</td><td>Instagram Ucuz Takipçi [Max 100K]</td><td>₺15,25</td></tr></table><button class="btn-secondary" style="width:100%; margin-top:15px;" onclick="window.location.href='servisler.html'">Tüm Servisleri Gör</button></div></div>
+    </div>
+</main>
+
+<div id="authModal" class="auth-modal"><div class="auth-card"><div class="close-auth" onclick="closeAuthModal()">&times;</div><h2 id="authTitle">Giriş Yap</h2><button class="btn-google" onclick="googleLogin()">Google ile Devam Et</button><div><hr><span>veya</span><hr></div><input type="text" id="authEmail" class="auth-input" placeholder="E-posta"><input type="password" id="authPassword" class="auth-input" placeholder="Şifre"><button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button><p><a onclick="switchMode()">Kayıt Ol</a></p></div></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    async function submitSuggestion() {
+        if(!currentUser){ alert('Giriş yapın'); openAuthModal(); return; }
+        const text=document.getElementById('suggestionText').value.trim();
+        if(!text){ alert('Mesaj yazın'); return; }
+        alert('Öneriniz gönderildi! Teşekkürler.');
+        document.getElementById('suggestionText').value='';
+    }
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

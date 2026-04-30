@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>360 Medya - Servisler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .platform-filter { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .platform-filter button { background: transparent; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 30px; cursor: pointer; color: #94a3b8; }
+        .platform-filter button.active { background: #6366f1; color: white; }
+        .service-category { background: #1a1a2e; border-radius: 20px; margin-bottom: 25px; overflow: hidden; }
+        .category-header { background: rgba(99,102,241,0.1); padding: 15px 20px; }
+        .service-table { width: 100%; border-collapse: collapse; }
+        .service-table th, .service-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .service-id { color: #6366f1; font-family: monospace; }
+        .service-price { color: #22c55e; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
+        <div class="nav-links"><a href="index.html">Ana Sayfa</a><a href="siparis.html">Yeni Sipariş</a><a href="siparislerim.html">Siparişler</a><a href="bakiye.html">Bakiye Yükle</a><a href="destek.html">Destek</a><a href="servisler.html" class="active">Servisler</a><a href="ayarlar.html">Ayarlar</a><a href="api.html">API</a><a href="topluluk.html">Topluluk</a><a href="referans.html">Referans</a></div>
+        <div class="right-area"><div class="balance-box" onclick="window.location.href='bakiye.html'"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div><div id="loginButton" class="auth-btn" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div><div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div></div>
+    </div>
+</header>
+
+<main>
+    <h1 class="page-title"><i class="fas fa-layer-group"></i> Servis Listesi</h1>
+    <div class="platform-filter" id="platformFilter">
+        <button class="active" data-platform="all">Tümü</button>
+        <button data-platform="instagram">Instagram</button>
+        <button data-platform="tiktok">TikTok</button>
+        <button data-platform="youtube">YouTube</button>
+        <button data-platform="twitter">Twitter/X</button>
+        <button data-platform="facebook">Facebook</button>
+    </div>
+    <div id="servicesContainer"></div>
+</main>
+
+<div id="authModal" class="auth-modal"><div class="auth-card"><div class="close-auth" onclick="closeAuthModal()">&times;</div><h2 id="authTitle">Giriş Yap</h2><button class="btn-google" onclick="googleLogin()"><img src="https://www.google.com/favicon.ico" style="width:18px;"> Google ile Devam Et</button><div><hr><span>veya</span><hr></div><input type="text" id="authEmail" class="auth-input" placeholder="E-posta"><input type="password" id="authPassword" class="auth-input" placeholder="Şifre"><button class="btn-primary" id="authActionBtn" onclick="authAction()">Giriş Yap</button><p><a onclick="switchMode()">Kayıt Ol</a></p></div></div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    const services = {
+        instagram: { name: "Instagram", categories: [{ name: "Takipçi Servisleri", services: [{ id:10010, name:"Kaliteli Takipçi", price:23.86, min:100, max:1000000 },{ id:10011, name:"Türk Takipçi", price:477.85, min:100, max:10000 }] },{ name:"Beğeni Servisleri", services: [{ id:10182, name:"Instagram Beğeni", price:6.94, min:100, max:1000000 }] }] },
+        tiktok: { name: "TikTok", categories: [{ name: "Takipçi Servisleri", services: [{ id:20010, name:"TikTok Takipçi", price:0.35, min:250, max:500000 }] }] },
+        youtube: { name: "YouTube", categories: [{ name: "Abone Servisleri", services: [{ id:40010, name:"YouTube Abone", price:1.8, min:100, max:100000 }] }] },
+        twitter: { name: "Twitter", categories: [{ name: "Takipçi Servisleri", services: [{ id:30010, name:"Twitter Takipçi", price:0.45, min:100, max:500000 }] }] },
+        facebook: { name: "Facebook", categories: [{ name: "Takipçi Servisleri", services: [{ id:50010, name:"Facebook Takipçi", price:0.15, min:500, max:500000 }] }] }
+    };
+    let currentPlatform = 'all';
+    function renderServices() {
+        let html = '';
+        let platforms = currentPlatform === 'all' ? Object.keys(services) : [currentPlatform];
+        for(let p of platforms) {
+            let data = services[p];
+            if(!data) continue;
+            for(let cat of data.categories) {
+                html += `<div class="service-category"><div class="category-header"><h3>📌 ${data.name} - ${cat.name}</h3></div><table class="service-table"><thead><tr><th>ID</th><th>SERVİS ADI</th><th>₺ (1000)</th><th>MİN/MAX</th></tr></thead><tbody>`;
+                for(let s of cat.services) {
+                    html += `<tr><td class="service-id">${s.id}</td><td>${s.name}</td><td class="service-price">₺${s.price.toFixed(2)}</td><td>${s.min.toLocaleString()} / ${s.max.toLocaleString()}</td></tr>`;
+                }
+                html += `</tbody></table></div>`;
+            }
+        }
+        document.getElementById('servicesContainer').innerHTML = html || '<p>Servis bulunamadı</p>';
+    }
+    document.querySelectorAll('#platformFilter button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#platformFilter button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentPlatform = this.dataset.platform;
+            renderServices();
+        });
+    });
+    renderServices();
+</script>
+<!-- Auth Modal -->
+<div id="authModal" class="auth-modal">
+    <div class="auth-card">
+        <div class="close-auth" onclick="closeAuthModal()">&times;</div>
+        <h2 id="authTitle">Giriş Yap</h2>
+        
+        <!-- Google ile Giriş -->
+        <button class="btn-google" onclick="googleLogin()">
+            <img src="https://www.google.com/favicon.ico" style="width: 18px; height: 18px;"> Google ile Devam Et
+        </button>
+        
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+            <span style="padding: 0 15px; color: #94a3b8; font-size: 0.8rem;">veya</span>
+            <hr style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        </div>
+        
+        <input type="text" id="authEmail" class="auth-input" placeholder="E-posta adresiniz">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Şifre">
+        <button class="btn-primary" id="authActionBtn" onclick="authAction()" style="width:100%; margin-top:10px;">Giriş Yap</button>
+        
+        <p style="margin-top: 20px;">
+            <a onclick="switchMode()" style="color: #6366f1; cursor: pointer;" id="switchModeBtn">Kayıt Ol</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>
