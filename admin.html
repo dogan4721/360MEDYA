@@ -334,6 +334,15 @@
             gap: 10px;
         }
         
+        .amount-input-small {
+            width: 120px;
+            padding: 6px 10px;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+        }
+        
         @media (max-width: 768px) {
             .sidebar { width: 80px; padding: 1.5rem 0.5rem; }
             .logo-area { font-size: 0; margin-bottom: 1.5rem; }
@@ -385,10 +394,12 @@
     <div class="menu-item" onclick="switchTab('settings')"><i class="fas fa-cog"></i> <span>Ayarlar</span></div>
     <div class="menu-item" onclick="switchTab('categories')"><i class="fas fa-layer-group"></i> <span>Kategoriler</span></div>
     <div class="menu-item" onclick="switchTab('support')"><i class="fas fa-headset"></i> <span>Destek Talepleri</span></div>
+    <div class="menu-item" onclick="switchTab('community')"><i class="fas fa-users"></i> <span>Topluluk</span></div>
     <div class="menu-item logout-item" onclick="logoutSystem()"><i class="fas fa-sign-out-alt"></i> <span>Çıkış Yap</span></div>
 </aside>
 
 <main class="main-content">
+    <!-- DASHBOARD -->
     <div id="dashboardTab" class="tab-pane">
         <div class="stats-grid">
             <div class="stat-card"><h4>📦 Toplam Sipariş</h4><div class="value" id="statTotalOrders">0</div></div>
@@ -403,12 +414,13 @@
             <div class="table-wrapper">
                 <table id="recentOrdersTable">
                     <thead><tr><th>Sipariş Kodu</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
-                    <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr>
+                    <tbody><tr><td colspan="6" class="loading">Yükleniyor...<\/td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- SİPARİŞLER -->
     <div id="ordersTab" class="tab-pane" style="display:none;">
         <div class="section-title"><i class="fas fa-truck-fast" style="color: var(--primary);"></i> Tüm Sipariş Yönetimi</div>
         <div class="search-area">
@@ -424,8 +436,7 @@
         <div class="table-wrapper">
             <table id="allOrdersTable">
                 <thead><tr><th>Kod</th><th>Kullanıcı</th><th>Ad Soyad</th><th>Hizmet</th><th>Miktar</th><th>Link</th><th>Tutar</th><th>Kalan</th><th>Tarih</th><th>Durum</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="11" class="loading">Yükleniyor...</td></tr>
-                </tbody>
+                <tbody><tr><td colspan="11" class="loading">Yükleniyor...<\/td></tr></tbody>
             </table>
         </div>
         <div class="admin-note">
@@ -434,17 +445,37 @@
         </div>
     </div>
 
+    <!-- BAKİYE TALEPLERİ (Havale + Shopier) -->
     <div id="paymentsTab" class="tab-pane" style="display:none;">
-        <div class="section-title"><i class="fas fa-money-bill-wave" style="color: var(--success);"></i> Bakiye Yükleme Talepleri</div>
+        <div class="section-title">
+            <i class="fas fa-money-bill-wave" style="color: var(--success);"></i> 
+            Bakiye Talepleri
+            <button class="btn-sm btn-primary" onclick="loadAllPayments()" style="margin-left: auto;">
+                <i class="fas fa-sync-alt"></i> Yenile
+            </button>
+        </div>
+        
+        <!-- Havale/EFT Talepleri -->
+        <div class="section-title" style="font-size: 1.2rem; margin-top: 10px;">
+            <i class="fas fa-building-columns"></i> Havale/EFT Talepleri
+        </div>
         <div class="table-wrapper">
             <table id="paymentRequestsTable">
                 <thead><tr><th>Kullanıcı</th><th>Ad Soyad</th><th>Tarih</th><th>Miktar</th><th>Talep Kodu</th><th>İşlem</th></tr></thead>
-                <tbody><tr><td colspan="6" class="loading">Yükleniyor...</td></tr>
-                </tbody>
+                <tbody><tr><td colspan="6" class="loading">Yükleniyor...<\/td></tr></tbody>
             </table>
+        </div>
+        
+        <!-- Shopier Ödeme Talepleri -->
+        <div class="section-title" style="font-size: 1.2rem; margin-top: 30px;">
+            <i class="fas fa-credit-card"></i> Shopier Ödeme Talepleri
+        </div>
+        <div id="shopierPaymentsList" class="orders-container">
+            <p class="loading">Yükleniyor...</p>
         </div>
     </div>
 
+    <!-- KULLANICILAR -->
     <div id="usersTab" class="tab-pane" style="display:none;">
         <div class="section-title"><i class="fas fa-users" style="color: var(--secondary);"></i> Kullanıcı Yönetimi</div>
         <div class="search-area">
@@ -456,12 +487,12 @@
         <div class="table-wrapper">
             <table id="usersManagementTable">
                 <thead><tr><th>E-posta</th><th>Ad Soyad</th><th>Şifre</th><th>Bakiye (₺)</th><th>Sipariş Sayısı</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr></thead>
-                <tbody><tr><td colspan="7" class="loading">Yükleniyor...</td></tr>
-                </tbody>
+                <tbody><tr><td colspan="7" class="loading">Yükleniyor...<\/td></tr></tbody>
             </table>
         </div>
     </div>
 
+    <!-- AYARLAR -->
     <div id="settingsTab" class="tab-pane" style="display:none;">
         <div class="section-title"><i class="fas fa-cog" style="color: var(--info);"></i> Sistem Ayarları</div>
         <div class="stats-grid">
@@ -476,39 +507,39 @@
         </div>
     </div>
 
+    <!-- KATEGORİLER -->
     <div id="categoriesTab" class="tab-pane" style="display:none;">
         <div class="section-title"><i class="fas fa-layer-group" style="color: var(--success);"></i> Kategori ve Hizmet Yönetimi</div>
         <div class="table-wrapper">
             <table id="categoriesTable">
                 <thead><tr><th>Kategori Kodu</th><th>Kategori Adı</th><th>Hizmet Sayısı</th><th>İşlemler</th></tr></thead>
-                <tbody id="categoriesList"><tr><td colspan="4" class="loading">Yükleniyor...</td></tr>
-                </tbody>
+                <tbody id="categoriesList"><tr><td colspan="4" class="loading">Yükleniyor...<\/td></tr></tbody>
             </table>
         </div>
         <div class="admin-note" style="border-left-color: var(--success); margin-top: 20px;">
             <h4>➕ Yeni Kategori Ekle</h4>
             <div style="display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap;">
-                <input type="text" id="newCatCode" placeholder="Kategori Kodu (facebook, twitter)" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-                <input type="text" id="newCatName" placeholder="Kategori Adı (👍 Facebook)" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-                <button class="btn-sm btn-success" onclick="addCategory()" style="padding: 0 20px;">Kategori Ekle</button>
+                <input type="text" id="newCatCode" placeholder="Kategori Kodu" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="text" id="newCatName" placeholder="Kategori Adı" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <button class="btn-sm btn-success" onclick="addCategory()">Kategori Ekle</button>
             </div>
         </div>
-        <<div id="servicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
-    <h4 id="servicePanelTitle">➕ Hizmet Ekle</h4>
-    <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
-        <input type="text" id="servName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-        <input type="text" id="servDesc" placeholder="📝 Açıklama (Örn: 1000 takipçi 1-3 günde gelir)" style="flex:3; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-        <input type="number" id="servPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-        <input type="number" id="servMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
-        <button class="btn-sm btn-primary" onclick="addService()">Hizmet Ekle</button>
-        <button class="btn-sm btn-danger" onclick="closeServicePanel()">İptal</button>
-    </div>
-</div>
+        <div id="servicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
+            <h4 id="servicePanelTitle">➕ Hizmet Ekle</h4>
+            <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
+                <input type="text" id="servName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="text" id="servDesc" placeholder="📝 Açıklama" style="flex:3; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="number" id="servPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="number" id="servMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <button class="btn-sm btn-primary" onclick="addService()">Hizmet Ekle</button>
+                <button class="btn-sm btn-danger" onclick="closeServicePanel()">İptal</button>
+            </div>
         </div>
         <div id="editServicePanel" style="display: none; margin-top: 20px; background: var(--card); border-radius: 1rem; padding: 20px;">
-            <h4>✏️ Hizmet Düzenle</h4>
+            <h4 id="editServicePanelTitle">✏️ Hizmet Düzenle</h4>
             <div style="display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
                 <input type="text" id="editServName" placeholder="Hizmet Adı" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <input type="text" id="editServDesc" placeholder="📝 Açıklama" style="flex:2; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
                 <input type="number" id="editServPrice" placeholder="Fiyat (₺/adet)" step="0.01" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
                 <input type="number" id="editServMin" placeholder="Min. Miktar" style="flex:1; background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
                 <button class="btn-sm btn-success" onclick="updateService()">Güncelle</button>
@@ -517,7 +548,7 @@
         </div>
     </div>
 
-    <!-- DESTEK TALEPLERİ TAB'İ -->
+    <!-- DESTEK TALEPLERİ -->
     <div id="supportTab" class="tab-pane" style="display:none;">
         <div class="section-title">
             <i class="fas fa-headset" style="color: var(--primary);"></i> 
@@ -547,6 +578,37 @@
             </div>
         </div>
     </div>
+
+    <!-- TOPLULUK -->
+    <div id="communityTab" class="tab-pane" style="display:none;">
+        <div class="section-title">
+            <i class="fas fa-users" style="color: var(--success);"></i> 
+            Topluluk Duyuruları
+        </div>
+        <div class="admin-note" style="border-left-color: var(--primary); margin-bottom: 25px;">
+            <h4 style="margin-bottom: 15px;">📢 Yeni Duyuru Oluştur</h4>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="announcementTitle" placeholder="Duyuru Başlığı" style="background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white;">
+                <textarea id="announcementContent" rows="3" placeholder="Duyuru içeriği..." style="background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: white; resize: vertical;"></textarea>
+                <div style="display: flex; gap: 12px;">
+                    <select id="announcementType" style="background: var(--darker); border: 1px solid var(--border); border-radius: 12px; padding: 10px; color: white;">
+                        <option value="info">ℹ️ Bilgi</option>
+                        <option value="warning">⚠️ Uyarı</option>
+                        <option value="success">✅ Başarılı</option>
+                        <option value="danger">🔴 Önemli</option>
+                    </select>
+                    <button class="btn-sm btn-primary" onclick="addAnnouncement()"><i class="fas fa-plus"></i> Duyuru Ekle</button>
+                </div>
+            </div>
+        </div>
+        <div class="section-title" style="margin-top: 20px;">
+            <i class="fas fa-bullhorn"></i> Mevcut Duyurular
+            <button class="btn-sm btn-warning" onclick="loadAnnouncements()" style="margin-left: auto;"><i class="fas fa-sync-alt"></i> Yenile</button>
+        </div>
+        <div id="announcementsList" class="orders-container">
+            <p class="loading">Yükleniyor...</p>
+        </div>
+    </div>
 </main>
 
 <script>
@@ -565,7 +627,12 @@
 
     const ADMINS = [{ username: "doganb", password: "472131" }, { username: "360admin", password: "360123" }];
     let allOrders = [], allUsers = [], allRequests = [];
+    let allCategories = {};
+    let currentCategoryCode = '';
+    let currentEditServiceIndex = null;
+    let currentEditServiceCatCode = null;
 
+    // ========== TEMEL FONKSİYONLAR ==========
     function showToast(msg, type = 'success') {
         const toast = document.createElement('div');
         toast.className = 'toast';
@@ -637,9 +704,8 @@
             <td><span class="badge badge-pending">${o.status}</span></td>
             <td><button class="btn-sm btn-primary" onclick="updateStatus('${o.code}','İşlemde')">İşlemde</button>
                 <button class="btn-sm btn-success" onclick="updateStatus('${o.code}','Tamamlandı')">Tamamla</button>
-                <div style="display:flex; gap:3px; margin-top:5px;"><button class="btn-sm btn-warning" onclick="fullRefundOrder('${o.code}')">💰 Tam İade</button>
-                <button class="btn-sm btn-warning" onclick="halfRefundOrder('${o.code}')">⚡ %50 İade</button>
-                <button class="btn-sm btn-danger" onclick="cancelOrderWithAmount('${o.code}')">❌ İade</button></div></td>
+                <div style="display:flex; gap:3px; margin-top:5px;"><button class="btn-sm btn-warning" onclick="fullRefundOrder('${o.code}')">Tam İade</button>
+                <button class="btn-sm btn-danger" onclick="cancelOrderWithAmount('${o.code}')">İade</button></div></td>
         </tr>`).join('');
     }
 
@@ -654,7 +720,7 @@
             <td><code>${r.code}</code></td>
             <td><button class="btn-sm btn-success" onclick="approveReq('${r.id}','${r.userEmail}',${r.amount})">Onayla</button>
                 <button class="btn-sm btn-danger" onclick="rejectReq('${r.id}')">Reddet</button></td>
-         </tr>`).join('');
+        </tr>`).join('');
     }
 
     function renderUsersTable(users) {
@@ -664,20 +730,54 @@
             <td>${u.email}</td>
             <td>${u.name || '-'}</td>
             <td>•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${u.email}', this)"></i></td>
-            <td style="color:var(--success);">${(u.balance || 0).toFixed(2)} ₺</td>
+            <td style="color:var(--success);">${(u.balance || 0).toFixed(2)} ₺
+                <div style="margin-top:5px;"><input type="number" id="balanceAmount_${u.email.replace(/\./g, '_')}" class="amount-input-small" placeholder="Tutar" style="width:100px;"> 
+                <button class="btn-sm btn-success" onclick="addCustomBalance('${u.email}')">+ Ekle</button>
+                <button class="btn-sm btn-danger" onclick="removeCustomBalance('${u.email}')">- Çıkar</button></div>
+            </td>
             <td>${(u.orders || []).length}</td>
             <td><small>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : '-'}</small></td>
-            <td><button class="btn-sm btn-success" onclick="addBalance('${u.email}')">Bakiye</button>
-                <button class="btn-sm btn-primary" onclick="editUser('${u.email}')">Düzenle</button>
+            <td><button class="btn-sm btn-primary" onclick="editUser('${u.email}')">Düzenle</button>
                 <button class="btn-sm btn-danger" onclick="delUser('${u.email}')">Sil</button></td>
-         </tr>`).join('');
+        </tr>`).join('');
     }
 
     async function updateStatus(code, status) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/status`).set(status); showToast(`Sipariş ${status}`); loadAllData(); } }
     async function updateRemaining(code) { const newVal = prompt("Kalan miktar:"); if(newVal) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/remaining`).set(parseInt(newVal)); loadAllData(); } } }
     async function approveReq(id, email, amount) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/balance`).set((snap.val()[entry[0]].balance || 0) + amount); await database.ref(`balance_requests/${id}`).remove(); loadAllData(); } }
     async function rejectReq(id) { await database.ref(`balance_requests/${id}`).remove(); loadAllData(); }
-    async function addBalance(email) { let m = prompt("Bakiye (₺):"); if(m) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/balance`).set((snap.val()[entry[0]].balance || 0) + parseFloat(m)); loadAllData(); } } }
+    
+    // Bakiye Ekle/Çıkar
+    async function addCustomBalance(email) {
+        const inputId = `balanceAmount_${email.replace(/\./g, '_')}`;
+        const amount = parseFloat(document.getElementById(inputId).value);
+        if(isNaN(amount) || amount <= 0) { alert('Geçerli bir tutar girin!'); return; }
+        const snap = await database.ref('users').once('value');
+        const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+        if(entry) { 
+            const newBalance = (snap.val()[entry[0]].balance || 0) + amount;
+            await database.ref(`users/${entry[0]}/balance`).set(newBalance);
+            showToast(`✅ ${amount} TL bakiye eklendi!`);
+            loadAllData();
+            document.getElementById(inputId).value = '';
+        }
+    }
+    
+    async function removeCustomBalance(email) {
+        const inputId = `balanceAmount_${email.replace(/\./g, '_')}`;
+        const amount = parseFloat(document.getElementById(inputId).value);
+        if(isNaN(amount) || amount <= 0) { alert('Geçerli bir tutar girin!'); return; }
+        const snap = await database.ref('users').once('value');
+        const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+        if(entry) { 
+            const newBalance = (snap.val()[entry[0]].balance || 0) - amount;
+            await database.ref(`users/${entry[0]}/balance`).set(newBalance);
+            showToast(`✅ ${amount} TL bakiye çıkarıldı!`);
+            loadAllData();
+            document.getElementById(inputId).value = '';
+        }
+    }
+    
     async function editUser(email) { const newName = prompt("Yeni ad:"); if(newName) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/name`).set(newName); loadAllData(); } } }
     async function delUser(email) { if(confirm("Sil?")) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}`).remove(); loadAllData(); } } }
     function showPass(email, el) { const u = allUsers.find(u => u.email === email); if(u) el.closest('td').innerHTML = `${u.password} <i class="fas fa-eye-slash" onclick="hidePass('${email}', this)"></i>`; }
@@ -691,7 +791,7 @@
     async function saveAdminNote() { await database.ref('admin_notes').set({ note: document.getElementById('adminNoteText').value, date: new Date().toISOString() }); showToast('Not kaydedildi'); }
     async function loadAdminNote() { const snap = await database.ref('admin_notes').once('value'); if(snap.val()) document.getElementById('adminNoteText').value = snap.val().note; }
 
-    // İADE FONKSİYONLARI
+    // İADE
     async function cancelOrderWithRefund(orderCode, customAmount = null) {
         if(!confirm("İptal ve iade yapılsın mı?")) return;
         const ordersSnap = await database.ref('orders').once('value');
@@ -718,9 +818,6 @@
     async function viewRefundHistory() { const snap = await database.ref('refund_logs').once('value'); const logs = snap.val(); if(!logs) { alert("İade kaydı yok"); return; } let msg = "📋 İADE GEÇMİŞİ\n\n"; for(const [k, v] of Object.entries(logs)) { msg += `${v.orderCode} - ${v.userEmail} - ${v.refundAmount}₺\n`; } alert(msg); }
 
     // KATEGORİ YÖNETİMİ
-    let allCategories = {};
-    let currentCategoryCode = '';
-
     async function loadCategories() { try { const snap = await database.ref('service_categories').once('value'); allCategories = snap.val() || {}; renderCategoriesTable(); } catch(e) { console.error(e); } }
     function renderCategoriesTable() {
         const tbody = document.getElementById('categoriesList');
@@ -728,203 +825,213 @@
         if(Object.keys(allCategories).length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="loading">📭 Henüz kategori yok</td></tr>'; return; }
         tbody.innerHTML = '';
         for(const [code, data] of Object.entries(allCategories)) {
-            tbody.innerHTML += `<tr><td><strong>${code}</strong></td>
+            tbody.innerHTML += `<tr>
+                <td><strong>${code}</strong></td>
                 <td><input type="text" value="${data.displayName}" data-code="${code}" class="catNameInput" style="background:var(--darker); border:1px solid var(--border); border-radius:8px; padding:5px 10px; color:white;"></td>
                 <td>${data.services ? data.services.length : 0}</td>
                 <td><button class="btn-sm btn-primary" onclick="showServices('${code}')">Hizmetler</button>
                 <button class="btn-sm btn-warning" onclick="openServicePanel('${code}', '${data.displayName}')">+ Hizmet</button>
-                <button class="btn-sm btn-danger" onclick="deleteCategory('${code}')">Sil</button></td></tr>`;
+                <button class="btn-sm btn-danger" onclick="deleteCategory('${code}')">Sil</button></td>
+            </tr>`;
         }
         document.querySelectorAll('.catNameInput').forEach(i => { i.onchange = function() { updateCategoryName(this.dataset.code, this.value); }; });
     }
     async function updateCategoryName(code, newName) { if(allCategories[code]) { allCategories[code].displayName = newName; await database.ref('service_categories').set(allCategories); showToast('Kategori adı güncellendi'); } }
     async function addCategory() { const code = document.getElementById('newCatCode').value.trim().toLowerCase(); const name = document.getElementById('newCatName').value.trim(); if(!code || !name) { alert("Kategori kodu ve adı girin!"); return; } if(allCategories[code]) { alert("Zaten var!"); return; } allCategories[code] = { displayName: name, services: [] }; await database.ref('service_categories').set(allCategories); renderCategoriesTable(); document.getElementById('newCatCode').value = ''; document.getElementById('newCatName').value = ''; showToast(`✅ "${name}" eklendi!`); }
     async function deleteCategory(code) { if(confirm(`"${code}" silinsin mi?`)) { delete allCategories[code]; await database.ref('service_categories').set(allCategories); renderCategoriesTable(); showToast("Kategori silindi"); } }
+    
     function showServices(catCode) { 
-    const cat = allCategories[catCode]; 
-    if(!cat?.services?.length) { 
-        alert("Hizmet yok"); 
-        return; 
-    } 
-    let msg = `📋 ${cat.displayName}\n\n`; 
-    cat.services.forEach((s, i) => { 
-        msg += `${i+1}. ${s.name}\n`;
-        msg += `   📝 ${s.desc || "Açıklama yok"}\n`;   // Açıklama satırı
-        msg += `   💰 ${s.price}₺ | Min: ${s.min}\n\n`; 
-    }); 
-    alert(msg); 
-}
+        const cat = allCategories[catCode]; 
+        if(!cat?.services?.length) { alert("Hizmet yok"); return; } 
+        let msg = `📋 ${cat.displayName}\n\n`; 
+        cat.services.forEach((s, i) => { msg += `${i+1}. ${s.name}\n   📝 ${s.desc || "Açıklama yok"}\n   💰 ${s.price}₺ | Min: ${s.min}\n   🔧 ID: ${i}\n\n`; }); 
+        const id = prompt(msg + "Düzenlemek için ID girin:");
+        if(id !== null && !isNaN(parseInt(id))) { const index = parseInt(id); if(cat.services[index]) openEditServicePanel(catCode, index); else alert("Geçersiz ID!"); }
+    }
+    
+    function openEditServicePanel(catCode, index) {
+        currentEditServiceCatCode = catCode;
+        currentEditServiceIndex = index;
+        const service = allCategories[catCode].services[index];
+        document.getElementById('editServName').value = service.name;
+        document.getElementById('editServDesc').value = service.desc || '';
+        document.getElementById('editServPrice').value = service.price;
+        document.getElementById('editServMin').value = service.min;
+        document.getElementById('editServicePanel').style.display = 'block';
+        document.getElementById('editServicePanelTitle').innerHTML = `✏️ Hizmet Düzenle: ${service.name}`;
+    }
+    
     function openServicePanel(catCode, catName) { 
-    currentCategoryCode = catCode; 
-    document.getElementById('servicePanelTitle').innerHTML = `➕ Hizmet Ekle: ${catName}`; 
-    document.getElementById('servicePanel').style.display = 'block'; 
-    document.getElementById('servName').value = ''; 
-    document.getElementById('servDesc').value = '';   // YENİ
-    document.getElementById('servPrice').value = ''; 
-    document.getElementById('servMin').value = ''; 
-}
+        currentCategoryCode = catCode; 
+        document.getElementById('servicePanelTitle').innerHTML = `➕ Hizmet Ekle: ${catName}`; 
+        document.getElementById('servicePanel').style.display = 'block'; 
+        document.getElementById('servName').value = ''; 
+        document.getElementById('servDesc').value = ''; 
+        document.getElementById('servPrice').value = ''; 
+        document.getElementById('servMin').value = ''; 
+    }
+    
     async function addService() { 
-    const name = document.getElementById('servName').value.trim(); 
-    const desc = document.getElementById('servDesc').value.trim();   // YENİ
-    const price = parseFloat(document.getElementById('servPrice').value); 
-    const min = parseInt(document.getElementById('servMin').value); 
-    if(!name || isNaN(price) || isNaN(min)) { 
-        alert("Tüm alanları doldurun!"); 
-        return; 
-    } 
-    if(!allCategories[currentCategoryCode]) { 
-        alert("Kategori bulunamadı!"); 
-        return; 
-    } 
-    if(!allCategories[currentCategoryCode].services) 
-        allCategories[currentCategoryCode].services = []; 
+        const name = document.getElementById('servName').value.trim(); 
+        const desc = document.getElementById('servDesc').value.trim(); 
+        const price = parseFloat(document.getElementById('servPrice').value); 
+        const min = parseInt(document.getElementById('servMin').value); 
+        if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } 
+        if(!allCategories[currentCategoryCode]) { alert("Kategori bulunamadı!"); return; } 
+        if(!allCategories[currentCategoryCode].services) allCategories[currentCategoryCode].services = []; 
+        allCategories[currentCategoryCode].services.push({ name, desc: desc || "Hızlı teslimat, kaliteli hizmet", price, min }); 
+        await database.ref('service_categories').set(allCategories); 
+        document.getElementById('servicePanel').style.display = 'none'; 
+        renderCategoriesTable(); 
+        alert(`✅ "${name}" eklendi!`); 
+    }
     
-    // Açıklama ile birlikte kaydet
-    allCategories[currentCategoryCode].services.push({ 
-        name: name, 
-        desc: desc || "Hızlı teslimat, kaliteli hizmet",  // Varsayılan açıklama
-        price: price, 
-        min: min 
-    }); 
+    async function updateService() { 
+        const name = document.getElementById('editServName').value.trim(); 
+        const desc = document.getElementById('editServDesc').value.trim(); 
+        const price = parseFloat(document.getElementById('editServPrice').value); 
+        const min = parseInt(document.getElementById('editServMin').value); 
+        if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } 
+        if(!allCategories[currentEditServiceCatCode]) { alert("Kategori bulunamadı!"); return; }
+        if(currentEditServiceIndex === null || !allCategories[currentEditServiceCatCode].services[currentEditServiceIndex]) { alert("Hizmet bulunamadı!"); return; }
+        allCategories[currentEditServiceCatCode].services[currentEditServiceIndex] = { name, desc: desc || "Hızlı teslimat, kaliteli hizmet", price, min };
+        await database.ref('service_categories').set(allCategories); 
+        document.getElementById('editServicePanel').style.display = 'none'; 
+        renderCategoriesTable(); 
+        showToast(`✅ "${name}" güncellendi!`);
+        currentEditServiceIndex = null;
+        currentEditServiceCatCode = null;
+    }
     
-    await database.ref('service_categories').set(allCategories); 
-    document.getElementById('servicePanel').style.display = 'none'; 
-    renderCategoriesTable(); 
-    alert(`✅ "${name}" eklendi!`); 
-}
     function closeServicePanel() { document.getElementById('servicePanel').style.display = 'none'; }
-    function closeEditPanel() { document.getElementById('editServicePanel').style.display = 'none'; }
-    async function updateService() { const name = document.getElementById('editServName').value.trim(); const price = parseFloat(document.getElementById('editServPrice').value); const min = parseInt(document.getElementById('editServMin').value); if(!name || isNaN(price) || isNaN(min)) { alert("Tüm alanları doldurun!"); return; } alert("Güncelleme özelliği aktif değil"); closeEditPanel(); }
+    function closeEditPanel() { document.getElementById('editServicePanel').style.display = 'none'; currentEditServiceIndex = null; currentEditServiceCatCode = null; }
 
-    // ======================= DESTEK TALEP SİSTEMİ =======================
+    // SHOPIER ÖDEME TALEPLERİ
+    async function loadAllPayments() {
+        await renderPaymentsTable();
+        await loadShopierPayments();
+    }
     
-    async function loadAllSupportTickets() {
+    async function loadShopierPayments() {
+        const container = document.getElementById('shopierPaymentsList');
+        if (!container) return;
         try {
-            const snapshot = await database.ref('support_tickets').once('value');
-            const tickets = snapshot.val();
-            if (!tickets) return {};
-            return tickets;
-        } catch(e) {
-            console.error("Destek talepleri yüklenemedi:", e);
-            return {};
-        }
+            const snapshot = await database.ref('payment_requests').once('value');
+            const payments = snapshot.val();
+            if (!payments || Object.keys(payments).length === 0) {
+                container.innerHTML = '<p class="loading">📭 Henüz Shopier ödeme talebi yok.</p>';
+                return;
+            }
+            const paymentsList = Object.entries(payments).map(([id, p]) => ({ id, ...p }));
+            paymentsList.sort((a, b) => new Date(b.date) - new Date(a.date));
+            container.innerHTML = paymentsList.map(payment => `
+                <div class="order-card" style="border-left: 4px solid ${payment.status === 'approved' ? '#10b981' : '#f59e0b'}; margin-bottom: 15px;">
+                    <div class="order-card-header">
+                        <span class="order-code"><i class="fas fa-credit-card"></i> ${payment.code || payment.orderId || 'BELİRSİZ'}</span>
+                        <span class="badge ${payment.status === 'approved' ? 'badge-completed' : 'badge-pending'}">${payment.status === 'approved' ? '✅ Onaylandı' : '⏳ Bekliyor'}</span>
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <div><strong>👤 ${payment.userName || '-'}</strong> (${payment.userEmail})</div>
+                        <div>📞 Tel: ${payment.userPhone || '-'}</div>
+                        <div>💰 Tutar: <strong style="color: #22c55e;">${payment.amount} TL</strong> ${payment.bonus ? `(+%${payment.bonus} bonus)` : ''}</div>
+                        <div>📅 Tarih: ${new Date(payment.date).toLocaleString('tr-TR')}</div>
+                    </div>
+                    ${payment.status !== 'approved' ? `
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn-sm btn-success" onclick="approveShopierPayment('${payment.id}', '${payment.userEmail}', ${payment.amount})"><i class="fas fa-check"></i> Onayla</button>
+                            <button class="btn-sm btn-danger" onclick="rejectShopierPayment('${payment.id}')"><i class="fas fa-times"></i> Reddet</button>
+                        </div>
+                    ` : `<div style="margin-top: 10px;"><span class="badge badge-completed">✅ Onaylandı - ${payment.approvedAt ? new Date(payment.approvedAt).toLocaleString('tr-TR') : '-'}</span></div>`}
+                </div>
+            `).join('');
+        } catch(e) { console.error(e); container.innerHTML = '<p class="loading">❌ Yüklenirken hata oluştu</p>'; }
+    }
+    
+    async function approveShopierPayment(paymentId, userEmail, amount) {
+        if (!confirm(`${amount} TL bakiyeyi onaylamak istediğinize emin misiniz?`)) return;
+        try {
+            await database.ref(`payment_requests/${paymentId}/status`).set('approved');
+            await database.ref(`payment_requests/${paymentId}/approvedAt`).set(new Date().toISOString());
+            const usersSnap = await database.ref('users').once('value');
+            const users = usersSnap.val();
+            let userKey = null;
+            for (const [k, v] of Object.entries(users || {})) { if (v.email === userEmail) { userKey = k; break; } }
+            if (userKey) {
+                const oldBalance = users[userKey].balance || 0;
+                await database.ref(`users/${userKey}/balance`).set(oldBalance + amount);
+                showToast(`✅ ${amount} TL bakiye eklendi!`, 'success');
+            } else { showToast('❌ Kullanıcı bulunamadı!', 'danger'); }
+            loadAllPayments();
+            loadAllData();
+        } catch(e) { console.error(e); showToast('Onaylama sırasında hata oluştu!', 'danger'); }
+    }
+    
+    async function rejectShopierPayment(paymentId) {
+        if (!confirm('Bu ödeme talebini reddetmek istediğinize emin misiniz?')) return;
+        try {
+            await database.ref(`payment_requests/${paymentId}/status`).set('rejected');
+            await database.ref(`payment_requests/${paymentId}/rejectedAt`).set(new Date().toISOString());
+            showToast('✅ Ödeme talebi reddedildi!', 'success');
+            loadAllPayments();
+        } catch(e) { console.error(e); showToast('Reddetme sırasında hata oluştu!', 'danger'); }
     }
 
+    // DESTEK TALEPLERİ
+    async function loadAllSupportTickets() { try { const snapshot = await database.ref('support_tickets').once('value'); const tickets = snapshot.val(); if (!tickets) return {}; return tickets; } catch(e) { console.error(e); return {}; } }
     async function adminLoadAllTickets() {
         const allTickets = await loadAllSupportTickets();
         const ticketsArray = Object.entries(allTickets).map(([id, t]) => ({ ...t, firebaseId: id }));
         ticketsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
         const container = document.getElementById('adminTicketsContainer');
         if (!container) return;
-        
-        if (ticketsArray.length === 0) {
-            container.innerHTML = '<p class="loading">📭 Henüz destek talebi yok.</p>';
-            return;
-        }
-        
+        if (ticketsArray.length === 0) { container.innerHTML = '<p class="loading">📭 Henüz destek talebi yok.</p>'; return; }
         container.innerHTML = ticketsArray.map(ticket => `
             <div style="background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border);">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
                     <span style="font-family: monospace; color: var(--primary); font-weight: bold;">${escapeHtmlSupport(ticket.ticketId)}</span>
                     <select onchange="adminChangeTicketStatus('${ticket.firebaseId}', this.value)" style="background: var(--darker); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; color: white;">
-                        <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>🟡 Açık (Beklemede)</option>
-                        <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>✅ Çözüldü (Kapalı)</option>
+                        <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>🟡 Açık</option>
+                        <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>✅ Çözüldü</option>
                     </select>
                 </div>
                 <div><strong>📌 ${escapeHtmlSupport(ticket.subject)}</strong></div>
                 <div style="font-size:0.85rem; margin: 5px 0;">👤 ${escapeHtmlSupport(ticket.userName)} (${ticket.userId})</div>
                 <div style="font-size:0.75rem; color: var(--text-muted);">📅 ${new Date(ticket.createdAt).toLocaleString('tr-TR')} | 💬 ${ticket.messages.length} mesaj</div>
-                <button style="margin-top: 10px; background: var(--primary); border: none; padding: 6px 12px; border-radius: 20px; color: white; cursor: pointer;" onclick="adminOpenTicketDetail('${ticket.firebaseId}')">
-                    <i class="fas fa-reply"></i> Cevapla
-                </button>
+                <button style="margin-top: 10px; background: var(--primary); border: none; padding: 6px 12px; border-radius: 20px; color: white; cursor: pointer;" onclick="adminOpenTicketDetail('${ticket.firebaseId}')"><i class="fas fa-reply"></i> Cevapla</button>
             </div>
         `).join('');
     }
-
-    let currentTicketFirebaseId = null;
-    let currentTicketData = null;
-
+    let currentTicketFirebaseId = null, currentTicketData = null;
     async function adminOpenTicketDetail(ticketFirebaseId) {
         const allTickets = await loadAllSupportTickets();
         const ticket = allTickets[ticketFirebaseId];
-        
-        if (!ticket) {
-            alert('Talep bulunamadı');
-            return;
-        }
-        
+        if (!ticket) { alert('Talep bulunamadı'); return; }
         currentTicketFirebaseId = ticketFirebaseId;
         currentTicketData = ticket;
-        
         document.getElementById('detailTicketSubject').innerHTML = `<i class="fas fa-ticket-alt"></i> ${escapeHtmlSupport(ticket.subject)} <span style="font-size:0.8rem;">(${ticket.ticketId})</span>`;
         document.getElementById('detailTicketStatus').innerHTML = `Durum: <span style="color: ${ticket.status === 'open' ? '#f59e0b' : '#22c55e'}">${ticket.status === 'open' ? '🟡 Beklemede' : '✅ Çözüldü'}</span> | 👤 ${escapeHtmlSupport(ticket.userName)} | 📧 ${ticket.userId}`;
-        
         const container = document.getElementById('ticketMessagesContainer');
-        container.innerHTML = ticket.messages.map(msg => `
-            <div style="margin-bottom: 15px; padding: 12px; background: ${msg.sender === 'admin' ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius: 12px; border-left: 3px solid ${msg.sender === 'admin' ? 'var(--primary)' : 'var(--secondary)'}">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <strong>${escapeHtmlSupport(msg.senderName)} ${msg.sender === 'admin' ? '<span style="font-size:0.7rem;">(Destek Ekibi)</span>' : '(Müşteri)'}</strong>
-                    <span style="font-size:0.7rem; color: var(--text-muted);">${new Date(msg.timestamp).toLocaleString('tr-TR')}</span>
-                </div>
-                <div style="font-size:0.9rem; line-height: 1.5;">${escapeHtmlSupport(msg.message).replace(/\n/g, '<br>')}</div>
-            </div>
-        `).join('');
-        
+        container.innerHTML = ticket.messages.map(msg => `<div style="margin-bottom: 15px; padding: 12px; background: ${msg.sender === 'admin' ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.05)'}; border-radius: 12px; border-left: 3px solid ${msg.sender === 'admin' ? 'var(--primary)' : 'var(--secondary)'}"><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><strong>${escapeHtmlSupport(msg.senderName)} ${msg.sender === 'admin' ? '<span style="font-size:0.7rem;">(Destek Ekibi)</span>' : '(Müşteri)'}</strong><span style="font-size:0.7rem; color: var(--text-muted);">${new Date(msg.timestamp).toLocaleString('tr-TR')}</span></div><div style="font-size:0.9rem; line-height: 1.5;">${escapeHtmlSupport(msg.message).replace(/\n/g, '<br>')}</div></div>`).join('');
         document.getElementById('replyMessageAdmin').value = '';
         document.getElementById('ticketDetailModal').style.display = 'flex';
     }
-
     async function adminSendReplyToTicket() {
-        if (!currentTicketFirebaseId || !currentTicketData) {
-            alert('Talep bilgisi bulunamadı');
-            return;
-        }
-        
+        if (!currentTicketFirebaseId || !currentTicketData) { alert('Talep bilgisi bulunamadı'); return; }
         const reply = document.getElementById('replyMessageAdmin').value.trim();
-        if (!reply) {
-            alert('Lütfen bir yanıt yazın.');
-            return;
-        }
-        
-        const newMessage = {
-            sender: 'admin',
-            senderName: '360 Medya Destek',
-            message: reply,
-            timestamp: new Date().toISOString()
-        };
-        
+        if (!reply) { alert('Lütfen bir yanıt yazın.'); return; }
+        const newMessage = { sender: 'admin', senderName: '360 Medya Destek', message: reply, timestamp: new Date().toISOString() };
         try {
             const ticketRef = database.ref(`support_tickets/${currentTicketFirebaseId}`);
             const updatedMessages = [...currentTicketData.messages, newMessage];
-            await ticketRef.update({
-                messages: updatedMessages,
-                lastUpdated: new Date().toISOString(),
-                status: 'open'
-            });
-            
+            await ticketRef.update({ messages: updatedMessages, lastUpdated: new Date().toISOString(), status: 'open' });
             currentTicketData.messages = updatedMessages;
-            
             const container = document.getElementById('ticketMessagesContainer');
-            container.innerHTML += `
-                <div style="margin-bottom: 15px; padding: 12px; background: rgba(99,102,241,0.15); border-radius: 12px; border-left: 3px solid var(--primary)">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <strong>360 Medya Destek (Destek Ekibi)</strong>
-                        <span style="font-size:0.7rem; color: var(--text-muted);">${new Date().toLocaleString('tr-TR')}</span>
-                    </div>
-                    <div style="font-size:0.9rem;">${escapeHtmlSupport(reply).replace(/\n/g, '<br>')}</div>
-                </div>
-            `;
+            container.innerHTML += `<div style="margin-bottom: 15px; padding: 12px; background: rgba(99,102,241,0.15); border-radius: 12px; border-left: 3px solid var(--primary)"><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><strong>360 Medya Destek (Destek Ekibi)</strong><span style="font-size:0.7rem; color: var(--text-muted);">${new Date().toLocaleString('tr-TR')}</span></div><div style="font-size:0.9rem;">${escapeHtmlSupport(reply).replace(/\n/g, '<br>')}</div></div>`;
             document.getElementById('replyMessageAdmin').value = '';
             adminLoadAllTickets();
             showToastAdminMsg('✅ Cevap gönderildi!');
-            
-        } catch(e) {
-            console.error("Yanıt gönderme hatası:", e);
-            alert('Yanıt gönderilirken bir hata oluştu.');
-        }
+        } catch(e) { console.error(e); alert('Yanıt gönderilirken bir hata oluştu.'); }
     }
-
     async function adminChangeTicketStatus(ticketFirebaseId, newStatus) {
         if (!ticketFirebaseId) return;
         try {
@@ -932,42 +1039,75 @@
             await database.ref(`support_tickets/${ticketFirebaseId}/lastUpdated`).set(new Date().toISOString());
             showToastAdminMsg('✅ Durum güncellendi');
             adminLoadAllTickets();
-        } catch(e) {
-            console.error("Durum güncelleme hatası:", e);
-            alert('Durum güncellenirken hata oluştu.');
-        }
+        } catch(e) { console.error(e); alert('Durum güncellenirken hata oluştu.'); }
     }
+    function closeTicketDetailModalAdmin() { document.getElementById('ticketDetailModal').style.display = 'none'; currentTicketFirebaseId = null; currentTicketData = null; }
+    function showToastAdminMsg(msg) { const toast = document.createElement('div'); toast.className = 'toast'; toast.style.position = 'fixed'; toast.style.bottom = '20px'; toast.style.right = '20px'; toast.style.background = 'var(--card)'; toast.style.borderLeft = '4px solid var(--success)'; toast.style.padding = '12px 20px'; toast.style.borderRadius = '12px'; toast.style.zIndex = '10001'; toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+    function escapeHtmlSupport(str) { if (!str) return ''; return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
-    function closeTicketDetailModalAdmin() {
-        document.getElementById('ticketDetailModal').style.display = 'none';
-        currentTicketFirebaseId = null;
-        currentTicketData = null;
+    // TOPLULUK
+    async function loadAnnouncements() {
+        try {
+            const snapshot = await database.ref('announcements').once('value');
+            const announcements = snapshot.val();
+            const container = document.getElementById('announcementsList');
+            if (!announcements || Object.keys(announcements).length === 0) { container.innerHTML = '<p class="loading">📭 Henüz duyuru yok.</p>'; return; }
+            const announcementsArray = Object.entries(announcements).map(([id, data]) => ({ id, ...data }));
+            announcementsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+            container.innerHTML = announcementsArray.map(ann => `
+                <div class="order-card" style="border-left: 4px solid ${getAnnouncementTypeColor(ann.type)};">
+                    <div class="order-card-header">
+                        <span class="order-code"><i class="fas fa-bullhorn"></i> ${escapeHtmlSupport(ann.title)}</span>
+                        <div><button class="btn-sm btn-warning" onclick="editAnnouncement('${ann.id}')"><i class="fas fa-edit"></i> Düzenle</button>
+                        <button class="btn-sm btn-danger" onclick="deleteAnnouncement('${ann.id}')"><i class="fas fa-trash"></i> Sil</button></div>
+                    </div>
+                    <div style="margin: 10px 0;">${escapeHtmlSupport(ann.content)}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-calendar"></i> ${new Date(ann.date).toLocaleString('tr-TR')}</span>
+                        <span class="badge ${getAnnouncementTypeBadge(ann.type)}">${getAnnouncementTypeText(ann.type)}</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch(e) { console.error(e); }
     }
-
-    function showToastAdminMsg(msg) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.style.position = 'fixed';
-        toast.style.bottom = '20px';
-        toast.style.right = '20px';
-        toast.style.background = 'var(--card)';
-        toast.style.borderLeft = '4px solid var(--success)';
-        toast.style.padding = '12px 20px';
-        toast.style.borderRadius = '12px';
-        toast.style.zIndex = '10001';
-        toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+    function getAnnouncementTypeColor(type) { const colors = { info: '#3b82f6', warning: '#f59e0b', success: '#10b981', danger: '#ef4444' }; return colors[type] || '#6366f1'; }
+    function getAnnouncementTypeBadge(type) { const badges = { info: 'badge-processing', warning: 'badge-pending', success: 'badge-completed', danger: 'badge-cancelled' }; return badges[type] || 'badge-processing'; }
+    function getAnnouncementTypeText(type) { const texts = { info: 'ℹ️ Bilgi', warning: '⚠️ Uyarı', success: '✅ Başarılı', danger: '🔴 Önemli' }; return texts[type] || 'ℹ️ Bilgi'; }
+    async function addAnnouncement() {
+        const title = document.getElementById('announcementTitle').value.trim();
+        const content = document.getElementById('announcementContent').value.trim();
+        const type = document.getElementById('announcementType').value;
+        if (!title || !content) { showToast('Başlık ve içerik giriniz!', 'danger'); return; }
+        const newAnnouncement = { id: Date.now().toString(), title, content, type, date: new Date().toISOString() };
+        try {
+            const snapshot = await database.ref('announcements').once('value');
+            let announcements = snapshot.val() || {};
+            announcements[newAnnouncement.id] = newAnnouncement;
+            await database.ref('announcements').set(announcements);
+            showToast('✅ Duyuru eklendi!', 'success');
+            document.getElementById('announcementTitle').value = '';
+            document.getElementById('announcementContent').value = '';
+            loadAnnouncements();
+        } catch(e) { console.error(e); showToast('Duyuru eklenirken hata oluştu!', 'danger'); }
     }
-
-    function escapeHtmlSupport(str) {
-        if (!str) return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+    async function editAnnouncement(id) {
+        const snapshot = await database.ref(`announcements/${id}`).once('value');
+        const ann = snapshot.val();
+        if (!ann) { showToast('Duyuru bulunamadı!', 'danger'); return; }
+        const newTitle = prompt('Yeni başlık:', ann.title);
+        if (newTitle === null) return;
+        const newContent = prompt('Yeni içerik:', ann.content);
+        if (newContent === null) return;
+        const updated = { ...ann, title: newTitle, content: newContent, date: new Date().toISOString() };
+        await database.ref(`announcements/${id}`).set(updated);
+        showToast('✅ Duyuru güncellendi!', 'success');
+        loadAnnouncements();
+    }
+    async function deleteAnnouncement(id) {
+        if (!confirm('Bu duyuruyu silmek istediğinize emin misiniz?')) return;
+        await database.ref(`announcements/${id}`).remove();
+        showToast('✅ Duyuru silindi!', 'success');
+        loadAnnouncements();
     }
 
     function switchTab(tabName) {
@@ -979,6 +1119,8 @@
         if(activeMenu) activeMenu.classList.add('active');
         if(tabName === 'categories') loadCategories();
         if(tabName === 'support') adminLoadAllTickets();
+        if(tabName === 'community') loadAnnouncements();
+        if(tabName === 'payments') loadAllPayments();
     }
 
     window.onload = () => {
