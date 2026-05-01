@@ -332,7 +332,10 @@
 <header>
     <div class="header-container">
         <div class="logo" onclick="window.location.href='index.html'">🔥 360 Medya</div>
-        <div class="nav-links">
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="nav-links" id="navLinks">
             <a href="index.html">Ana Sayfa</a>
             <a href="siparis.html">Yeni Sipariş</a>
             <a href="siparislerim.html">Siparişler</a>
@@ -345,15 +348,9 @@
             <a href="referans.html">Referans</a>
         </div>
         <div class="right-area">
-            <div class="balance-box" onclick="window.location.href='bakiye.html'">
-                <i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺
-            </div>
-            <div id="loginButton" class="auth-btn" onclick="openAuthModal()">
-                <i class="fas fa-sign-in-alt"></i> Giriş Yap
-            </div>
-            <div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Çıkış
-            </div>
+            <div class="balance-box" onclick="window.location.href='bakiye.html'"><i class="fas fa-coins"></i> <span id="userBalance">0.00</span> ₺</div>
+            <div id="loginButton" class="auth-btn" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</div>
+            <div id="logoutButton" class="auth-btn logout-btn" style="display:none;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</div>
         </div>
     </div>
 </header>
@@ -568,6 +565,31 @@
         document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
         if (!wasActive) item.classList.add('active');
     }
+
+// Mobil menü aç/kapa
+function toggleMobileMenu() {
+    const navLinks = document.getElementById('navLinks');
+    navLinks.classList.toggle('show');
+}
+
+// Menü dışına tıklayınca kapat
+document.addEventListener('click', function(event) {
+    const navLinks = document.getElementById('navLinks');
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    if (navLinks && menuBtn) {
+        if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
+            navLinks.classList.remove('show');
+        }
+    }
+});
+
+// Sayfa her yüklendiğinde menü kapalı olsun
+window.addEventListener('resize', function() {
+    const navLinks = document.getElementById('navLinks');
+    if (window.innerWidth > 768 && navLinks) {
+        navLinks.classList.remove('show');
+    }
+});
 </script>
 <!-- Auth Modal -->
 <div id="authModal" class="auth-modal">
