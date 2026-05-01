@@ -359,7 +359,7 @@
         <i class="fas fa-clock"></i> ⏳ Bekleyen Taleplerim
     </div>
     <table class="transaction-table">
-        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th><th>TALEP KODU</th></tr></thead>
+        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th><th>TALEP KODU</th><tr></thead>
         <tbody id="pendingRequestsList"><tr><td colspan="6">Yükleniyor...<\/td></tr></tbody>
     </table>
     
@@ -377,7 +377,7 @@
         <i class="fas fa-history"></i> 📋 Tüm İşlem Geçmişim
     </div>
     <table class="transaction-table">
-        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th><tr></thead>
+        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th></tr></thead>
         <tbody id="transactionsList"><tr><td colspan="5">Yükleniyor...<\/td></tr></tbody>
     </table>
 </main>
@@ -427,161 +427,197 @@
     let isLoginMode = true;
     
     // ============ HER TUTAR İÇİN 5 FARKLI SHOPIER LİNKİ ============
-const shopierLinks = {
-    50: [
-        "https://www.shopier.com/s/payment/454407284?isApiOrder=1",
-        "https://www.shopier.com/s/payment/273619637?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/321704697?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/318892518?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/954825417?isApiOrder=1&type=5"
-    ],
-    100: [
-        "https://www.shopier.com/s/payment/191338747?isApiOrder=1",
-        "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=5"
-    ],
-    150: [
-        "https://www.shopier.com/s/payment/959667531?isApiOrder=1",
-        "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=5"
-    ],
-    200: [
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=5"
-    ],
-    250: [
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=5"
-    ],
-    300: [
-        "https://www.shopier.com/s/payment/836368537?isApiOrder=1",
-        "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=5"
-    ],
-    350: [
-        "https://www.shopier.com/s/payment/580918858?isApiOrder=1",
-        "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=5"
-    ],
-    400: [
-        "https://www.shopier.com/s/payment/509081680?isApiOrder=1",
-        "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=2",
-        "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=5"
-    ],
-    450: [
-        "https://www.shopier.com/s/payment/126972653?isApiOrder=1",
-        "https://www.shopier.com/s/payment/773323222?isApiOrder=1=1&type=2",
-        "https://www.shopier.com/s/payment/625296820?isApiOrder=1&type=3",
-        "https://www.shopier.com/s/payment/625296820?isApiOrder=1&type=4",
-        "https://www.shopier.com/s/payment/625296820?isApiOrder=1&type=5"
-    ],
-    500: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=500",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=5"
-    ],
-    550: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=550",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=5"
-    ],
-    600: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=600",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=5"
-    ],
-    650: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=650",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=5"
-    ],
-    700: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=700",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=5"
-    ],
-    750: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=750",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=5"
-    ],
-    800: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=800",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=5"
-    ],
-    850: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=850",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=5"
-    ],
-    900: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=900",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=5"
-    ],
-    950: [
-        "https://www.shopier.com/TechnicTrader/34691307?amount=950",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=2",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=3",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=4",
-        "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=5"
-    ],
-    1000: [
-        "https://www.shopier.com/s/payment/604620080?isApiOrder=1?amount=1000",
-        "https://www.shopier.com/s/payment/909721204?isApiOrder=1amount=1000&type=2",
-        "https://www.shopier.com/s/payment/895250759?isApiOrder=1?amount=1000&type=3",
-        "https://www.shopier.com/s/payment/299197377?isApiOrder=1?amount=1000&type=4",
-        "https://www.shopier.com/s/payment/718511015?isApiOrder=1?amount=1000&type=5"
-    ]
-};
+    const shopierLinks = {
+        50: [
+            "https://www.shopier.com/s/payment/454407284?isApiOrder=1",
+            "https://www.shopier.com/s/payment/273619637?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/321704697?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/318892518?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/954825417?isApiOrder=1&type=5"
+        ],
+        100: [
+            "https://www.shopier.com/s/payment/191338747?isApiOrder=1",
+            "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/191338747?isApiOrder=1&type=5"
+        ],
+        150: [
+            "https://www.shopier.com/s/payment/959667531?isApiOrder=1",
+            "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/959667531?isApiOrder=1&type=5"
+        ],
+        200: [
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=5"
+        ],
+        250: [
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/136618662?isApiOrder=1&type=5"
+        ],
+        300: [
+            "https://www.shopier.com/s/payment/836368537?isApiOrder=1",
+            "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/836368537?isApiOrder=1&type=5"
+        ],
+        350: [
+            "https://www.shopier.com/s/payment/580918858?isApiOrder=1",
+            "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/580918858?isApiOrder=1&type=5"
+        ],
+        400: [
+            "https://www.shopier.com/s/payment/509081680?isApiOrder=1",
+            "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=2",
+            "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/207007070?isApiOrder=1&type=5"
+        ],
+        450: [
+            "https://www.shopier.com/s/payment/126972653?isApiOrder=1",
+            "https://www.shopier.com/s/payment/773323222?isApiOrder=1=1&type=2",
+            "https://www.shopier.com/s/payment/625296820?isApiOrder=1&type=3",
+            "https://www.shopier.com/s/payment/625296820?isApiOrder=1&type=4",
+            "https://www.shopier.com/s/payment/625296820?isApiOrder=1&type=5"
+        ],
+        500: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=500",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=500&type=5"
+        ],
+        550: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=550",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=550&type=5"
+        ],
+        600: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=600",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=600&type=5"
+        ],
+        650: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=650",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=650&type=5"
+        ],
+        700: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=700",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=700&type=5"
+        ],
+        750: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=750",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=750&type=5"
+        ],
+        800: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=800",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=800&type=5"
+        ],
+        850: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=850",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=850&type=5"
+        ],
+        900: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=900",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=900&type=5"
+        ],
+        950: [
+            "https://www.shopier.com/TechnicTrader/34691307?amount=950",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=2",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=3",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=4",
+            "https://www.shopier.com/TechnicTrader/34691307?amount=950&type=5"
+        ],
+        1000: [
+            "https://www.shopier.com/s/payment/604620080?isApiOrder=1?amount=1000",
+            "https://www.shopier.com/s/payment/909721204?isApiOrder=1amount=1000&type=2",
+            "https://www.shopier.com/s/payment/895250759?isApiOrder=1?amount=1000&type=3",
+            "https://www.shopier.com/s/payment/299197377?isApiOrder=1?amount=1000&type=4",
+            "https://www.shopier.com/s/payment/718511015?isApiOrder=1?amount=1000&type=5"
+        ]
+    };
 
-// Rastgele link seçme fonksiyonu
-function getRandomShopierLink(amount) {
-    const links = shopierLinks[amount];
-    if (!links || links.length === 0) {
-        console.error(`${amount} TL için link bulunamadı!`);
-        return null;
+    // Kullanılmış linkleri kontrol et ve yeni link al
+    async function getUnusedShopierLink(amount) {
+        const links = shopierLinks[amount];
+        if (!links || links.length === 0) {
+            console.error(`${amount} TL için link bulunamadı!`);
+            return null;
+        }
+        
+        try {
+            const usedSnapshot = await database.ref('used_links').once('value');
+            const usedLinks = usedSnapshot.val() || {};
+            
+            const unusedLinks = links.filter(link => !usedLinks[link]);
+            
+            if (unusedLinks.length === 0) {
+                alert('Bu tutar için tüm ödeme linkleri kullanıldı. Lütfen farklı bir tutar seçin.');
+                return null;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * unusedLinks.length);
+            const selectedLink = unusedLinks[randomIndex];
+            
+            const linkKey = selectedLink.replace(/[.#$\/\[\]]/g, '_');
+            await database.ref(`used_links/${linkKey}`).set({
+                link: selectedLink,
+                amount: amount,
+                usedBy: currentUser ? currentUser.email : 'unknown',
+                usedAt: new Date().toISOString(),
+                status: 'pending'
+            });
+            
+            return selectedLink;
+        } catch(e) {
+            console.error('Link kontrol hatası:', e);
+            return null;
+        }
     }
-    const randomIndex = Math.floor(Math.random() * links.length);
-    const selectedLink = links[randomIndex];
-    console.log(`Seçilen link (${amount} TL): ${selectedLink} (${randomIndex + 1}/${links.length})`);
-    return selectedLink;
-}
+
+    // Linki kalıcı olarak kullanıldı olarak işaretle
+    async function markLinkAsUsed(link) {
+        try {
+            const linkKey = link.replace(/[.#$\/\[\]]/g, '_');
+            await database.ref(`used_links/${linkKey}/status`).set('used');
+            await database.ref(`used_links/${linkKey}/completedAt`).set(new Date().toISOString());
+        } catch(e) {
+            console.error('Link işaretleme hatası:', e);
+        }
+    }
     
     const amountList = [];
     for (let i = 50; i <= 1000; i += 50) amountList.push(i);
@@ -658,69 +694,72 @@ function getRandomShopierLink(amount) {
     }
     
     // Shopier ödeme - Rastgele link seç
-window.shopierOdeme = async function() {
-    if (!currentUser) {
-        alert('Lütfen önce giriş yapın!');
-        openAuthModal();
-        return;
-    }
-    if (!selectedShopierAmount) {
-        alert('Lütfen bir tutar seçin!');
-        return;
-    }
-    
-    const ad = document.getElementById('shopierName').value.trim();
-    const tel = document.getElementById('shopierPhone').value.trim();
-    let email = document.getElementById('shopierEmail').value.trim();
-    
-    if (!ad) { alert('Lütfen ad soyad girin!'); return; }
-    if (!tel || tel.length < 10) { alert('Lütfen geçerli telefon numarası girin!'); return; }
-    if (!email) email = currentUser.email;
-    
-    const tutar = selectedShopierAmount;
-    const bonus = bonusHesapla(tutar);
-    const bonusTutar = tutar * bonus / 100;
-    const toplam = tutar + bonusTutar;
-    
-    const requestCode = 'BL-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
-    const requestData = {
-        code: requestCode,
-        userEmail: currentUser.email,
-        userName: ad,
-        userPhone: tel,
-        userEmail2: email,
-        amount: tutar,
-        bonus: bonus,
-        total: toplam,
-        method: 'shopier',
-        status: 'pending',
-        date: new Date().toISOString(),
-        reported: false
-    };
-    
-    try {
-        const newRef = await database.ref('payment_requests').push(requestData);
-        lastShopierRequestId = newRef.key;
-        lastShopierRequestData = requestData;
-        
-        document.getElementById('shopierReportPanel').style.display = 'block';
-        
-        alert(`🎉 Ödeme talebi oluşturuldu!\n\n💰 Tutar: ${tutar} TL\n🎁 Bonus: %${bonus} (${bonusTutar.toFixed(2)} TL)\n📌 Toplam: ${toplam.toFixed(2)} TL\n📌 Talep Kodu: ${requestCode}\n\nÖdemenizi tamamladıktan sonra "Ödemeyi Bildir" butonuna tıklayın.`);
-        
-        // **** BURASI DEĞİŞTİ - Rastgele link seç ****
-        const shopierLink = getRandomShopierLink(tutar);
-        if (shopierLink) {
-            window.open(shopierLink, '_blank');
-        } else {
-            alert('Bu tutar için ödeme linki bulunamadı! Lütfen daha sonra tekrar deneyin.');
+    window.shopierOdeme = async function() {
+        if (!currentUser) {
+            alert('Lütfen önce giriş yapın!');
+            openAuthModal();
+            return;
+        }
+        if (!selectedShopierAmount) {
+            alert('Lütfen bir tutar seçin!');
+            return;
         }
         
-        setTimeout(() => loadTransactions(), 1000);
-    } catch(e) {
-        console.error('Shopier ödeme hatası:', e);
-        alert('Bir hata oluştu: ' + e.message);
-    }
-};
+        const ad = document.getElementById('shopierName').value.trim();
+        const tel = document.getElementById('shopierPhone').value.trim();
+        let email = document.getElementById('shopierEmail').value.trim();
+        
+        if (!ad) { alert('Lütfen ad soyad girin!'); return; }
+        if (!tel || tel.length < 10) { alert('Lütfen geçerli telefon numarası girin!'); return; }
+        if (!email) email = currentUser.email;
+        
+        const tutar = selectedShopierAmount;
+        const bonus = bonusHesapla(tutar);
+        const bonusTutar = tutar * bonus / 100;
+        const toplam = tutar + bonusTutar;
+        
+        // Kullanılmamış link al
+        const shopierLink = await getUnusedShopierLink(tutar);
+        if (!shopierLink) return;
+        
+        const requestCode = 'BL-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
+        const requestData = {
+            code: requestCode,
+            userEmail: currentUser.email,
+            userName: ad,
+            userPhone: tel,
+            userEmail2: email,
+            amount: tutar,
+            bonus: bonus,
+            total: toplam,
+            method: 'shopier',
+            status: 'pending',
+            date: new Date().toISOString(),
+            reported: false,
+            usedLink: shopierLink
+        };
+        
+        try {
+            const newRef = await database.ref('payment_requests').push(requestData);
+            lastShopierRequestId = newRef.key;
+            lastShopierRequestData = requestData;
+            
+            document.getElementById('shopierReportPanel').style.display = 'block';
+            
+            alert(`🎉 Ödeme talebi oluşturuldu!\n\n💰 Tutar: ${tutar} TL\n🎁 Bonus: %${bonus} (${bonusTutar.toFixed(2)} TL)\n📌 Toplam: ${toplam.toFixed(2)} TL\n📌 Talep Kodu: ${requestCode}\n\nÖdemenizi tamamladıktan sonra "Ödemeyi Bildir" butonuna tıklayın.`);
+            
+            if (shopierLink) {
+                window.open(shopierLink, '_blank');
+            } else {
+                alert('Bu tutar için ödeme linki bulunamadı! Lütfen daha sonra tekrar deneyin.');
+            }
+            
+            setTimeout(() => loadTransactions(), 1000);
+        } catch(e) {
+            console.error('Shopier ödeme hatası:', e);
+            alert('Bir hata oluştu: ' + e.message);
+        }
+    };
     
     // Shopier ödeme bildirimi
     window.reportShopierPayment = async function() {
@@ -737,6 +776,11 @@ window.shopierOdeme = async function() {
         try {
             await database.ref(`payment_requests/${lastShopierRequestId}/reported`).set(true);
             await database.ref(`payment_requests/${lastShopierRequestId}/reportedAt`).set(new Date().toISOString());
+            
+            // Linki kalıcı olarak kullanıldı olarak işaretle
+            if (lastShopierRequestData.usedLink) {
+                await markLinkAsUsed(lastShopierRequestData.usedLink);
+            }
             
             const balanceRequestData = {
                 code: lastShopierRequestData.code,
@@ -886,7 +930,7 @@ window.shopierOdeme = async function() {
         
         const pendingRequests = userRequests.filter(r => r.status !== 'approved');
         document.getElementById('pendingRequestsList').innerHTML = pendingRequests.length === 0 ? 
-            '<tr><td colspan="6">✅ Bekleyen talebiniz bulunmuyor<\/td></tr>' :
+            '<tr><td colspan="6">✅ Bekleyen talebiniz bulunmuyor</td>' :
             pendingRequests.map(r => `
                 <tr>
                     <td>${new Date(r.date).toLocaleString('tr-TR')}</td>
@@ -900,7 +944,7 @@ window.shopierOdeme = async function() {
         
         const approvedRequests = userRequests.filter(r => r.status === 'approved').sort((a, b) => new Date(b.approvedAt || b.date) - new Date(a.approvedAt || a.date));
         document.getElementById('approvedTransactionsList').innerHTML = approvedRequests.length === 0 ?
-            '<tr><td colspan="6">📭 Henüz onaylanmış bakiye yok</td></tr>' :
+            '<tr><td colspan="6">📭 Henüz onaylanmış bakiye yok</td>' :
             approvedRequests.slice(0, 20).map(r => `
                 <tr>
                     <td>${new Date(r.date).toLocaleString('tr-TR')}</td>
@@ -909,7 +953,7 @@ window.shopierOdeme = async function() {
                     <td><strong>${r.total || r.amount || 0} TL</strong></td>
                     <td><span class="approved-badge">✅ Onaylandı</span></td>
                     <td><small>${r.approvedAt ? new Date(r.approvedAt).toLocaleString('tr-TR') : '-'}</small></td>
-                <tr>
+                </tr>
             `).join('');
     }
     
