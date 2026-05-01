@@ -351,3 +351,108 @@ main {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
+/* ============ TÜM SAYFALAR İÇİN MOBİL UYUMLULUK ============ */
+
+@media (max-width: 992px) {
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    .nav-links {
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .nav-links a {
+        font-size: 0.85rem;
+        padding: 5px 8px;
+    }
+    .right-area {
+        justify-content: center;
+    }
+    .page-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 20px 12px;
+    }
+    .page-title {
+        font-size: 1.3rem;
+    }
+    .section-title {
+        font-size: 1.1rem;
+    }
+    .amount-buttons {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 8px;
+    }
+    .amount-btn, .btn-primary, .btn-warning {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .transaction-table, .orders-table {
+        min-width: 600px;
+    }
+    .transaction-table th, .transaction-table td,
+    .orders-table th, .orders-table td {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+    .auth-card {
+        padding: 20px;
+        width: 95%;
+    }
+    .auth-input {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.2rem;
+    }
+    .nav-links a {
+        font-size: 0.7rem;
+        padding: 4px 6px;
+    }
+    .balance-box, .auth-btn {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+    .page-title {
+        font-size: 1.2rem;
+    }
+    .amount-buttons {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+    .amount-btn {
+        font-size: 0.7rem;
+        padding: 8px 4px;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .amount-btn, .btn-primary, .btn-warning, .payment-method, .auth-btn {
+        min-height: 44px;
+    }
+}
+
+.table-wrapper::-webkit-scrollbar {
+    height: 4px;
+}
+.table-wrapper::-webkit-scrollbar-track {
+    background: #1a1a2e;
+    border-radius: 4px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 4px;
+}
