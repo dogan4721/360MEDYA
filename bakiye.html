@@ -9,14 +9,85 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a12;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: #11111f;
+            border-bottom: 1px solid rgba(99,102,241,0.2);
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            cursor: pointer;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: #6366f1;
+        }
+        .right-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .balance-box {
+            background: rgba(99,102,241,0.15);
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .auth-btn {
+            background: #6366f1;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .logout-btn {
+            background: #ef4444;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
         .payment-methods { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
         .payment-method { background: #1a1a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 12px 30px; cursor: pointer; transition: 0.3s; }
         .payment-method.active { background: #6366f1; color: white; }
         .bonus-table { background: #1a1a2e; border-radius: 16px; padding: 20px; margin-top: 20px; }
         .transaction-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .transaction-table th, .transaction-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .transaction-table tr:last-child td { border-bottom: none; }
         
         .amount-buttons {
             display: grid;
@@ -35,7 +106,7 @@
             transition: 0.3s;
             text-align: center;
         }
-        .amount-btn:hover {
+        .amount-btn:hover, .amount-btn.active {
             background: #6366f1;
             transform: translateY(-2px);
         }
@@ -50,6 +121,139 @@
             padding: 4px 12px;
             border-radius: 30px;
             font-size: 0.7rem;
+        }
+        .pending-badge {
+            background: rgba(245,158,11,0.15);
+            color: #f59e0b;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+        .approved-badge {
+            background: rgba(34,197,94,0.15);
+            color: #22c55e;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(99,102,241,0.3);
+        }
+        .alert-info {
+            background: rgba(59,130,246,0.15);
+            border-left: 3px solid #3b82f6;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245,158,11,0.3);
+        }
+        .info-box {
+            background: rgba(99,102,241,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #0f0f1a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+        }
+        .iban-mini p {
+            margin: 8px 0;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Auth Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        .auth-card {
+            background: #1a1a2e;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+        .close-auth {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #0f0f1a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+        }
+        .btn-google {
+            background: white;
+            color: #333;
+            padding: 10px;
+            border-radius: 12px;
+            width: 100%;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -84,7 +288,7 @@
     
     <div class="payment-methods">
         <div class="payment-method active" data-method="shopier"><i class="fas fa-shopping-cart"></i> Shopier</div>
-        <div class="payment-method" data-method="havale"><i class="fas fa-building-columns"></i> Havale</div>
+        <div class="payment-method" data-method="havale"><i class="fas fa-building-columns"></i> Havale/EFT</div>
     </div>
     
     <!-- SHOPIER PANELİ -->
@@ -111,6 +315,16 @@
         <button class="btn-primary" onclick="shopierOdeme()" style="width:100%;">
             <i class="fas fa-credit-card"></i> Kredi Kartı ile Öde
         </button>
+        
+        <div id="shopierReportPanel" style="display: none;">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i> Ödemenizi tamamladıysanız aşağıdaki butona tıklayarak bildirim gönderin.
+            </div>
+            <button class="btn-warning" onclick="reportShopierPayment()">
+                <i class="fas fa-check-circle"></i> Ödemeyi Bildir
+            </button>
+            <p class="info-text" style="margin-top: 10px; text-align: center;">✅ Bildiriminiz admin tarafından onaylandığında bakiyeniz anında yüklenecektir.</p>
+        </div>
     </div>
     
     <!-- HAVALE PANELİ -->
@@ -140,10 +354,31 @@
         </ul>
     </div>
     
-    <h3 style="margin-top:30px;">📋 Tüm İşlemler</h3>
+    <!-- BEKLEYEN TALEPLER -->
+    <div class="section-title">
+        <i class="fas fa-clock"></i> ⏳ Bekleyen Taleplerim
+    </div>
     <table class="transaction-table">
-        <thead><tr><th>TARİH</th><th>TUTAR</th><th>DURUM</th></tr></thead>
-        <tbody id="transactionsList"><tr><td colspan="3">Yükleniyor...<\/td></tr></tbody>
+        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th><th>TALEP KODU</th></tr></thead>
+        <tbody id="pendingRequestsList"><tr><td colspan="6">Yükleniyor...<\/td></tr></tbody>
+    </table>
+    
+    <!-- ONAYLANAN BAKİYELER (SON YÜKLENENLER) -->
+    <div class="section-title">
+        <i class="fas fa-check-circle" style="color: #22c55e;"></i> ✅ Onaylanan Bakiyelerim (Son Yüklenenler)
+    </div>
+    <table class="transaction-table">
+        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th><th>ONAY TARİHİ</th></tr></thead>
+        <tbody id="approvedTransactionsList"><tr><td colspan="6">Yükleniyor...<\/td></tr></tbody>
+    </table>
+    
+    <!-- TÜM İŞLEMLER -->
+    <div class="section-title">
+        <i class="fas fa-history"></i> 📋 Tüm İşlem Geçmişim
+    </div>
+    <table class="transaction-table">
+        <thead><tr><th>TARİH</th><th>TUTAR</th><th>BONUS</th><th>TOPLAM</th><th>DURUM</th><tr></thead>
+        <tbody id="transactionsList"><tr><td colspan="5">Yükleniyor...<\/td></tr></tbody>
     </table>
 </main>
 
@@ -167,9 +402,30 @@
     </div>
 </div>
 
-<script src="assets/js/main.js"></script>
 <script>
-    // HER TUTAR İÇİN AYRI SHOPIER LİNKİ
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCtSpmTP9_i-s2ZL2rC1ozVx6uPu68kVCs",
+        authDomain: "smm-panel-f2947.firebaseapp.com",
+        databaseURL: "https://smm-panel-f2947-default-rtdb.firebaseio.com",
+        projectId: "smm-panel-f2947",
+        storageBucket: "smm-panel-f2947.firebasestorage.app",
+        messagingSenderId: "758065772278",
+        appId: "1:758065772278:web:a94d37b0ff892583e81ed7"
+    };
+    
+    // Firebase'i başlat
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const auth = firebase.auth();
+    
+    // Global değişkenler
+    let currentUser = null;
+    let selectedShopierAmount = null;
+    let lastShopierRequestId = null;
+    let lastShopierRequestData = null;
+    let isLoginMode = true;
+    
     const shopierLinks = {
         50: "https://www.shopier.com/s/payment/191338747",
         100: "https://www.shopier.com/s/payment/383806204",
@@ -193,45 +449,60 @@
         1000: "https://www.shopier.com/TechnicTrader/34691307?amount=1000"
     };
     
-    let selectedShopierAmount = null;
-    
-    // 50'den 1000'e kadar 50'şer TL'lik tutarlar
     const amountList = [];
-    for (let i = 50; i <= 1000; i += 50) {
-        amountList.push(i);
+    for (let i = 50; i <= 1000; i += 50) amountList.push(i);
+    
+    // Auth durumunu dinle
+    auth.onAuthStateChanged(async (user) => {
+        currentUser = user;
+        if (user) {
+            document.getElementById('loginButton').style.display = 'none';
+            document.getElementById('logoutButton').style.display = 'block';
+            await loadTransactions();
+            await updateUserBalance();
+        } else {
+            document.getElementById('loginButton').style.display = 'block';
+            document.getElementById('logoutButton').style.display = 'none';
+            document.getElementById('userBalance').innerText = '0.00';
+            document.getElementById('transactionsList').innerHTML = '<tr><td colspan="5">İşlemler için giriş yapın<\/td></tr>';
+            document.getElementById('pendingRequestsList').innerHTML = '<tr><td colspan="6">İşlemler için giriş yapın<\/td></tr>';
+            document.getElementById('approvedTransactionsList').innerHTML = '<tr><td colspan="6">İşlemler için giriş yapın<\/td></tr>';
+        }
+    });
+    
+    // Shopier butonlarını oluştur
+    const shopierContainer = document.getElementById('shopierAmountButtons');
+    if (shopierContainer) {
+        amountList.forEach(tutar => {
+            const btn = document.createElement('button');
+            btn.className = 'amount-btn';
+            btn.textContent = `${tutar} ₺`;
+            btn.onclick = () => {
+                document.querySelectorAll('#shopierAmountButtons .amount-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedShopierAmount = tutar;
+                document.getElementById('selectedAmountInfo').style.display = 'block';
+                document.getElementById('selectedAmountText').innerText = tutar;
+            };
+            shopierContainer.appendChild(btn);
+        });
     }
     
-    // Shopier tutar butonlarını oluştur
-    const shopierContainer = document.getElementById('shopierAmountButtons');
-    amountList.forEach(tutar => {
-        const btn = document.createElement('button');
-        btn.className = 'amount-btn';
-        btn.textContent = `${tutar} ₺`;
-        btn.setAttribute('data-amount', tutar);
-        btn.onclick = () => {
-            document.querySelectorAll('#shopierAmountButtons .amount-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedShopierAmount = tutar;
-            document.getElementById('selectedAmountInfo').style.display = 'block';
-            document.getElementById('selectedAmountText').innerText = tutar;
-        };
-        shopierContainer.appendChild(btn);
-    });
-    
-    // Havale tutar butonlarını oluştur
+    // Havale butonlarını oluştur
     const havaleContainer = document.getElementById('havaleAmountButtons');
-    amountList.forEach(tutar => {
-        const btn = document.createElement('button');
-        btn.className = 'amount-btn';
-        btn.textContent = `${tutar} ₺`;
-        btn.setAttribute('data-amount', tutar);
-        btn.onclick = () => {
-            document.querySelectorAll('#havaleAmountButtons .amount-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('havaleAmount').value = tutar;
-        };
-        havaleContainer.appendChild(btn);
-    });
+    if (havaleContainer) {
+        amountList.forEach(tutar => {
+            const btn = document.createElement('button');
+            btn.className = 'amount-btn';
+            btn.textContent = `${tutar} ₺`;
+            btn.onclick = () => {
+                document.querySelectorAll('#havaleAmountButtons .amount-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('havaleAmount').value = tutar;
+            };
+            havaleContainer.appendChild(btn);
+        });
+    }
     
     // Ödeme yöntemi geçişi
     document.querySelectorAll('.payment-method').forEach(m => {
@@ -243,7 +514,6 @@
         });
     });
     
-    // Bonus hesaplama
     function bonusHesapla(tutar) {
         if (tutar >= 10000) return 10;
         if (tutar >= 5000) return 7.5;
@@ -254,13 +524,12 @@
     }
     
     // Shopier ödeme
-    function shopierOdeme() {
+    window.shopierOdeme = async function() {
         if (!currentUser) {
             alert('Lütfen önce giriş yapın!');
             openAuthModal();
             return;
         }
-        
         if (!selectedShopierAmount) {
             alert('Lütfen bir tutar seçin!');
             return;
@@ -270,41 +539,17 @@
         const tel = document.getElementById('shopierPhone').value.trim();
         let email = document.getElementById('shopierEmail').value.trim();
         
-        if (!ad) {
-            alert('Lütfen ad soyad girin!');
-            return;
-        }
-        if (!tel || tel.length < 10) {
-            alert('Lütfen geçerli telefon numarası girin!');
-            return;
-        }
+        if (!ad) { alert('Lütfen ad soyad girin!'); return; }
+        if (!tel || tel.length < 10) { alert('Lütfen geçerli telefon numarası girin!'); return; }
         if (!email) email = currentUser.email;
-        if (!email.includes('@')) {
-            alert('Lütfen geçerli e-posta girin!');
-            return;
-        }
         
         const tutar = selectedShopierAmount;
-        const link = shopierLinks[tutar];
-        
-        if (!link) {
-            alert('Bu tutar için ödeme linki bulunamadı!');
-            return;
-        }
-        
         const bonus = bonusHesapla(tutar);
         const bonusTutar = tutar * bonus / 100;
         const toplam = tutar + bonusTutar;
         
-        if (bonus > 0) {
-            if (!confirm(`💰 ${tutar} TL yüklenecek\n🎁 %${bonus} bonus kazanacaksınız! (+${bonusTutar} TL)\n📌 Toplam: ${toplam} TL\n\nDevam etmek istiyor musunuz?`)) {
-                return;
-            }
-        }
-        
-        // Ödeme talebini Firebase'e kaydet (admin paneli için)
         const requestCode = 'BL-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
-        database.ref('payment_requests').push({
+        const requestData = {
             code: requestCode,
             userEmail: currentUser.email,
             userName: ad,
@@ -315,15 +560,77 @@
             total: toplam,
             method: 'shopier',
             status: 'pending',
-            date: new Date().toISOString()
-        }).catch(err => console.error('Kayıt hatası:', err));
+            date: new Date().toISOString(),
+            reported: false
+        };
         
-        // Shopier ödeme linkine yönlendir
-        window.open(link, '_blank');
-    }
+        try {
+            const newRef = await database.ref('payment_requests').push(requestData);
+            lastShopierRequestId = newRef.key;
+            lastShopierRequestData = requestData;
+            
+            document.getElementById('shopierReportPanel').style.display = 'block';
+            
+            alert(`🎉 Ödeme talebi oluşturuldu!\n\n💰 Tutar: ${tutar} TL\n🎁 Bonus: %${bonus} (${bonusTutar.toFixed(2)} TL)\n📌 Toplam: ${toplam.toFixed(2)} TL\n📌 Talep Kodu: ${requestCode}\n\nÖdemenizi tamamladıktan sonra "Ödemeyi Bildir" butonuna tıklayın.`);
+            
+            const shopierLink = shopierLinks[tutar];
+            if (shopierLink) {
+                window.open(shopierLink, '_blank');
+            }
+            
+            setTimeout(() => loadTransactions(), 1000);
+        } catch(e) {
+            console.error('Shopier ödeme hatası:', e);
+            alert('Bir hata oluştu: ' + e.message);
+        }
+    };
+    
+    // Shopier ödeme bildirimi
+    window.reportShopierPayment = async function() {
+        if (!lastShopierRequestId || !lastShopierRequestData) {
+            alert('Önce bir ödeme talebi oluşturun!');
+            return;
+        }
+        
+        if (lastShopierRequestData.reported) {
+            alert('Bu talep zaten bildirildi!');
+            return;
+        }
+        
+        try {
+            await database.ref(`payment_requests/${lastShopierRequestId}/reported`).set(true);
+            await database.ref(`payment_requests/${lastShopierRequestId}/reportedAt`).set(new Date().toISOString());
+            
+            const balanceRequestData = {
+                code: lastShopierRequestData.code,
+                userEmail: lastShopierRequestData.userEmail,
+                userName: lastShopierRequestData.userName,
+                amount: lastShopierRequestData.amount,
+                bonus: lastShopierRequestData.bonus,
+                total: lastShopierRequestData.total,
+                date: lastShopierRequestData.date,
+                status: 'pending',
+                method: 'shopier',
+                paymentId: lastShopierRequestId
+            };
+            
+            await database.ref('balance_requests').push(balanceRequestData);
+            
+            alert(`✅ Ödemeniz bildirildi!\n\n📌 Talep Kodu: ${lastShopierRequestData.code}\n💰 Tutar: ${lastShopierRequestData.amount} TL\n🎁 Bonus: %${lastShopierRequestData.bonus}\n\nBakiyeniz en kısa sürede admin tarafından onaylanacaktır.`);
+            
+            document.getElementById('shopierReportPanel').style.display = 'none';
+            lastShopierRequestId = null;
+            lastShopierRequestData = null;
+            
+            loadTransactions();
+        } catch(e) {
+            console.error('Bildirim hatası:', e);
+            alert('Bildirim gönderilirken hata oluştu: ' + e.message);
+        }
+    };
     
     // Havale bildirim
-    async function havaleBildirim() {
+    window.havaleBildirim = async function() {
         if (!currentUser) {
             alert('Lütfen önce giriş yapın!');
             openAuthModal();
@@ -347,10 +654,7 @@
         const toplam = tutar + bonusTutar;
         const kod = 'BL-' + Date.now() + '-' + Math.random().toString(36).substring(2,8).toUpperCase();
         
-        const snapshot = await database.ref('balance_requests').once('value');
-        let requests = snapshot.val() ? Object.values(snapshot.val()) : [];
-        
-        requests.push({
+        const requestData = {
             code: kod,
             userEmail: currentUser.email,
             userName: ad,
@@ -358,36 +662,76 @@
             bonus: bonus,
             total: toplam,
             date: new Date().toISOString(),
-            status: 'pending'
-        });
+            status: 'pending',
+            method: 'havale'
+        };
         
-        await database.ref('balance_requests').set(requests);
-        
-        alert(`✅ Bakiye yükleme talebiniz alındı!\n💰 Tutar: ${tutar} TL\n🎁 Bonus: %${bonus} (${bonusTutar} TL)\n📌 Toplam: ${toplam} TL\n📌 Talep Kodu: ${kod}\n\nBakiyeniz 5 dakika içinde yüklenecektir.`);
-        
-        document.getElementById('havaleAmount').value = '';
-        document.getElementById('havaleAd').value = '';
-        document.querySelectorAll('#havaleAmountButtons .amount-btn').forEach(b => b.classList.remove('active'));
-        
-        loadTransactions();
-    }
+        try {
+            await database.ref('balance_requests').push(requestData);
+            
+            alert(`✅ Bakiye yükleme talebiniz alındı!\n💰 Tutar: ${tutar} TL\n🎁 Bonus: %${bonus} (${bonusTutar.toFixed(2)} TL)\n📌 Toplam: ${toplam.toFixed(2)} TL\n📌 Talep Kodu: ${kod}\n\nBakiyeniz admin onayından sonra yüklenecektir.`);
+            
+            document.getElementById('havaleAmount').value = '';
+            document.getElementById('havaleAd').value = '';
+            document.querySelectorAll('#havaleAmountButtons .amount-btn').forEach(b => b.classList.remove('active'));
+            
+            loadTransactions();
+        } catch(e) {
+            console.error('Havale bildirim hatası:', e);
+            alert('Bir hata oluştu: ' + e.message);
+        }
+    };
     
     async function loadBalanceRequests() {
-        const s = await database.ref('balance_requests').once('value');
-        return s.val() ? Object.values(s.val()) : [];
+        try {
+            const s = await database.ref('balance_requests').once('value');
+            const data = s.val();
+            return data ? Object.entries(data).map(([id, val]) => ({ id, ...val })) : [];
+        } catch(e) {
+            console.error('Balance requests yükleme hatası:', e);
+            return [];
+        }
+    }
+    
+    async function loadPaymentRequests() {
+        try {
+            const s = await database.ref('payment_requests').once('value');
+            const data = s.val();
+            return data ? Object.entries(data).map(([id, val]) => ({ id, ...val })) : [];
+        } catch(e) {
+            console.error('Payment requests yükleme hatası:', e);
+            return [];
+        }
     }
     
     async function loadTransactions() {
         if (!currentUser) {
-            document.getElementById('transactionsList').innerHTML = '<tr><td colspan="3">İşlemler için giriş yapın<\/td></tr>';
             return;
         }
         
-        const requests = await loadBalanceRequests();
-        const userRequests = requests.filter(r => r.userEmail === currentUser.email);
+        const balanceRequests = await loadBalanceRequests();
+        const paymentRequests = await loadPaymentRequests();
+        
+        let allRequests = [...balanceRequests];
+        
+        for (const req of paymentRequests) {
+            if (req.userEmail === currentUser.email) {
+                allRequests.push({
+                    ...req,
+                    amount: req.amount,
+                    bonus: req.bonus || 0,
+                    total: req.total || req.amount,
+                    date: req.date
+                });
+            }
+        }
+        
+        const userRequests = allRequests.filter(r => r.userEmail === currentUser.email);
         
         if (userRequests.length === 0) {
-            document.getElementById('transactionsList').innerHTML = '<tr><td colspan="3">Henüz işlem bulunmuyor<\/td></tr>';
+            document.getElementById('transactionsList').innerHTML = '<tr><td colspan="5">Henüz işlem bulunmuyor<\/td></tr>';
+            document.getElementById('pendingRequestsList').innerHTML = '<tr><td colspan="6">Henüz bekleyen talep yok<\/td></tr>';
+            document.getElementById('approvedTransactionsList').innerHTML = '<tr><td colspan="6">Henüz onaylanan bakiye yok<\/td></tr>';
             return;
         }
         
@@ -396,19 +740,133 @@
         document.getElementById('transactionsList').innerHTML = userRequests.map(r => `
             <tr>
                 <td>${new Date(r.date).toLocaleString('tr-TR')}</td>
-                <td style="color: #22c55e;">+${r.amount} TL ${r.bonus > 0 ? `(+%${r.bonus} bonus)` : ''}</td>
-                <td><span class="success-badge">${r.status === 'pending' ? '⏳ Beklemede' : '✅ Onaylandı'}</span></td>
+                <td style="color: #22c55e;">${r.amount || 0} TL</td>
+                <td>${r.bonus > 0 ? `%${r.bonus} (+${(r.amount * r.bonus / 100).toFixed(2)} TL)` : '-'}</td>
+                <td>${r.total || r.amount || 0} TL</td>
+                <td>${r.status === 'approved' ? '<span class="approved-badge">✅ Onaylandı</span>' : '<span class="pending-badge">⏳ Beklemede</span>'}</td>
             </tr>
         `).join('');
+        
+        const pendingRequests = userRequests.filter(r => r.status !== 'approved');
+        document.getElementById('pendingRequestsList').innerHTML = pendingRequests.length === 0 ? 
+            '<tr><td colspan="6">✅ Bekleyen talebiniz bulunmuyor<\/td></tr>' :
+            pendingRequests.map(r => `
+                <tr>
+                    <td>${new Date(r.date).toLocaleString('tr-TR')}</td>
+                    <td style="color: #f59e0b;">${r.amount || 0} TL</td>
+                    <td>${r.bonus > 0 ? `%${r.bonus}` : '-'}</td>
+                    <td>${r.total || r.amount || 0} TL</td>
+                    <td><span class="pending-badge">⏳ Beklemede</span></td>
+                    <td><small>${r.code || '-'}</small></td>
+                </tr>
+            `).join('');
+        
+        const approvedRequests = userRequests.filter(r => r.status === 'approved').sort((a, b) => new Date(b.approvedAt || b.date) - new Date(a.approvedAt || a.date));
+        document.getElementById('approvedTransactionsList').innerHTML = approvedRequests.length === 0 ?
+            '<tr><td colspan="6">📭 Henüz onaylanmış bakiye yok</td></tr>' :
+            approvedRequests.slice(0, 20).map(r => `
+                <tr>
+                    <td>${new Date(r.date).toLocaleString('tr-TR')}</td>
+                    <td style="color: #22c55e;"><strong>+${r.amount || 0} TL</strong></td>
+                    <td>${r.bonus > 0 ? `%${r.bonus} (+${(r.amount * r.bonus / 100).toFixed(2)} TL)` : '-'}</td>
+                    <td><strong>${r.total || r.amount || 0} TL</strong></td>
+                    <td><span class="approved-badge">✅ Onaylandı</span></td>
+                    <td><small>${r.approvedAt ? new Date(r.approvedAt).toLocaleString('tr-TR') : '-'}</small></td>
+                <tr>
+            `).join('');
     }
     
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            if (currentUser) {
-                loadTransactions();
+    async function updateUserBalance() {
+        if (!currentUser) return;
+        try {
+            const snapshot = await database.ref('users').once('value');
+            const users = snapshot.val();
+            let userKey = null;
+            for (const [k, v] of Object.entries(users || {})) {
+                if (v.email === currentUser.email) {
+                    userKey = k;
+                    break;
+                }
             }
-        }, 500);
-    });
+            if (userKey) {
+                const balance = users[userKey].balance || 0;
+                document.getElementById('userBalance').innerText = balance.toFixed(2);
+            }
+        } catch(e) { console.error(e); }
+    }
+    
+    // Auth Modal Fonksiyonları
+    window.openAuthModal = function() {
+        document.getElementById('authModal').style.display = 'flex';
+    };
+    
+    window.closeAuthModal = function() {
+        document.getElementById('authModal').style.display = 'none';
+    };
+    
+    window.switchMode = function() {
+        isLoginMode = !isLoginMode;
+        const title = document.getElementById('authTitle');
+        const btn = document.getElementById('authActionBtn');
+        if (isLoginMode) {
+            title.innerText = 'Giriş Yap';
+            btn.innerText = 'Giriş Yap';
+        } else {
+            title.innerText = 'Kayıt Ol';
+            btn.innerText = 'Kayıt Ol';
+        }
+    };
+    
+    window.authAction = async function() {
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+        
+        if (!email || !password) {
+            alert('Lütfen email ve şifre girin!');
+            return;
+        }
+        
+        try {
+            if (isLoginMode) {
+                await auth.signInWithEmailAndPassword(email, password);
+                alert('Giriş başarılı!');
+            } else {
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+                isLoginMode = true;
+                document.getElementById('authTitle').innerText = 'Giriş Yap';
+                document.getElementById('authActionBtn').innerText = 'Giriş Yap';
+            }
+            closeAuthModal();
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+        } catch(error) {
+            alert('Hata: ' + error.message);
+        }
+    };
+    
+    window.googleLogin = async function() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+            await auth.signInWithPopup(provider);
+            alert('Google ile giriş başarılı!');
+            closeAuthModal();
+        } catch(error) {
+            alert('Google giriş hatası: ' + error.message);
+        }
+    };
+    
+    window.logout = async function() {
+        await auth.signOut();
+        alert('Çıkış yapıldı.');
+    };
+    
+    setInterval(() => {
+        if (currentUser) {
+            loadTransactions();
+            updateUserBalance();
+        }
+    }, 10000);
 </script>
 </body>
 </html>
