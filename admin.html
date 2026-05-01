@@ -659,51 +659,98 @@
 
     function logoutSystem() { localStorage.removeItem('admin_session'); localStorage.removeItem('admin_user'); location.reload(); }
 
-   async function loadAllData() {
+    async function loadAllData() {
     try {
+        // Kullanıcıları güvenli şekilde yükle
         const usersSnap = await database.ref('users').once('value');
-        const usersVal = usersSnap.val();
-        // undefined/null değerleri filtrele
-        allUsers = usersVal ? Object.values(usersVal).filter(u => u && u.email) : [];
+        const usersData = usersSnap.val();
         
+        // undefined/null/geçersiz kullanıcıları filtrele
+        allUsers = [];
+        if (usersData && typeof usersData === 'object') {
+            allUsers = Object.values(usersData).filter(user => {
+                return user && typeof user === 'object' && user.email && typeof user.email === 'string';
+            });
+        }
+        
+        // Siparişleri güvenli şekilde yükle
         const ordersSnap = await database.ref('orders').once('value');
-        const ordersVal = ordersSnap.val();
-        allOrders = ordersVal ? Object.values(ordersVal).filter(o => o) : [];
+        const ordersData = ordersSnap.val();
+        allOrders = [];
+        if (ordersData && typeof ordersData === 'object') {
+            allOrders = Object.values(ordersData).filter(order => order && typeof order === 'object');
+        }
         
+        // Bakiye taleplerini güvenli şekilde yükle
         const reqSnap = await database.ref('balance_requests').once('value');
-        const reqVal = reqSnap.val();
-        allRequests = reqVal ? Object.entries(reqVal).map(([id, d]) => ({ 
-            id, 
-            userEmail: d?.userEmail || d?.email, 
-            userName: d?.userName || d?.name, 
-            amount: d?.amount || 0, 
-            date: d?.date, 
-            code: d?.code, 
-            status: d?.status 
-        })).filter(r => r.userEmail) : [];
+        const reqData = reqSnap.val();
+        allRequests = [];
+        if (reqData && typeof reqData === 'object') {
+            allRequests = Object.entries(reqData)
+                .filter(([_, d]) => d && typeof d === 'object')
+                .map(([id, d]) => ({ 
+                    id, 
+                    userEmail: d.userEmail || d.email || '', 
+                    userName: d.userName || d.name || '-', 
+                    amount: d.amount || 0, 
+                    date: d.date || new Date().toISOString(), 
+                    code: d.code || 'N/A', 
+                    status: d.status || 'pending'
+                }))
+                .filter(r => r.userEmail);
+        }
         
         updateUI();
-        document.getElementById('lastUpdate').innerHTML = new Date().toLocaleString('tr-TR');
+        const lastUpdateEl = document.getElementById('lastUpdate');
+        if (lastUpdateEl) {
+            lastUpdateEl.innerHTML = new Date().toLocaleString('tr-TR');
+        }
     } catch(e) { 
-        console.error(e); 
-        showToast('Yükleme hatası!', 'danger'); 
+        console.error('loadAllData hatası:', e); 
+        showToast('Yükleme hatası: ' + e.message, 'danger'); 
     }
 }
 
     function updateUI() {
-        document.getElementById('statTotalOrders').innerText = allOrders.length;
-        document.getElementById('statPendingOrders').innerText = allOrders.filter(o => o.status === 'Beklemede' || o.status === 'İşlemde').length;
-        document.getElementById('statCompletedOrders').innerText = allOrders.filter(o => o.status === 'Tamamlandı').length;
-        document.getElementById('statTotalUsers').innerText = allUsers.length;
-        document.getElementById('statTotalBalance').innerText = allUsers.reduce((s, u) => s + (u.balance || 0), 0).toFixed(2) + ' ₺';
-        document.getElementById('statPendingRequests').innerText = allRequests.filter(r => r.status !== 'approved').length;
-        
-        const recent = [...allOrders].reverse().slice(0,5);
-        document.querySelector('#recentOrdersTable tbody').innerHTML = recent.map(o => `<tr><td><strong>${o.code}</strong></td><td>${o.email}</td><td>${o.name || '-'}</td><td>${o.price}</td><td><span class="badge badge-pending">${o.status}</span></td><td><small>${o.date ? new Date(o.date).toLocaleDateString('tr-TR') : '-'}</small></td></tr>`).join('');
-        renderOrdersTable(allOrders);
-        renderPaymentsTable();
-        renderUsersTable(allUsers);
+    // İstatistikleri güncelle (güvenli kontrollerle)
+    const statTotalOrders = document.getElementById('statTotalOrders');
+    if (statTotalOrders) statTotalOrders.innerText = allOrders.length;
+    
+    const statPendingOrders = document.getElementById('statPendingOrders');
+    if (statPendingOrders) statPendingOrders.innerText = allOrders.filter(o => o && (o.status === 'Beklemede' || o.status === 'İşlemde')).length;
+    
+    const statCompletedOrders = document.getElementById('statCompletedOrders');
+    if (statCompletedOrders) statCompletedOrders.innerText = allOrders.filter(o => o && o.status === 'Tamamlandı').length;
+    
+    const statTotalUsers = document.getElementById('statTotalUsers');
+    if (statTotalUsers) statTotalUsers.innerText = allUsers.length;
+    
+    const statTotalBalance = document.getElementById('statTotalBalance');
+    if (statTotalBalance) statTotalBalance.innerText = allUsers.reduce((s, u) => s + (u.balance || 0), 0).toFixed(2) + ' ₺';
+    
+    const statPendingRequests = document.getElementById('statPendingRequests');
+    if (statPendingRequests) statPendingRequests.innerText = allRequests.filter(r => r.status !== 'approved').length;
+    
+    // Son siparişler tablosu
+    const recent = [...allOrders].filter(o => o).reverse().slice(0,5);
+    const recentTableBody = document.querySelector('#recentOrdersTable tbody');
+    if (recentTableBody) {
+        recentTableBody.innerHTML = recent.map(o => `
+            <tr>
+                <td><strong>${o.code || '-'}</strong></td>
+                <td>${o.email || '-'}</td>
+                <td>${o.name || '-'}</td>
+                <td>${o.price || '0'} ₺</td>
+                <td><span class="badge badge-pending">${o.status || '-'}</span></td>
+                <td><small>${o.date ? new Date(o.date).toLocaleDateString('tr-TR') : '-'}</small></td>
+            </tr>
+        `).join('');
     }
+    
+    renderOrdersTable(allOrders);
+    renderPaymentsTable();
+    renderUsersTable(allUsers);
+}
 
     function renderOrdersTable(orders) {
         const tbody = document.querySelector('#allOrdersTable tbody');
@@ -740,34 +787,64 @@
         </tr>`).join('');
     }
 
-   function renderUsersTable(users) {
+    function renderUsersTable(users) {
     const tbody = document.querySelector('#usersManagementTable tbody');
-    // Geçersiz kullanıcıları filtrele
-    const validUsers = (users || []).filter(u => u && typeof u === 'object' && u.email);
+    if (!tbody) return;
     
-    if(!validUsers.length) { 
-        tbody.innerHTML = '<tr><td colspan="7" class="loading">👤 Kullanıcı yok</td></tr>'; 
-        return; 
+    // Güvenli kullanıcı listesi oluştur - undefined ve null değerleri filtrele
+    const safeUsers = Array.isArray(users) ? users.filter(user => user && typeof user === 'object' && user.email) : [];
+    
+    if (safeUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="loading">👤 Kullanıcı yok</td></tr>';
+        return;
     }
     
-    tbody.innerHTML = validUsers.map(u => {
-        // Email içindeki noktaları güvenli hale getir
-        const safeEmailId = (u.email || '').replace(/[\.#\$\[\]]/g, '_');
-        return `<tr>
-            <td>${u.email || '-'}</td>
-            <td>${u.name || '-'}</td>
-            <td>•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${u.email}', this)"></i></td>
-            <td style="color:var(--success);">${(u.balance || 0).toFixed(2)} ₺
-                <div style="margin-top:5px;"><input type="number" id="balanceAmount_${safeEmailId}" class="amount-input-small" placeholder="Tutar" style="width:100px;"> 
-                <button class="btn-sm btn-success" onclick="addCustomBalance('${u.email}')">+ Ekle</button>
-                <button class="btn-sm btn-danger" onclick="removeCustomBalance('${u.email}')">- Çıkar</button></div>
-            </td>
-            <td>${(u.orders || []).length}</td>
-            <td><small>${u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : '-'}</small></td>
-            <td><button class="btn-sm btn-primary" onclick="editUser('${u.email}')">Düzenle</button>
-                <button class="btn-sm btn-danger" onclick="delUser('${u.email}')">Sil</button></td>
-        </tr>`;
-    }).join('');
+    try {
+        tbody.innerHTML = safeUsers.map(user => {
+            // Email güvenli hale getir (replace hatasını önlemek için)
+            const email = user.email || '';
+            const safeEmailForId = email.replace(/[\.#\$\[\]]/g, '_');
+            const name = user.name || '-';
+            const balance = (user.balance || 0).toFixed(2);
+            const orderCount = (user.orders && Array.isArray(user.orders)) ? user.orders.length : 0;
+            const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString('tr-TR') : '-';
+            
+            return `
+                <tr>
+                    <td>${escapeHtml(email)}</td>
+                    <td>${escapeHtml(name)}</td>
+                    <td>•••••• <i class="fas fa-eye eye-icon" onclick="showPass('${escapeHtml(email)}', this)"></i></td>
+                    <td style="color:var(--success);">${balance} ₺
+                        <div style="margin-top:5px;">
+                            <input type="number" id="balanceAmount_${safeEmailForId}" class="amount-input-small" placeholder="Tutar" style="width:100px;"> 
+                            <button class="btn-sm btn-success" onclick="addCustomBalance('${escapeHtml(email)}')">+ Ekle</button>
+                            <button class="btn-sm btn-danger" onclick="removeCustomBalance('${escapeHtml(email)}')">- Çıkar</button>
+                        </div>
+                    </td>
+                    <td>${orderCount}</td>
+                    <td><small>${createdAt}</small></td>
+                    <td>
+                        <button class="btn-sm btn-primary" onclick="editUser('${escapeHtml(email)}')">Düzenle</button>
+                        <button class="btn-sm btn-danger" onclick="delUser('${escapeHtml(email)}')">Sil</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch(error) {
+        console.error('renderUsersTable hatası:', error);
+        tbody.innerHTML = '<tr><td colspan="7" class="loading">❌ Tablo yüklenirken hata oluştu</td></tr>';
+    }
+}
+
+// HTML escape fonksiyonu (XSS koruması için)
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
 }
 
     async function updateStatus(code, status) { const snap = await database.ref('orders').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.code === code); if(entry) { await database.ref(`orders/${entry[0]}/status`).set(status); showToast(`Sipariş ${status}`); loadAllData(); } }
@@ -776,47 +853,35 @@
     async function rejectReq(id) { await database.ref(`balance_requests/${id}`).remove(); loadAllData(); }
     
     // Bakiye Ekle/Çıkar
-   async function addCustomBalance(email) {
-    if(!email) { alert('Geçersiz kullanıcı!'); return; }
-    const safeEmailId = `balanceAmount_${email.replace(/[\.#\$\[\]]/g, '_')}`;
-    const inputElement = document.getElementById(safeEmailId);
-    if(!inputElement) { alert('Input alanı bulunamadı!'); return; }
-    const amount = parseFloat(inputElement.value);
-    if(isNaN(amount) || amount <= 0) { alert('Geçerli bir tutar girin!'); return; }
-    const snap = await database.ref('users').once('value');
-    const users = snap.val() || {};
-    const entry = Object.entries(users).find(([k,v]) => v && v.email === email);
-    if(entry) { 
-        const newBalance = (users[entry[0]].balance || 0) + amount;
-        await database.ref(`users/${entry[0]}/balance`).set(newBalance);
-        showToast(`✅ ${amount} TL bakiye eklendi!`);
-        loadAllData();
-        inputElement.value = '';
-    } else {
-        alert('Kullanıcı bulunamadı!');
+    async function addCustomBalance(email) {
+        const inputId = `balanceAmount_${email.replace(/\./g, '_')}`;
+        const amount = parseFloat(document.getElementById(inputId).value);
+        if(isNaN(amount) || amount <= 0) { alert('Geçerli bir tutar girin!'); return; }
+        const snap = await database.ref('users').once('value');
+        const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+        if(entry) { 
+            const newBalance = (snap.val()[entry[0]].balance || 0) + amount;
+            await database.ref(`users/${entry[0]}/balance`).set(newBalance);
+            showToast(`✅ ${amount} TL bakiye eklendi!`);
+            loadAllData();
+            document.getElementById(inputId).value = '';
+        }
     }
-}
-
-async function removeCustomBalance(email) {
-    if(!email) { alert('Geçersiz kullanıcı!'); return; }
-    const safeEmailId = `balanceAmount_${email.replace(/[\.#\$\[\]]/g, '_')}`;
-    const inputElement = document.getElementById(safeEmailId);
-    if(!inputElement) { alert('Input alanı bulunamadı!'); return; }
-    const amount = parseFloat(inputElement.value);
-    if(isNaN(amount) || amount <= 0) { alert('Geçerli bir tutar girin!'); return; }
-    const snap = await database.ref('users').once('value');
-    const users = snap.val() || {};
-    const entry = Object.entries(users).find(([k,v]) => v && v.email === email);
-    if(entry) { 
-        const newBalance = (users[entry[0]].balance || 0) - amount;
-        await database.ref(`users/${entry[0]}/balance`).set(newBalance < 0 ? 0 : newBalance);
-        showToast(`✅ ${amount} TL bakiye çıkarıldı!`);
-        loadAllData();
-        inputElement.value = '';
-    } else {
-        alert('Kullanıcı bulunamadı!');
+    
+    async function removeCustomBalance(email) {
+        const inputId = `balanceAmount_${email.replace(/\./g, '_')}`;
+        const amount = parseFloat(document.getElementById(inputId).value);
+        if(isNaN(amount) || amount <= 0) { alert('Geçerli bir tutar girin!'); return; }
+        const snap = await database.ref('users').once('value');
+        const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email);
+        if(entry) { 
+            const newBalance = (snap.val()[entry[0]].balance || 0) - amount;
+            await database.ref(`users/${entry[0]}/balance`).set(newBalance);
+            showToast(`✅ ${amount} TL bakiye çıkarıldı!`);
+            loadAllData();
+            document.getElementById(inputId).value = '';
+        }
     }
-}
     
     async function editUser(email) { const newName = prompt("Yeni ad:"); if(newName) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}/name`).set(newName); loadAllData(); } } }
     async function delUser(email) { if(confirm("Sil?")) { const snap = await database.ref('users').once('value'); const entry = Object.entries(snap.val() || {}).find(([k,v]) => v.email === email); if(entry) { await database.ref(`users/${entry[0]}`).remove(); loadAllData(); } } }
