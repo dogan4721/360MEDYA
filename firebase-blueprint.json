@@ -1,0 +1,68 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "description": "Registered user accounts with balance and role",
+      "fields": [
+        { "name": "uid", "type": "string", "description": "User UID from Firebase Auth" },
+        { "name": "email", "type": "string", "description": "User email address" },
+        { "name": "displayName", "type": "string", "description": "User display name" },
+        { "name": "balance", "type": "number", "description": "User wallet balance in TRY (starts at 0)" },
+        { "name": "role", "type": "string", "description": "admin or user" },
+        { "name": "totalSpent", "type": "number", "description": "Lifetime total spent in TRY" },
+        { "name": "totalOrders", "type": "number", "description": "Lifetime total orders placed" },
+        { "name": "createdAt", "type": "string", "description": "ISO timestamp of registration" }
+      ]
+    },
+    {
+      "name": "orders",
+      "description": "User SMM orders placed through TurkPaneli API",
+      "fields": [
+        { "name": "id", "type": "string", "description": "Internal order document ID" },
+        { "name": "userId", "type": "string", "description": "User UID who placed the order" },
+        { "name": "userEmail", "type": "string", "description": "User email" },
+        { "name": "apiOrderId", "type": "string", "description": "TurkPaneli API Order ID" },
+        { "name": "serviceId", "type": "number", "description": "TurkPaneli Service ID" },
+        { "name": "serviceName", "type": "string", "description": "Service name" },
+        { "name": "category", "type": "string", "description": "Service category" },
+        { "name": "link", "type": "string", "description": "Target profile/post link" },
+        { "name": "quantity", "type": "number", "description": "Quantity ordered" },
+        { "name": "charge", "type": "number", "description": "Total TRY amount deducted from user balance" },
+        { "name": "status", "type": "string", "description": "Current status from API" },
+        { "name": "remains", "type": "string", "description": "Remaining count" },
+        { "name": "startCount", "type": "string", "description": "Start count" },
+        { "name": "createdAt", "type": "string", "description": "Order creation date" }
+      ]
+    },
+    {
+      "name": "deposits",
+      "description": "Balance top-up / deposit transactions (Stripe, İyzico, Havale)",
+      "fields": [
+        { "name": "id", "type": "string", "description": "Deposit transaction ID" },
+        { "name": "userId", "type": "string", "description": "User UID" },
+        { "name": "userEmail", "type": "string", "description": "User email" },
+        { "name": "amount", "type": "number", "description": "Deposit amount in TRY" },
+        { "name": "currency", "type": "string", "description": "Currency (TRY)" },
+        { "name": "status", "type": "string", "description": "completed, pending, or failed" },
+        { "name": "paymentMethod", "type": "string", "description": "Payment method used" },
+        { "name": "transactionId", "type": "string", "description": "Gateway reference ID" },
+        { "name": "createdAt", "type": "string", "description": "Creation timestamp" }
+      ]
+    },
+    {
+      "name": "bankAccounts",
+      "description": "Admin configurable bank accounts for Havale / FAST deposits",
+      "fields": [
+        { "name": "id", "type": "string", "description": "Bank account document ID" },
+        { "name": "bankName", "type": "string", "description": "Bank name (e.g. Ziraat Bankası)" },
+        { "name": "accountHolder", "type": "string", "description": "Account holder name (Alıcı)" },
+        { "name": "iban", "type": "string", "description": "IBAN number (TR...)" },
+        { "name": "branchName", "type": "string", "description": "Optional branch name" },
+        { "name": "accountNumber", "type": "string", "description": "Optional account number" },
+        { "name": "description", "type": "string", "description": "Instructions / description" },
+        { "name": "isActive", "type": "boolean", "description": "Whether this bank account is currently active" },
+        { "name": "updatedAt", "type": "string", "description": "Last update ISO timestamp" }
+      ]
+    }
+  ]
+}

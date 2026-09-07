@@ -1,0 +1,6 @@
+{
+  "name": "360 Medya",
+  "description": "360 Medya Sosyal Medya Bayilik & Sipariş Portalı: Takipçi, beğeni, izlenme ve etkileşim servisleri",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
